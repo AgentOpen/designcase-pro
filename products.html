@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产品库 - George Design</title>
+<link rel="stylesheet" href="common.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon">G</div>
+    <div class="sidebar-logo-text">George Design</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">主菜单</div>
+      <a href="dashboard.html" class="nav-item" data-page="dashboard"><span class="nav-icon">⊞</span> 工作台</a>
+      <a href="products.html" class="nav-item active" data-page="products"><span class="nav-icon">⊡</span> 产品库<span class="nav-badge">128</span></a>
+      <a href="cases.html" class="nav-item" data-page="cases"><span class="nav-icon">⊟</span> 案例库</a>
+      <a href="mycases.html" class="nav-item" data-page="mycases"><span class="nav-icon">⊠</span> 我的案例</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">文件与数据</div>
+      <a href="nas.html" class="nav-item" data-page="nas"><span class="nav-icon">⊡</span> NAS文件管理</a>
+      <a href="analytics.html" class="nav-item" data-page="analytics"><span class="nav-icon">📊</span> 数据看板</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">管理</div>
+      <a href="admin.html" class="nav-item" data-page="admin"><span class="nav-icon">⚙</span> 系统管理</a>
+      <a href="settings.html" class="nav-item" data-page="settings"><span class="nav-icon">🔄</span> 同步设置</a>
+    </div>
+  </nav>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar chen">陈</div>
+    <div class="sidebar-user-info">
+      <div class="sidebar-user-name">陈磊</div>
+      <div class="sidebar-user-role">资深设计师 · 部门主管</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <header class="header">
+    <h1 class="header-title" id="headerTitle">产品库</h1>
+    <div class="header-actions">
+      <button class="dark-toggle" onclick="toggleDarkMode()">🌙 暗色模式</button>
+      <button class="btn btn-ghost" onclick="showShortcuts()">⌨ 快捷键</button>
+      <span style="font-size:12px;color:var(--text-muted);">2026年5月23日</span>
+    </div>
+  </header>
+
+  <div class="page-content">
+    <div class="page active" id="page-products">
+      <!-- 搜索栏 -->
+      <div class="search-bar">
+        <div class="search-input-wrap"><input type="text" placeholder="搜索产品名称、SKU..." id="productSearch" oninput="filterProducts()"></div>
+        <select id="productStyleFilter" onchange="filterProducts()">
+          <option value="">全部风格</option>
+          <option>现代简约</option><option>北欧</option><option>新中式</option>
+          <option>轻奢</option><option>工业风</option><option>日式</option><option>美式</option>
+        </select>
+        <select id="productSpaceFilter" onchange="filterProducts()">
+          <option value="">全部空间</option>
+          <option>客厅</option><option>卧室</option><option>厨房</option>
+          <option>餐厅</option><option>书房</option><option>儿童房</option><option>玄关</option>
+        </select>
+        <select id="productCategoryFilter" onchange="filterProducts()">
+          <option value="">全部品类</option>
+          <option>沙发</option><option>床</option><option>灯具</option><option>茶几</option>
+          <option>餐桌</option><option>椅子</option><option>地毯</option><option>窗帘</option><option>装饰品</option>
+        </select>
+        <button class="btn btn-primary" onclick="filterProducts()">搜索</button>
+        <button class="btn btn-secondary" onclick="resetProductFilter()">重置</button>
+        <button class="btn btn-secondary" onclick="openImageSearch()" title="上传图片搜索相似产品">📷 图搜产品</button>
+        <button class="btn btn-primary" onclick="openAISearch()" title="AI智能推荐">🤖 AI智能推荐</button>
+      </div>
+      <!-- 结果数 -->
+      <div style="margin-bottom:12px;font-size:12px;color:var(--text-secondary);" id="resultCount"></div>
+      <!-- 产品网格 -->
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ====== MODALS ====== -->
+<!-- Product Detail Modal -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h2 id="productModalTitle">产品详情</h2><button class="modal-close" onclick="closeModal('productModal')">✕</button></div>
+    <div class="modal-body">
+      <div style="display:flex;gap:24px;flex-wrap:wrap;">
+        <div class="card-thumb" style="width:300px;min-width:250px;border-radius:var(--radius);" id="productModalThumbWrap"></div>
+        <div style="flex:1;min-width:250px;">
+          <h3 id="productModalName" style="margin-bottom:8px;"></h3>
+          <p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;" id="productModalSKU"></p>
+          <p style="font-size:20px;font-weight:700;color:var(--primary);margin-bottom:12px;" id="productModalPrice"></p>
+          <div id="productModalTags" style="margin-bottom:12px;"></div>
+          <p style="font-size:13px;margin-bottom:8px;">该产品适用于多种室内设计场景，提供高质量的3D模型文件。</p>
+          <p style="font-size:12px;color:var(--text-muted);">下载次数: <span id="productModalDownloads">0</span></p>
+          <div style="margin-top:12px;">
+            <button class="fav-star" id="productFavStar" onclick="toggleProductFav()">☆</button>
+          </div>
+        </div>
+      </div>
+      <!-- 3D Preview -->
+      <div style="margin-top:20px;">
+        <h4 style="font-size:14px;margin-bottom:10px;">3D模型预览</h4>
+        <div class="model-3d-preview">
+          <div class="model-3d-grid"></div>
+          <div class="model-3d-shape"></div>
+        </div>
+      </div>
+      <!-- Format selection + download -->
+      <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <span style="font-size:13px;">选择格式:</span>
+        <select id="productDownloadFormat">
+          <option>.max (3D Max)</option><option>.skp (SketchUp)</option>
+          <option>.fbx</option><option>.obj</option>
+        </select>
+        <button class="btn btn-primary" onclick="simulateDownload('模型')">⬇ 下载模型</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Download Progress Modal -->
+<div class="modal-overlay" id="downloadModal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header"><h2>下载中...</h2><button class="modal-close" onclick="closeModal('downloadModal')">✕</button></div>
+    <div class="modal-body" style="text-align:center;">
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;" id="downloadStatus">正在准备下载...</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="downloadProgressBar" style="width:0%"></div></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:6px;" id="downloadPercent">0%</div>
+    </div>
+  </div>
+</div>
+
+<!-- AI Search Modal -->
+<div class="modal-overlay" id="aiSearchModal">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header"><h2>AI智能推荐</h2><button class="modal-close" onclick="closeModal('aiSearchModal')">✕</button></div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">描述你的设计需求，AI将推荐最匹配的产品组合</p>
+      <div class="form-group">
+        <textarea id="aiSearchInput" placeholder="例如：我需要一个北欧风格客厅的沙发，搭配简约灯具和浅色地毯..." rows="3"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="executeAISearch()">开始推荐</button>
+      <div id="aiSearchResult" style="margin-top:16px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Image Search Modal -->
+<div class="modal-overlay" id="imageSearchModal">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header"><h2>图搜产品</h2><button class="modal-close" onclick="closeModal('imageSearchModal')">✕</button></div>
+    <div class="modal-body" style="text-align:center;">
+      <div style="border:2px dashed var(--border);border-radius:var(--radius-lg);padding:60px 20px;margin-bottom:16px;cursor:pointer;" onclick="simulateImageSearch()">
+        <div style="font-size:48px;margin-bottom:12px;">📷</div>
+        <p style="color:var(--text-secondary);">点击此处上传或拖拽图片</p>
+        <p style="font-size:11px;color:var(--text-muted);">支持 JPG / PNG / WebP</p>
+      </div>
+      <div id="imageSearchResult"></div>
+    </div>
+  </div>
+</div>
+
+<!-- History Panel -->
+<div class="history-panel" id="historyPanel">
+  <div style="padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+    <strong>操作历史</strong>
+    <button class="btn btn-ghost btn-sm" onclick="toggleHistory()">✕</button>
+  </div>
+  <div id="historyList"></div>
+</div>
+
+<!-- Compare Panel -->
+<div class="compare-panel hidden" id="comparePanel">
+  <div class="compare-items" id="compareItems"></div>
+</div>
+
+<!-- Shortcuts Modal -->
+<div class="modal-overlay" id="shortcutsModal">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div>
+    <div class="modal-body">
+      <table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody>
+        <tr><td><kbd>?</kbd></td><td>显示快捷键列表</td></tr>
+        <tr><td><kbd>Ctrl/Cmd + P</kbd></td><td>产品库</td></tr>
+        <tr><td><kbd>Ctrl/Cmd + B</kbd></td><td>切换暗色模式</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>关闭所有弹窗</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- Compare Modal -->
+<div class="modal-overlay" id="compareModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h2>案例对比</h2><button class="modal-close" onclick="closeModal('compareModal')">✕</button></div>
+    <div class="modal-body" id="compareModalBody"></div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="common.js"></script>
+<script>
+// ========== PRODUCT DATA (30+ items) ==========
+const allProducts = [
+  // 沙发 (6)
+  {id:1,name:'北欧简约布艺沙发',sku:'SKU-SF-001',style:'北欧',space:'客厅',category:'沙发',price:6800,downloads:256,theme:'sofa'},
+  {id:2,name:'现代极简真皮沙发',sku:'SKU-SF-002',style:'现代简约',space:'客厅',category:'沙发',price:12800,downloads:312,theme:'sofa'},
+  {id:3,name:'轻奢绒面转角沙发',sku:'SKU-SF-003',style:'轻奢',space:'客厅',category:'沙发',price:15800,downloads:189,theme:'sofa'},
+  {id:4,name:'新中式实木框架沙发',sku:'SKU-SF-004',style:'新中式',space:'客厅',category:'沙发',price:22000,downloads:145,theme:'chair'},
+  {id:5,name:'美式复古皮沙发',sku:'SKU-SF-005',style:'美式',space:'客厅',category:'沙发',price:19500,downloads:98,theme:'sofa'},
+  {id:6,name:'日式榻榻米沙发',sku:'SKU-SF-006',style:'日式',space:'书房',category:'沙发',price:4200,downloads:167,theme:'sofa'},
+  // 床 (5)
+  {id:7,name:'新中式实木大床',sku:'SKU-BD-001',style:'新中式',space:'卧室',category:'床',price:8900,downloads:134,theme:'bed'},
+  {id:8,name:'现代简约软包床',sku:'SKU-BD-002',style:'现代简约',space:'卧室',category:'床',price:7600,downloads:203,theme:'bed'},
+  {id:9,name:'北欧白橡木床',sku:'SKU-BD-003',style:'北欧',space:'卧室',category:'床',price:6500,downloads:178,theme:'bed'},
+  {id:10,name:'轻奢真皮软床',sku:'SKU-BD-004',style:'轻奢',space:'卧室',category:'床',price:13500,downloads:156,theme:'bed'},
+  {id:11,name:'工业风铁艺床',sku:'SKU-BD-005',style:'工业风',space:'卧室',category:'床',price:4800,downloads:89,theme:'shelf'},
+  // 灯具 (5)
+  {id:12,name:'现代极简吊灯',sku:'SKU-LT-001',style:'现代简约',space:'客厅',category:'灯具',price:1800,downloads:267,theme:'lamp'},
+  {id:13,name:'北欧星球吊灯',sku:'SKU-LT-002',style:'北欧',space:'餐厅',category:'灯具',price:2200,downloads:234,theme:'lamp'},
+  {id:14,name:'新中式宫灯吊灯',sku:'SKU-LT-003',style:'新中式',space:'餐厅',category:'灯具',price:3500,downloads:112,theme:'lamp'},
+  {id:15,name:'轻奢水晶吊灯',sku:'SKU-LT-004',style:'轻奢',space:'客厅',category:'灯具',price:6800,downloads:198,theme:'lamp'},
+  {id:16,name:'日式纸艺吊灯',sku:'SKU-LT-005',style:'日式',space:'书房',category:'灯具',price:950,downloads:145,theme:'lamp'},
+  // 茶几 (4)
+  {id:17,name:'轻奢大理石茶几',sku:'SKU-TB-001',style:'轻奢',space:'客厅',category:'茶几',price:4200,downloads:312,theme:'table'},
+  {id:18,name:'现代简约玻璃茶几',sku:'SKU-TB-002',style:'现代简约',space:'客厅',category:'茶几',price:2800,downloads:245,theme:'table'},
+  {id:19,name:'北欧实木圆几',sku:'SKU-TB-003',style:'北欧',space:'客厅',category:'茶几',price:1900,downloads:189,theme:'dining'},
+  {id:20,name:'工业风金属茶几',sku:'SKU-TB-004',style:'工业风',space:'客厅',category:'茶几',price:2200,downloads:134,theme:'shelf'},
+  // 餐桌 (4)
+  {id:21,name:'现代简约餐桌套装',sku:'SKU-DT-001',style:'现代简约',space:'餐厅',category:'餐桌',price:5600,downloads:201,theme:'dining'},
+  {id:22,name:'轻奢大理石餐桌',sku:'SKU-DT-002',style:'轻奢',space:'餐厅',category:'餐桌',price:9800,downloads:178,theme:'table'},
+  {id:23,name:'北欧实木餐桌',sku:'SKU-DT-003',style:'北欧',space:'餐厅',category:'餐桌',price:4200,downloads:223,theme:'dining'},
+  {id:24,name:'新中式圆餐桌',sku:'SKU-DT-004',style:'新中式',space:'餐厅',category:'餐桌',price:7500,downloads:156,theme:'dining'},
+  // 椅子 (3)
+  {id:25,name:'北欧温莎椅',sku:'SKU-CH-001',style:'北欧',space:'餐厅',category:'椅子',price:680,downloads:345,theme:'chair'},
+  {id:26,name:'现代简约餐椅',sku:'SKU-CH-002',style:'现代简约',space:'餐厅',category:'椅子',price:520,downloads:289,theme:'chair'},
+  {id:27,name:'轻奢丝绒餐椅',sku:'SKU-CH-003',style:'轻奢',space:'餐厅',category:'椅子',price:1200,downloads:167,theme:'chair'},
+  // 地毯 (3)
+  {id:28,name:'北欧羊毛地毯',sku:'SKU-CP-001',style:'北欧',space:'客厅',category:'地毯',price:2800,downloads:145,theme:'carpet'},
+  {id:29,name:'现代简约几何地毯',sku:'SKU-CP-002',style:'现代简约',space:'卧室',category:'地毯',price:1900,downloads:178,theme:'carpet'},
+  {id:30,name:'轻奢丝质地毯',sku:'SKU-CP-003',style:'轻奢',space:'客厅',category:'地毯',price:4500,downloads:98,theme:'carpet'},
+  // 窗帘 (2)
+  {id:31,name:'北欧亚麻窗帘',sku:'SKU-CU-001',style:'北欧',space:'客厅',category:'窗帘',price:1200,downloads:134,theme:'curtain'},
+  {id:32,name:'轻奢丝绒窗帘',sku:'SKU-CU-002',style:'轻奢',space:'卧室',category:'窗帘',price:2800,downloads:89,theme:'curtain'},
+  // 装饰品 (3)
+  {id:33,name:'新中式花瓶摆件',sku:'SKU-DC-001',style:'新中式',space:'玄关',category:'装饰品',price:680,downloads:212,theme:'vase'},
+  {id:34,name:'北欧墙面挂饰',sku:'SKU-DC-002',style:'北欧',space:'客厅',category:'装饰品',price:380,downloads:167,theme:'screen'},
+  {id:35,name:'日式枯山水摆件',sku:'SKU-DC-003',style:'日式',space:'书房',category:'装饰品',price:560,downloads:145,theme:'vase'},
+];
+
+let currentProductId = null;
+
+function getTagClass(style) {
+  const map = {'现代简约':'tag-blue','北欧':'tag-green','新中式':'tag-purple','轻奢':'tag-orange','工业风':'tag-red','日式':'tag-pink','美式':'tag-cyan'};
+  return map[style] || 'tag-blue';
+}
+
+function renderProductCard(p) {
+  const favClass = isFavorite(p.id, 'product') ? 'active' : '';
+  return `
+  <div class="product-card">
+    <div class="card-thumb" onclick="openProductDetail(${p.id})">
+      <div class="card-thumb-placeholder theme-${p.theme}"></div>
+    </div>
+    <div class="card-body">
+      <div class="card-body-title" style="display:flex;justify-content:space-between;">
+        <span onclick="openProductDetail(${p.id})" style="cursor:pointer;">${p.name}</span>
+        <span class="fav-star ${favClass}" onclick="event.stopPropagation();toggleFavorite(${p.id},'product');this.classList.toggle('active');">${favClass ? '\u2605' : '\u2606'}</span>
+      </div>
+      <div class="card-body-meta">${p.sku} | ¥${p.price.toLocaleString()}</div>
+      <div class="card-body-tags">
+        <span class="tag ${getTagClass(p.style)}">${p.style}</span>
+        <span class="tag tag-green">${p.space}</span>
+        <span class="tag tag-purple">${p.category}</span>
+      </div>
+      <div class="card-body-footer">
+        <span style="font-size:11px;color:var(--text-muted);">⬇ ${p.downloads}次下载</span>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-ghost btn-sm" onclick="openProductDetail(${p.id})">详情</button>
+          <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();simulateDownload('${p.name}')">下载</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function filterProducts() {
+  const s = document.getElementById('productSearch').value.toLowerCase();
+  const style = document.getElementById('productStyleFilter').value;
+  const space = document.getElementById('productSpaceFilter').value;
+  const cat = document.getElementById('productCategoryFilter').value;
+  const filtered = allProducts.filter(p =>
+    (p.name.toLowerCase()+p.sku.toLowerCase()).includes(s) &&
+    (!style||p.style===style) && (!space||p.space===space) && (!cat||p.category===cat)
+  );
+  document.getElementById('productGrid').innerHTML = filtered.map(renderProductCard).join('') ||
+    '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px;">无匹配产品</p>';
+  document.getElementById('resultCount').textContent = `共 ${filtered.length} 个产品`;
+}
+
+function resetProductFilter() {
+  document.getElementById('productSearch').value='';
+  document.getElementById('productStyleFilter').value='';
+  document.getElementById('productSpaceFilter').value='';
+  document.getElementById('productCategoryFilter').value='';
+  filterProducts();
+}
+
+function openProductDetail(id) {
+  const p = allProducts.find(x=>x.id===id); if(!p) return;
+  currentProductId = id;
+  document.getElementById('productModalTitle').textContent = p.name;
+  document.getElementById('productModalThumbWrap').innerHTML = `<div class="card-thumb-placeholder theme-${p.theme}" style="width:100%;height:100%;min-height:200px;"></div>`;
+  document.getElementById('productModalName').textContent = p.name;
+  document.getElementById('productModalSKU').textContent = 'SKU: ' + p.sku;
+  document.getElementById('productModalPrice').textContent = '¥' + p.price.toLocaleString();
+  document.getElementById('productModalTags').innerHTML = `<span class="tag ${getTagClass(p.style)}">${p.style}</span> <span class="tag tag-green">${p.space}</span> <span class="tag tag-purple">${p.category}</span>`;
+  document.getElementById('productModalDownloads').textContent = p.downloads;
+  const favStar = document.getElementById('productFavStar');
+  if (favStar) {
+    favStar.textContent = isFavorite(id, 'product') ? '★' : '☆';
+    favStar.className = 'fav-star' + (isFavorite(id, 'product') ? ' active' : '');
+  }
+  openModal('productModal');
+}
+
+function toggleProductFav() {
+  if (!currentProductId) return;
+  const isFav = toggleFavorite(currentProductId, 'product');
+  const star = document.getElementById('productFavStar');
+  if (star) {
+    star.textContent = isFav ? '★' : '☆';
+    star.className = 'fav-star' + (isFav ? ' active' : '');
+  }
+  if (typeof filterProducts === 'function') filterProducts();
+}
+
+// Init
+filterProducts();
+</script>
+</body>
+</html>

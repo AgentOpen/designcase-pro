@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>系统管理 - George Design</title>
+<link rel="stylesheet" href="common.css">
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon">G</div><div class="sidebar-logo-text">George Design</div></div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">主菜单</div>
+      <a href="dashboard.html" class="nav-item" data-page="dashboard"><span class="nav-icon">⊞</span> 工作台</a>
+      <a href="products.html" class="nav-item" data-page="products"><span class="nav-icon">⊡</span> 产品库</a>
+      <a href="cases.html" class="nav-item" data-page="cases"><span class="nav-icon">⊟</span> 案例库</a>
+      <a href="mycases.html" class="nav-item" data-page="mycases"><span class="nav-icon">⊠</span> 我的案例</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">文件与数据</div>
+      <a href="nas.html" class="nav-item" data-page="nas"><span class="nav-icon">⊡</span> NAS文件管理</a>
+      <a href="analytics.html" class="nav-item" data-page="analytics"><span class="nav-icon">📊</span> 数据看板</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">管理</div>
+      <a href="admin.html" class="nav-item active" data-page="admin"><span class="nav-icon">⚙</span> 系统管理</a>
+      <a href="settings.html" class="nav-item" data-page="settings"><span class="nav-icon">🔄</span> 同步设置</a>
+    </div>
+  </nav>
+  <div class="sidebar-user"><div class="sidebar-avatar chen">陈</div>陈磊 · 部门主管</div>
+</aside>
+
+<main class="main">
+  <header class="header">
+    <h1 class="header-title">系统管理</h1>
+    <div class="header-actions">
+      <button class="dark-toggle" onclick="toggleDarkMode()">🌙</button>
+      <button class="btn btn-ghost" onclick="showShortcuts()">⌨</button>
+    </div>
+  </header>
+
+  <div class="page-content">
+    <div class="page active" id="page-admin">
+      <!-- Tabs -->
+      <div class="admin-tabs" style="display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid var(--border);">
+        <button class="admin-tab active" onclick="switchAdminTab('users')">用户管理</button>
+        <button class="admin-tab" onclick="switchAdminTab('permissions')">权限配置</button>
+        <button class="admin-tab" onclick="switchAdminTab('settings')">系统设置</button>
+      </div>
+
+      <!-- Tab: Users -->
+      <div class="admin-panel" id="adminUsers">
+        <div class="card">
+          <div class="card-title">用户管理</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>用户名</th><th>角色</th><th>部门</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody id="adminUserTable">
+                <tr><td>陈磊</td><td>部门主管</td><td>设计一部</td><td><span class="tag tag-green">启用</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('info','编辑用户: 陈磊')">编辑</button> <button class="btn btn-danger btn-sm" onclick="toggleUserStatus(this)">禁用</button></td></tr>
+                <tr><td>林悦</td><td>资深设计师</td><td>设计一部</td><td><span class="tag tag-green">启用</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('info','编辑用户: 林悦')">编辑</button> <button class="btn btn-danger btn-sm" onclick="toggleUserStatus(this)">禁用</button></td></tr>
+                <tr><td>王明远</td><td>资深设计师</td><td>设计二部</td><td><span class="tag tag-green">启用</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('info','编辑用户: 王明远')">编辑</button> <button class="btn btn-danger btn-sm" onclick="toggleUserStatus(this)">禁用</button></td></tr>
+                <tr><td>张薇</td><td>中级设计师</td><td>设计三部</td><td><span class="tag tag-green">启用</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('info','编辑用户: 张薇')">编辑</button> <button class="btn btn-danger btn-sm" onclick="toggleUserStatus(this)">禁用</button></td></tr>
+                <tr><td>李强</td><td>中级设计师</td><td>设计四部</td><td><span class="tag tag-red">禁用</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('info','编辑用户: 李强')">编辑</button> <button class="btn btn-primary btn-sm" onclick="toggleUserStatus(this)">启用</button></td></tr>
+                <tr><td>赵工</td><td>初级设计师</td><td>设计五部</td><td><span class="tag tag-green">启用</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('info','编辑用户: 赵工')">编辑</button> <button class="btn btn-danger btn-sm" onclick="toggleUserStatus(this)">禁用</button></td></tr>
+                <tr><td>孙敏</td><td>初级设计师</td><td>设计五部</td><td><span class="tag tag-green">启用</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('info','编辑用户: 孙敏')">编辑</button> <button class="btn btn-danger btn-sm" onclick="toggleUserStatus(this)">禁用</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Permissions -->
+      <div class="admin-panel" id="adminPermissions" style="display:none;">
+        <div class="card">
+          <div class="card-title">权限矩阵</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>权限项</th><th>管理员</th><th>部门主管</th><th>资深设计师</th><th>中级设计师</th><th>初级设计师</th></tr></thead>
+              <tbody>
+                <tr><td>查看产品库</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+                <tr><td>下载产品模型</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+                <tr><td>查看案例库</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+                <tr><td>复用案例</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+                <tr><td>创建案例</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td><td>✘</td></tr>
+                <tr><td>删除案例</td><td>✔</td><td>✔</td><td>限本人</td><td>限本人</td><td>✘</td></tr>
+                <tr><td>NAS文件管理</td><td>✔</td><td>✔</td><td>限本部门</td><td>限本部门</td><td>限本人</td></tr>
+                <tr><td>NAS文件删除</td><td>✔</td><td>✔</td><td>✘</td><td>✘</td><td>✘</td></tr>
+                <tr><td>数据看板查看</td><td>✔</td><td>✔</td><td>限本部门</td><td>✘</td><td>✘</td></tr>
+                <tr><td>系统管理</td><td>✔</td><td>✘</td><td>✘</td><td>✘</td><td>✘</td></tr>
+                <tr><td>用户管理</td><td>✔</td><td>✘</td><td>✘</td><td>✘</td><td>✘</td></tr>
+                <tr><td>同步设置</td><td>✔</td><td>✔</td><td>✘</td><td>✘</td><td>✘</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Settings -->
+      <div class="admin-panel" id="adminSettings" style="display:none;">
+        <div class="card">
+          <div class="card-title">系统设置</div>
+          <div class="form-group"><label>站点名称</label><input type="text" value="George Design"></div>
+          <div class="form-group"><label>NAS总配额 (GB)</label><input type="number" value="500"></div>
+          <div class="form-group"><label>日志保留天数</label><input type="number" value="180"></div>
+          <div class="form-group"><label>默认同步方向</label><select><option>双向同步</option><option>仅上传</option><option>仅下载</option></select></div>
+          <div class="form-group"><label>自动备份频率</label><select><option>每天</option><option>每小时</option><option>实时</option></select></div>
+          <button class="btn btn-primary" onclick="showToast('success','系统设置已保存')">保存设置</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="history-panel" id="historyPanel"><div style="padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;"><strong>操作历史</strong><button class="btn btn-ghost btn-sm" onclick="toggleHistory()">✕</button></div><div id="historyList"></div></div>
+<div class="modal-overlay" id="shortcutsModal"><div class="modal" style="max-width:600px;"><div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div><div class="modal-body"><table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody><tr><td><kbd>?</kbd></td><td>显示快捷键</td></tr><tr><td><kbd>Ctrl/Cmd + S</kbd></td><td>系统管理</td></tr><tr><td><kbd>Esc</kbd></td><td>关闭弹窗</td></tr></tbody></table></div></div></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="common.js"></script>
+<script>
+function switchAdminTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-panel').forEach(p => p.style.display = 'none');
+  document.getElementById('admin' + tab.charAt(0).toUpperCase() + tab.slice(1)).style.display = 'block';
+  event.target.classList.add('active');
+}
+
+function toggleUserStatus(btn) {
+  const row = btn.closest('tr');
+  const statusEl = row.querySelector('.tag');
+  const isEnabled = statusEl.textContent.trim() === '启用';
+  if (isEnabled) {
+    statusEl.textContent = '禁用';
+    statusEl.className = 'tag tag-red';
+    btn.textContent = '启用';
+    btn.className = 'btn btn-primary btn-sm';
+    showToast('warning', row.querySelector('td').textContent + ' 已禁用');
+  } else {
+    statusEl.textContent = '启用';
+    statusEl.className = 'tag tag-green';
+    btn.textContent = '禁用';
+    btn.className = 'btn btn-danger btn-sm';
+    showToast('success', row.querySelector('td').textContent + ' 已启用');
+  }
+}
+</script>
+</body>
+</html>

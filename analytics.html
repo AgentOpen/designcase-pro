@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据看板 - George Design</title>
+<link rel="stylesheet" href="common.css">
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon">G</div><div class="sidebar-logo-text">George Design</div></div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">主菜单</div>
+      <a href="dashboard.html" class="nav-item" data-page="dashboard"><span class="nav-icon">⊞</span> 工作台</a>
+      <a href="products.html" class="nav-item" data-page="products"><span class="nav-icon">⊡</span> 产品库</a>
+      <a href="cases.html" class="nav-item" data-page="cases"><span class="nav-icon">⊟</span> 案例库</a>
+      <a href="mycases.html" class="nav-item" data-page="mycases"><span class="nav-icon">⊠</span> 我的案例</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">文件与数据</div>
+      <a href="nas.html" class="nav-item" data-page="nas"><span class="nav-icon">⊡</span> NAS文件管理</a>
+      <a href="analytics.html" class="nav-item active" data-page="analytics"><span class="nav-icon">📊</span> 数据看板</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">管理</div>
+      <a href="admin.html" class="nav-item" data-page="admin"><span class="nav-icon">⚙</span> 系统管理</a>
+      <a href="settings.html" class="nav-item" data-page="settings"><span class="nav-icon">🔄</span> 同步设置</a>
+    </div>
+  </nav>
+  <div class="sidebar-user"><div class="sidebar-avatar chen">陈</div>陈磊 · 部门主管</div>
+</aside>
+
+<main class="main">
+  <header class="header">
+    <h1 class="header-title">数据看板</h1>
+    <div class="header-actions">
+      <select id="timeRange" onchange="refreshAnalytics()" style="margin-right:8px;">
+        <option>今日</option><option>本周</option><option selected>本月</option><option>本季度</option><option>今年</option>
+      </select>
+      <button class="dark-toggle" onclick="toggleDarkMode()">🌙</button>
+      <button class="btn btn-ghost" onclick="showShortcuts()">⌨</button>
+    </div>
+  </header>
+
+  <div class="page-content">
+    <div class="page active" id="page-analytics">
+      <!-- Metric Cards -->
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-card-label">总案例数</div>
+          <div class="stat-card-value">156</div>
+          <div class="stat-card-sub">较上月 +12%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">复用总次数</div>
+          <div class="stat-card-value">523</div>
+          <div class="stat-card-sub">较上月 +18%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">活跃设计师</div>
+          <div class="stat-card-value">28</div>
+          <div class="stat-card-sub">本月新增 3 人</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">模型下载总量</div>
+          <div class="stat-card-value">3,842</div>
+          <div class="stat-card-sub">较上月 +23%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">NAS总使用量</div>
+          <div class="stat-card-value">156 GB</div>
+          <div class="stat-card-sub">剩余 344 GB / 500 GB</div>
+        </div>
+      </div>
+
+      <!-- Charts row -->
+      <div class="chart-row" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
+        <!-- Bar chart: case trend -->
+        <div class="card" style="flex:1;min-width:400px;">
+          <div class="card-title">案例创建趋势（近12个月）</div>
+          <div class="chart-bar" id="barChart" style="height:200px;"></div>
+        </div>
+        <!-- Pie chart: style distribution -->
+        <div class="card" style="width:350px;min-width:280px;">
+          <div class="card-title">热门风格分布</div>
+          <div class="chart-pie-wrap" style="text-align:center;">
+            <div class="chart-pie" style="width:180px;height:180px;margin:0 auto;background:conic-gradient(#4f46e5 0% 28%, #10b981 28% 52%, #f59e0b 52% 70%, #ec4899 70% 82%, #ef4444 82% 92%, #3b82f6 92% 100%);border-radius:50%;"></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px;">
+            <span class="tag tag-purple">现代简约 28%</span><span class="tag tag-green">北欧 24%</span>
+            <span class="tag tag-orange">新中式 18%</span><span class="tag tag-pink">轻奢 12%</span>
+            <span class="tag tag-red">工业风 10%</span><span class="tag tag-blue">其他 8%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Second chart row -->
+      <div class="chart-row" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
+        <!-- Bar horizontal: designer reuse rank -->
+        <div class="card" style="flex:1;min-width:400px;">
+          <div class="card-title">设计师复用排行 Top 10</div>
+          <div class="chart-hbar" id="hBarChart" style="height:260px;"></div>
+        </div>
+        <!-- Pie: space -->
+        <div class="card" style="width:350px;min-width:280px;">
+          <div class="card-title">热门空间分布</div>
+          <div class="chart-pie-wrap" style="text-align:center;">
+            <div class="chart-pie" style="width:180px;height:180px;margin:0 auto;background:conic-gradient(#4f46e5 0% 35%, #10b981 35% 58%, #f59e0b 58% 74%, #ec4899 74% 86%, #ef4444 86% 94%, #3b82f6 94% 100%);border-radius:50%;"></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px;">
+            <span class="tag tag-purple">客厅 35%</span><span class="tag tag-green">卧室 23%</span>
+            <span class="tag tag-orange">餐厅 16%</span><span class="tag tag-pink">书房 12%</span>
+            <span class="tag tag-red">儿童房 8%</span><span class="tag tag-blue">其他 6%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Line chart: model downloads -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title">3D模型下载趋势（近12个月）</div>
+        <div class="chart-line" id="lineChart" style="height:200px;position:relative;overflow:hidden;"></div>
+      </div>
+
+      <!-- Department stats table -->
+      <div class="card">
+        <div class="card-title">部门案例统计</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>部门名称</th><th>案例数</th><th>复用次数</th><th>活跃设计师</th><th>NAS使用</th></tr></thead>
+            <tbody id="deptStats">
+              <tr><td>设计一部</td><td>42</td><td>156</td><td>5</td><td>45 GB / 100 GB</td></tr>
+              <tr><td>设计二部</td><td>31</td><td>112</td><td>4</td><td>32 GB / 100 GB</td></tr>
+              <tr><td>设计三部</td><td>28</td><td>98</td><td>3</td><td>28 GB / 100 GB</td></tr>
+              <tr><td>设计四部</td><td>25</td><td>87</td><td>3</td><td>20 GB / 100 GB</td></tr>
+              <tr><td>设计五部</td><td>30</td><td>70</td><td>4</td><td>31 GB / 100 GB</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="history-panel" id="historyPanel"><div style="padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;"><strong>操作历史</strong><button class="btn btn-ghost btn-sm" onclick="toggleHistory()">✕</button></div><div id="historyList"></div></div>
+<div class="modal-overlay" id="shortcutsModal"><div class="modal" style="max-width:600px;"><div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div><div class="modal-body"><table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody><tr><td><kbd>?</kbd></td><td>显示快捷键</td></tr><tr><td><kbd>Ctrl/Cmd + A</kbd></td><td>数据看板</td></tr><tr><td><kbd>Esc</kbd></td><td>关闭弹窗</td></tr></tbody></table></div></div></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="common.js"></script>
+<script>
+function refreshAnalytics() {
+  const range = document.getElementById('timeRange').value;
+  showToast('info', `数据已刷新为「${range}」范围`);
+  renderBarChart();
+  renderHBarChart();
+  renderLineChart();
+}
+
+function renderBarChart() {
+  const months = ['5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','4月'];
+  const values = [12,15,10,18,22,16,20,25,14,19,24,28];
+  const max = Math.max(...values);
+  const chart = document.getElementById('barChart');
+  chart.innerHTML = months.map((m,i) => `
+    <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+      <div style="font-size:10px;color:var(--text-muted);margin-bottom:4px;">${values[i]}</div>
+      <div style="width:100%;max-width:36px;height:${(values[i]/max*160)}px;background:linear-gradient(180deg,#4f46e5,#818cf8);border-radius:4px 4px 0 0;transition:height 0.6s ease;" class="bar-fill"></div>
+      <div style="font-size:10px;color:var(--text-secondary);margin-top:4px;">${m}</div>
+    </div>
+  `).join('');
+}
+
+function renderHBarChart() {
+  const designers = [
+    {name:'陈磊',value:156},{name:'林悦',value:132},{name:'王明远',value:118},
+    {name:'张薇',value:104},{name:'李强',value:89},{name:'赵工',value:67},
+    {name:'孙敏',value:54},{name:'周杰',value:43},{name:'吴亮',value:31},{name:'郑虹',value:22}
+  ];
+  const max = Math.max(...designers.map(d=>d.value));
+  const chart = document.getElementById('hBarChart');
+  chart.innerHTML = designers.map((d,i) => `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <span style="width:50px;text-align:right;font-size:12px;">${d.name}</span>
+      <div style="flex:1;height:18px;background:var(--bg);border-radius:4px;overflow:hidden;">
+        <div class="hbar-fill" style="width:${d.value/max*100}%;height:100%;background:linear-gradient(90deg,#4f46e5,#a78bfa);border-radius:4px;transition:width 1s ease;"></div>
+      </div>
+      <span style="font-size:11px;color:var(--text-muted);width:30px;">${d.value}</span>
+    </div>
+  `).join('');
+}
+
+function renderLineChart() {
+  const values = [180,210,195,240,260,230,280,310,290,340,320,380];
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const range = max - min || 1;
+  const w = 100 / (values.length - 1);
+  const points = values.map((v,i) => `${i*w}%,${100-(v-min)/range*90}%`).join(' ');
+  const chart = document.getElementById('lineChart');
+  chart.innerHTML = `
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;">
+      <defs>
+        <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4f46e5" stop-opacity="0.2"/><stop offset="100%" stop-color="#4f46e5" stop-opacity="0"/></linearGradient>
+      </defs>
+      <polygon points="${points} 100%,100% 100%,100% 0%,0 0%" fill="url(#lineGrad)"/>
+      <polyline points="${points}" fill="none" stroke="#4f46e5" stroke-width="0.5" vector-effect="non-scaling-stroke"/>
+    </svg>
+    <div style="position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;padding:0 4px;">
+      ${['5月','7月','9月','11月','1月','3月','4月'].map(m=>`<span style="font-size:9px;color:var(--text-muted);">${m}</span>`).join('')}
+    </div>
+  `;
+}
+
+renderBarChart();
+renderHBarChart();
+renderLineChart();
+</script>
+</body>
+</html>
