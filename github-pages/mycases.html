@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的案例 - George Design</title>
+<link rel="stylesheet" href="common.css">
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon">G</div><div class="sidebar-logo-text">George Design</div></div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">主菜单</div>
+      <a href="dashboard.html" class="nav-item" data-page="dashboard"><span class="nav-icon">⊞</span> 工作台</a>
+      <a href="products.html" class="nav-item" data-page="products"><span class="nav-icon">⊡</span> 产品库</a>
+      <a href="cases.html" class="nav-item" data-page="cases"><span class="nav-icon">⊟</span> 案例库</a>
+      <a href="mycases.html" class="nav-item active" data-page="mycases"><span class="nav-icon">⊠</span> 我的案例</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">文件与数据</div>
+      <a href="nas.html" class="nav-item" data-page="nas"><span class="nav-icon">⊡</span> NAS文件管理</a>
+      <a href="analytics.html" class="nav-item" data-page="analytics"><span class="nav-icon">📊</span> 数据看板</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">管理</div>
+      <a href="admin.html" class="nav-item" data-page="admin"><span class="nav-icon">⚙</span> 系统管理</a>
+      <a href="settings.html" class="nav-item" data-page="settings"><span class="nav-icon">🔄</span> 同步设置</a>
+    </div>
+  </nav>
+  <div class="sidebar-user"><div class="sidebar-avatar chen">陈</div>陈磊 · 部门主管</div>
+</aside>
+
+<main class="main">
+  <header class="header">
+    <h1 class="header-title">我的案例</h1>
+    <div class="header-actions">
+      <button class="btn btn-primary" onclick="openModal('createCaseModal')">＋ 创建新案例</button>
+      <button class="dark-toggle" onclick="toggleDarkMode()">🌙</button>
+      <button class="btn btn-ghost" onclick="toggleHistory()">📜</button>
+      <button class="btn btn-ghost" onclick="showShortcuts()">⌨</button>
+    </div>
+  </header>
+
+  <div class="page-content">
+    <div class="page active" id="page-mycases">
+      <div class="search-bar">
+        <div class="search-input-wrap"><input type="text" placeholder="搜索我的案例..." id="myCaseSearch" oninput="filterMyCases()"></div>
+        <select id="myCaseStyleFilter" onchange="filterMyCases()"><option value="">全部风格</option><option>现代简约</option><option>北欧</option><option>新中式</option><option>轻奢</option><option>工业风</option><option>日式</option><option>美式</option></select>
+        <select id="myCaseSpaceFilter" onchange="filterMyCases()"><option value="">全部空间</option><option>客厅</option><option>卧室</option><option>厨房</option><option>餐厅</option><option>书房</option><option>儿童房</option></select>
+        <button class="btn btn-primary" onclick="filterMyCases()">搜索</button>
+        <button class="btn btn-secondary" onclick="resetMyCaseFilter()">重置</button>
+      </div>
+      <div style="margin-bottom:12px;font-size:12px;color:var(--text-secondary);" id="myCaseResultCount"></div>
+      <div class="case-grid" id="myCaseGrid"></div>
+    </div>
+  </div>
+</main>
+
+<!-- Create Case Modal -->
+<div class="modal-overlay" id="createCaseModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h2>创建新案例</h2><button class="modal-close" onclick="closeModal('createCaseModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>案例名称</label><input type="text" id="newCaseName" placeholder="输入案例名称"></div>
+        <div class="form-group"><label>风格</label><select id="newCaseStyle"><option>现代简约</option><option>北欧</option><option>新中式</option><option>轻奢</option><option>工业风</option><option>日式</option><option>美式</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>空间</label><select id="newCaseSpace"><option>客厅</option><option>卧室</option><option>厨房</option><option>餐厅</option><option>书房</option><option>儿童房</option><option>玄关</option></select></div>
+        <div class="form-group"><label>面积 (㎡)</label><input type="number" id="newCaseArea" placeholder="如 85" min="10" max="500"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>预算 (万)</label><input type="number" id="newCaseBudget" placeholder="如 12" min="1"></div>
+        <div class="form-group"><label>国家</label><select id="newCaseCountry"><option>美国</option><option>新加坡</option><option>马来西亚</option><option>欧美</option><option>非洲</option><option>日本</option></select></div>
+      </div>
+      <div class="form-group"><label>标签 (逗号分隔)</label><input type="text" id="newCaseTags" placeholder="如 精装,简约,自然光"></div>
+      <div class="form-group"><label>上传源文件 (模拟)</label><div style="border:1px dashed var(--border);border-radius:var(--radius-sm);padding:20px;text-align:center;color:var(--text-muted);">点击上传 .max / .skp / .fbx 文件</div></div>
+      <div class="form-group"><label>上传产品图 (模拟)</label><div style="border:1px dashed var(--border);border-radius:var(--radius-sm);padding:20px;text-align:center;color:var(--text-muted);">点击上传 JPG/PNG 产品图</div></div>
+      <div class="form-group"><label>上传CAD图纸 (模拟)</label><div style="border:1px dashed var(--border);border-radius:var(--radius-sm);padding:20px;text-align:center;color:var(--text-muted);">点击上传 .dwg 图纸文件</div></div>
+      <div class="form-group"><label>产品清单编辑器</label><textarea placeholder="产品名称, SKU, 数量 （每行一条）" rows="4"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('createCaseModal')">取消</button>
+      <button class="btn btn-primary" onclick="createNewCase()">创建案例</button>
+    </div>
+  </div>
+</div>
+
+<div class="history-panel" id="historyPanel"><div style="padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;"><strong>操作历史</strong><button class="btn btn-ghost btn-sm" onclick="toggleHistory()">✕</button></div><div id="historyList"></div></div>
+<div class="compare-panel hidden" id="comparePanel"><div class="compare-items" id="compareItems"></div></div>
+<div class="modal-overlay" id="shortcutsModal"><div class="modal" style="max-width:600px;"><div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div><div class="modal-body"><table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody><tr><td><kbd>?</kbd></td><td>显示快捷键</td></tr><tr><td><kbd>Ctrl/Cmd + M</kbd></td><td>我的案例</td></tr><tr><td><kbd>Esc</kbd></td><td>关闭弹窗</td></tr></tbody></table></div></div></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="common.js"></script>
+<script>
+// My cases (Chen Lei's cases)
+let myCases = [
+  {id:101,name:'北欧极简客厅',designer:'陈磊',designerId:'001',style:'北欧',space:'客厅',area:85,budget:12,country:'美国',reuseCount:47,time:'2026-05-20',theme:'nordic',number:'001-America-案例001'},
+  {id:102,name:'现代主卧套房',designer:'陈磊',designerId:'001',style:'现代简约',space:'卧室',area:120,budget:18,country:'新加坡',reuseCount:35,time:'2026-05-18',theme:'modern',number:'001-Singapore-案例002'},
+  {id:103,name:'新中式茶室空间',designer:'陈磊',designerId:'001',style:'新中式',space:'书房',area:45,budget:8,country:'马来西亚',reuseCount:29,time:'2026-05-15',theme:'chinese',number:'001-Malaysia-案例003'},
+  {id:104,name:'现代简约三居室',designer:'陈磊',designerId:'001',style:'现代简约',space:'客厅',area:140,budget:25,country:'欧美',reuseCount:56,time:'2026-05-10',theme:'modern',number:'001-Europe-案例008'},
+  {id:105,name:'北欧餐厅设计',designer:'陈磊',designerId:'001',style:'北欧',space:'餐厅',area:42,budget:8,country:'欧美',reuseCount:25,time:'2026-04-18',theme:'nordic',number:'001-Europe-案例015'},
+  {id:106,name:'现代简约书房',designer:'陈磊',designerId:'001',style:'现代简约',space:'书房',area:25,budget:4,country:'马来西亚',reuseCount:23,time:'2026-04-12',theme:'modern',number:'001-Malaysia-案例017'},
+  {id:107,name:'新中式主卧',designer:'陈磊',designerId:'001',style:'新中式',space:'卧室',area:105,budget:26,country:'马来西亚',reuseCount:34,time:'2026-03-28',theme:'chinese',number:'001-Malaysia-案例022'},
+];
+let nextCaseId = 200;
+
+function getTagClass(s) {
+  const m = {'现代简约':'tag-blue','北欧':'tag-green','新中式':'tag-purple','轻奢':'tag-orange','工业风':'tag-red','日式':'tag-pink','美式':'tag-cyan'};
+  return m[s]||'tag-blue';
+}
+
+function renderMyCaseCard(c) {
+  return `
+  <div class="case-card">
+    <div class="card-thumb"><div class="card-thumb-placeholder theme-${c.theme}"></div></div>
+    <div class="card-body">
+      <div class="card-body-title">${c.name}</div>
+      <div class="card-body-meta" style="display:flex;align-items:center;gap:8px;">
+        <span class="user-avatar chen">${c.designer[0]}</span> ${c.designer} · ${c.area}㎡ · ¥${c.budget}万
+      </div>
+      <div class="card-body-tags">
+        <span class="tag ${getTagClass(c.style)}">${c.style}</span>
+        <span class="tag tag-green">${c.space}</span>
+        <span class="tag tag-orange">${c.country}</span>
+      </div>
+      <div class="card-body-footer">
+        <span style="font-size:11px;color:var(--text-muted);">🔄 ${c.reuseCount}次 · ${c.time}</span>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-ghost btn-sm" onclick="editMyCase(${c.id})">编辑</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteMyCase(${c.id})">删除</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function filterMyCases() {
+  const s = document.getElementById('myCaseSearch').value.toLowerCase();
+  const style = document.getElementById('myCaseStyleFilter').value;
+  const space = document.getElementById('myCaseSpaceFilter').value;
+  const filtered = myCases.filter(c =>
+    (c.name.toLowerCase()+c.designer.toLowerCase()).includes(s) &&
+    (!style||c.style===style) && (!space||c.space===space)
+  );
+  document.getElementById('myCaseGrid').innerHTML = filtered.map(renderMyCaseCard).join('') ||
+    '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px;">暂无匹配案例</p>';
+  document.getElementById('myCaseResultCount').textContent = `共 ${filtered.length} 个案例`;
+}
+
+function resetMyCaseFilter() {
+  document.getElementById('myCaseSearch').value='';
+  document.getElementById('myCaseStyleFilter').value='';
+  document.getElementById('myCaseSpaceFilter').value='';
+  filterMyCases();
+}
+
+function createNewCase() {
+  const name = document.getElementById('newCaseName').value.trim();
+  if (!name) { showToast('warning', '请输入案例名称'); return; }
+  const c = {
+    id: nextCaseId++, name: name,
+    designer: '陈磊', designerId: '001',
+    style: document.getElementById('newCaseStyle').value,
+    space: document.getElementById('newCaseSpace').value,
+    area: parseInt(document.getElementById('newCaseArea').value) || 80,
+    budget: parseInt(document.getElementById('newCaseBudget').value) || 10,
+    country: document.getElementById('newCaseCountry').value,
+    reuseCount: 0, time: '2026-05-23',
+    theme: 'modern', number: '001-New-案例' + nextCaseId
+  };
+  myCases.unshift(c);
+  closeModal('createCaseModal');
+  filterMyCases();
+  showToast('success', '案例「' + name + '」创建成功');
+  // Reset form
+  document.querySelectorAll('#createCaseModal input').forEach(el => { if(el.type!=='submit') el.value=''; });
+}
+
+function editMyCase(id) {
+  const c = myCases.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('newCaseName').value = c.name;
+  document.getElementById('newCaseStyle').value = c.style;
+  document.getElementById('newCaseSpace').value = c.space;
+  document.getElementById('newCaseArea').value = c.area;
+  document.getElementById('newCaseBudget').value = c.budget;
+  document.getElementById('newCaseCountry').value = c.country;
+  openModal('createCaseModal');
+  showToast('info', '正在编辑「' + c.name + '」，修改后请重新创建');
+}
+
+function deleteMyCase(id) {
+  const idx = myCases.findIndex(x => x.id === id);
+  if (idx < 0) return;
+  const name = myCases[idx].name;
+  myCases.splice(idx, 1);
+  filterMyCases();
+  showToast('error', '案例「' + name + '」已删除');
+}
+
+filterMyCases();
+</script>
+</body>
+</html>

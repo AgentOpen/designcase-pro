@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工作台 - George Design</title>
+<link rel="stylesheet" href="common.css">
+</head>
+<body>
+
+<!-- ====== SIDEBAR ====== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon">G</div>
+    <div class="sidebar-logo-text">George Design</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">主菜单</div>
+      <a href="dashboard.html" class="nav-item active" data-page="dashboard">
+        <span class="nav-icon">⊞</span> 工作台
+      </a>
+      <a href="products.html" class="nav-item" data-page="products">
+        <span class="nav-icon">⊡</span> 产品库
+        <span class="nav-badge">128</span>
+      </a>
+      <a href="cases.html" class="nav-item" data-page="cases">
+        <span class="nav-icon">⊟</span> 案例库
+      </a>
+      <a href="mycases.html" class="nav-item" data-page="mycases">
+        <span class="nav-icon">⊠</span> 我的案例
+      </a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">文件与数据</div>
+      <a href="nas.html" class="nav-item" data-page="nas">
+        <span class="nav-icon">⊡</span> NAS文件管理
+      </a>
+      <a href="analytics.html" class="nav-item" data-page="analytics">
+        <span class="nav-icon">📊</span> 数据看板
+      </a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">管理</div>
+      <a href="admin.html" class="nav-item" data-page="admin">
+        <span class="nav-icon">⚙</span> 系统管理
+      </a>
+      <a href="settings.html" class="nav-item" data-page="settings">
+        <span class="nav-icon">🔄</span> 同步设置
+      </a>
+    </div>
+  </nav>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar chen">陈</div>
+    <div class="sidebar-user-info">
+      <div class="sidebar-user-name">陈磊</div>
+      <div class="sidebar-user-role">资深设计师 · 部门主管</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ====== MAIN ====== -->
+<main class="main">
+  <header class="header">
+    <h1 class="header-title" id="headerTitle">工作台</h1>
+    <div class="header-actions">
+      <button class="dark-toggle" onclick="toggleDarkMode()">🌙 暗色模式</button>
+      <button class="btn btn-ghost" onclick="toggleHistory()">📜 历史</button>
+      <button class="btn btn-ghost" onclick="showShortcuts()">⌨ 快捷键</button>
+      <span style="font-size:12px;color:var(--text-muted);">2026年5月23日 星期六</span>
+    </div>
+  </header>
+
+  <div class="page-content">
+    <div class="page active" id="page-dashboard">
+      <!-- 统计卡片 -->
+      <div class="stat-cards">
+        <div class="stat-card" style="color:#4f46e5;">
+          <div class="stat-card-label">我的案例数</div>
+          <div class="stat-card-value">24</div>
+          <div class="stat-card-sub">本月新增 3 个</div>
+        </div>
+        <div class="stat-card" style="color:#3b82f6;">
+          <div class="stat-card-label">本月复用次数</div>
+          <div class="stat-card-value">47</div>
+          <div class="stat-card-sub">较上月 +12%</div>
+          <div class="stat-card-progress"><div class="stat-card-progress-bar blue" style="width:65%"></div></div>
+        </div>
+        <div class="stat-card" style="color:#4f46e5;">
+          <div class="stat-card-label">3D模型下载量</div>
+          <div class="stat-card-value">189</div>
+          <div class="stat-card-sub">本月累计</div>
+          <div class="stat-card-progress"><div class="stat-card-progress-bar purple" style="width:72%"></div></div>
+        </div>
+        <div class="stat-card" style="color:#f59e0b;">
+          <div class="stat-card-label">NAS使用量</div>
+          <div class="stat-card-value">156 GB</div>
+          <div class="stat-card-sub">配额 500 GB · 31.2%</div>
+          <div class="stat-card-progress"><div class="stat-card-progress-bar orange" style="width:31%"></div></div>
+        </div>
+      </div>
+
+      <!-- 快捷操作 -->
+      <div class="quick-actions">
+        <div class="quick-action" onclick="navigateTo('mycases');showToast('info','跳转到案例创建页面')">
+          <div class="quick-action-icon" style="background:linear-gradient(135deg,#eef2ff,#e0e7ff);color:var(--primary);">＋</div>
+          <div class="quick-action-text">创建案例</div>
+        </div>
+        <div class="quick-action" onclick="navigateTo('cases')">
+          <div class="quick-action-icon" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);color:var(--success);">⊟</div>
+          <div class="quick-action-text">浏览案例库</div>
+        </div>
+        <div class="quick-action" onclick="navigateTo('products')">
+          <div class="quick-action-icon" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);color:var(--info);">⬇</div>
+          <div class="quick-action-text">下载模型</div>
+        </div>
+        <div class="quick-action" onclick="navigateTo('nas')">
+          <div class="quick-action-icon" style="background:linear-gradient(135deg,#fff7ed,#fed7aa);color:var(--warning);">⬆</div>
+          <div class="quick-action-text">上传文件</div>
+        </div>
+      </div>
+
+      <!-- 最近案例 -->
+      <div class="card" style="margin-bottom:24px;">
+        <div class="card-header">
+          <span class="card-title">最近案例</span>
+          <a href="mycases.html" class="btn btn-ghost btn-sm">查看全部</a>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>案例名称</th><th>风格</th><th>空间</th><th>创建时间</th><th>复用次数</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr><td>现代简约三居室</td><td><span class="tag tag-blue">现代简约</span></td><td>客厅</td><td>2026-05-20</td><td>47</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
+              <tr><td>新中式别墅设计</td><td><span class="tag tag-purple">新中式</span></td><td>客厅</td><td>2026-05-18</td><td>29</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
+              <tr><td>现代极简厨房方案</td><td><span class="tag tag-blue">现代简约</span></td><td>厨房</td><td>2026-05-15</td><td>22</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
+              <tr><td>新中式茶室空间</td><td><span class="tag tag-purple">新中式</span></td><td>书房</td><td>2026-05-12</td><td>9</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 推荐产品 -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">推荐产品</span></div>
+        <div class="product-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr));">
+          <div class="product-card" onclick="navigateTo('products');setTimeout(()=>openProductDetail(1),200);">
+            <div class="card-thumb"><div class="card-thumb-placeholder theme-sofa" style="height:120px;"></div></div>
+            <div class="card-body">
+              <div class="card-body-title">北欧简约沙发</div>
+              <div class="card-body-tags"><span class="tag tag-blue">北欧风</span><span class="tag tag-green">客厅</span></div>
+            </div>
+          </div>
+          <div class="product-card" onclick="navigateTo('products');setTimeout(()=>openProductDetail(2),200);">
+            <div class="card-thumb"><div class="card-thumb-placeholder theme-lamp" style="height:120px;"></div></div>
+            <div class="card-body">
+              <div class="card-body-title">现代极简吊灯</div>
+              <div class="card-body-tags"><span class="tag tag-blue">现代简约</span><span class="tag tag-green">客厅</span></div>
+            </div>
+          </div>
+          <div class="product-card" onclick="navigateTo('products');setTimeout(()=>openProductDetail(3),200);">
+            <div class="card-thumb"><div class="card-thumb-placeholder theme-bed" style="height:120px;"></div></div>
+            <div class="card-body">
+              <div class="card-body-title">新中式实木床</div>
+              <div class="card-body-tags"><span class="tag tag-purple">新中式</span><span class="tag tag-green">卧室</span></div>
+            </div>
+          </div>
+          <div class="product-card" onclick="navigateTo('products');setTimeout(()=>openProductDetail(4),200);">
+            <div class="card-thumb"><div class="card-thumb-placeholder theme-table" style="height:120px;"></div></div>
+            <div class="card-body">
+              <div class="card-body-title">轻奢大理石茶几</div>
+              <div class="card-body-tags"><span class="tag tag-orange">轻奢</span><span class="tag tag-green">客厅</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ====== MODALS ====== -->
+<!-- History Panel -->
+<div class="history-panel" id="historyPanel">
+  <div style="padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+    <strong>操作历史</strong>
+    <button class="btn btn-ghost btn-sm" onclick="toggleHistory()">✕</button>
+  </div>
+  <div id="historyList"></div>
+</div>
+
+<!-- Shortcuts Modal -->
+<div class="modal-overlay" id="shortcutsModal">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>快捷键</th><th>功能</th></tr></thead>
+          <tbody>
+            <tr><td><kbd>?</kbd></td><td>显示快捷键列表</td></tr>
+            <tr><td><kbd>Ctrl/Cmd + D</kbd></td><td>工作台</td></tr>
+            <tr><td><kbd>Ctrl/Cmd + P</kbd></td><td>产品库</td></tr>
+            <tr><td><kbd>Ctrl/Cmd + C</kbd></td><td>案例库</td></tr>
+            <tr><td><kbd>Ctrl/Cmd + M</kbd></td><td>我的案例</td></tr>
+            <tr><td><kbd>Ctrl/Cmd + N</kbd></td><td>NAS文件管理</td></tr>
+            <tr><td><kbd>Ctrl/Cmd + A</kbd></td><td>数据看板</td></tr>
+            <tr><td><kbd>Ctrl/Cmd + S</kbd></td><td>同步设置</td></tr>
+            <tr><td><kbd>Ctrl/Cmd + B</kbd></td><td>切换暗色模式</td></tr>
+            <tr><td><kbd>Ctrl/Cmd + H</kbd></td><td>显示历史记录</td></tr>
+            <tr><td><kbd>Esc</kbd></td><td>关闭所有弹窗</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Compare Panel -->
+<div class="compare-panel hidden" id="comparePanel">
+  <div class="compare-items" id="compareItems"></div>
+</div>
+
+<!-- Compare Modal -->
+<div class="modal-overlay" id="compareModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h2>案例对比</h2><button class="modal-close" onclick="closeModal('compareModal')">✕</button></div>
+    <div class="modal-body" id="compareModalBody"></div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="common.js"></script>
+<script>
+// Dashboard specific functions
+function openProductDetail(id) {
+  // This will be implemented in products.html
+  showToast('info', '跳转到产品详情');
+}
+</script>
+</body>
+</html>
