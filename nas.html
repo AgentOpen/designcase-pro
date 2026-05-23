@@ -342,8 +342,8 @@ function renderNASCaseCard(c) {
         <span style="font-size:11px;color:var(--text-muted);">${c.size} MB</span>
       </div>
       <div class="card-body-footer">
-        <button class="btn btn-primary btn-sm" onclick="confirmNASDownload('${c.name.replace(/'/g,"\\'")}','${c.dept.replace(/'/g,"\\'")}','${c.designer.replace(/'/g,"\\'")}','${c.country.replace(/'/g,"\\'")}')">📥 一键下载到我的NAS</button>
-        <button class="btn btn-ghost btn-sm" onclick="showToast('info','查看详情: ${c.name.replace(/'/g,"\\'")}')">查看详情</button>
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); nasDownloadFromButton(this)" data-name="${c.name}" data-dept="${c.dept}" data-designer="${c.designer}" data-country="${c.country}">📥 一键下载到我的NAS</button>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); showToast('info',this.dataset.info)" data-info="查看详情: ${c.name}">查看详情</button>
       </div>
     </div>
   </div>`;
@@ -351,6 +351,10 @@ function renderNASCaseCard(c) {
 
 // ========== NAS DOWNLOAD FLOW ==========
 let nasDownloadTarget = null;
+
+function nasDownloadFromButton(btn) {
+  confirmNASDownload(btn.dataset.name, btn.dataset.dept, btn.dataset.designer, btn.dataset.country);
+}
 
 function confirmNASDownload(name, dept, designer, country) {
   nasDownloadTarget = { name, dept, designer, country };

@@ -443,6 +443,8 @@ select { padding:9px 12px; border:1px solid var(--border); border-radius:var(--r
 .sync-status.syncing { background:#eff6ff; color:#2563eb; }
 .sync-status.error { background:#fef2f2; color:#dc2626; }
 
+.admin-panel.hidden { display: none; }
+
 /* Responsive */
 @media(max-width:768px) {
   .sidebar { transform:translateX(-100%); }
