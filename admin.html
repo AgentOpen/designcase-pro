@@ -122,8 +122,11 @@
 function switchAdminTab(tab) {
   document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.admin-panel').forEach(p => p.style.display = 'none');
-  document.getElementById('admin' + tab.charAt(0).toUpperCase() + tab.slice(1)).style.display = 'block';
-  event.target.classList.add('active');
+  var panelId = tab === 'users' ? 'adminUsers' : (tab === 'permissions' ? 'adminPermissions' : 'adminSettings');
+  var panel = document.getElementById(panelId);
+  if (panel) panel.style.display = 'block';
+  var tabEl = document.querySelector('.admin-tab[onclick*="' + tab + '"]');
+  if (tabEl) tabEl.classList.add('active');
 }
 
 function toggleUserStatus(btn) {
@@ -144,6 +147,8 @@ function toggleUserStatus(btn) {
     showToast('success', row.querySelector('td').textContent + ' 已启用');
   }
 }
+
+window.addEventListener('DOMContentLoaded', function() { switchAdminTab('users'); });
 </script>
 </body>
 </html>

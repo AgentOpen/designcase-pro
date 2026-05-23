@@ -5,6 +5,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NAS文件管理 - George Design</title>
 <link rel="stylesheet" href="common.css">
+<style>
+.nas-layout { display:flex; gap:16px; flex-wrap:wrap; }
+.nas-left { width:280px; min-width:280px; display:flex; flex-direction:column; gap:12px; }
+.nas-right { flex:1; min-width:400px; }
+.nas-filter-card { background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--border); padding:16px; }
+.nas-filter-card .card-title { margin-bottom:12px; font-size:14px; }
+.nas-filter-row { display:flex; flex-direction:column; gap:8px; }
+.nas-filter-row select, .nas-filter-row input { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:12px; background:var(--card-bg); color:var(--text); }
+.nas-filter-row select:focus, .nas-filter-row input:focus { outline:none; border-color:var(--primary); }
+.nas-filter-btns { display:flex; gap:8px; margin-top:4px; }
+.nas-tree-card { background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--border); flex:1; overflow-y:auto; max-height:500px; }
+.nas-tree-header { padding:10px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; cursor:pointer; font-size:13px; font-weight:600; }
+.nas-tree-header .arrow { font-size:10px; transition:transform .2s; }
+.nas-tree-header.collapsed .arrow { transform:rotate(-90deg); }
+.nas-tree-body { padding:8px; font-size:12px; }
+.nas-tree-body.hidden { display:none; }
+.nas-tree-body .dir-item { padding:5px 8px; cursor:pointer; border-radius:4px; display:flex; align-items:center; gap:6px; font-size:12px; }
+.nas-tree-body .dir-item:hover { background:var(--bg); }
+.nas-tree-body .dir-item.active { background:var(--primary-light); color:var(--primary); font-weight:500; }
+.nas-tree-body .dir-children { padding-left:20px; }
+.nas-tree-body .dir-toggle { width:14px; display:inline-block; text-align:center; cursor:pointer; font-size:9px; }
+.case-card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+.nas-case-card { background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--border); overflow:hidden; transition:all var(--transition); }
+.nas-case-card:hover { box-shadow:var(--shadow-md); transform:translateY(-1px); }
+.nas-case-card .card-thumb { height:160px; }
+.nas-case-card .card-body { padding:14px; }
+.nas-case-card .card-body-title { font-size:14px; font-weight:600; margin-bottom:6px; }
+.nas-case-card .card-body-info { font-size:11px; color:var(--text-secondary); margin-bottom:6px; display:flex; flex-wrap:wrap; gap:4px; align-items:center; }
+.nas-case-card .card-body-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
+.nas-case-card .card-body-footer { display:flex; gap:8px; padding-top:8px; border-top:1px solid var(--border); }
+.result-count { font-size:12px; color:var(--text-secondary); margin-bottom:12px; }
+</style>
 </head>
 <body>
 
@@ -44,32 +76,46 @@
 
   <div class="page-content">
     <div class="page active" id="page-nas">
-      <!-- Toolbar -->
-      <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="showToast('info','文件上传功能已触发（模拟）')">⬆ 上传文件</button>
-        <button class="btn btn-secondary" onclick="createNewFolder()">📁 新建文件夹</button>
-        <div class="search-input-wrap" style="flex:1;min-width:200px;"><input type="text" placeholder="搜索文件名..." id="nasSearch" oninput="renderNASFiles()"></div>
-        <button class="btn btn-secondary" onclick="copyToMyNAS()">📋 复制到我的NAS</button>
-        <button class="btn btn-primary" onclick="simulateDownload('选中案例ZIP')">📦 一键打包下载</button>
-        <span id="nasBreadcrumb" style="font-size:12px;color:var(--text-secondary);"> / </span>
-      </div>
-
-      <!-- Directory tree + File list -->
-      <div style="display:flex;gap:16px;flex-wrap:wrap;">
-        <!-- Tree -->
-        <div class="card" style="width:320px;min-width:280px;max-height:600px;overflow-y:auto;">
-          <div class="card-title" style="margin-bottom:12px;">📂 NAS目录结构</div>
-          <div class="dir-tree" id="nasDirTree"></div>
-        </div>
-        <!-- File list -->
-        <div class="card" style="flex:1;min-width:400px;">
-          <div class="card-title" style="margin-bottom:12px;">📄 文件列表 — <span id="nasFileTitle" style="color:var(--primary);">请选择目录</span></div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>文件名</th><th>类型</th><th>大小</th><th>修改时间</th><th>操作</th></tr></thead>
-              <tbody id="nasFileTable"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:40px;">请从左侧目录树选择</td></tr></tbody>
-            </table>
+      <div class="nas-layout">
+        <!-- Left Panel -->
+        <div class="nas-left">
+          <!-- Filter card -->
+          <div class="nas-filter-card">
+            <div class="card-title">🔍 快速筛选</div>
+            <div class="nas-filter-row">
+              <select id="nasDeptFilter" onchange="onDeptChange()">
+                <option value="">全部部门</option>
+                <option>设计一部</option><option>设计二部</option><option>设计三部</option>
+                <option>设计四部</option><option>设计五部</option>
+              </select>
+              <select id="nasDesignerFilter" onchange="filterCases()">
+                <option value="">全部设计师</option>
+              </select>
+              <select id="nasCountryFilter" onchange="filterCases()">
+                <option value="">全部国家</option>
+                <option>美国</option><option>欧美</option><option>新加坡</option>
+                <option>马来西亚</option><option>日本</option><option>非洲</option>
+              </select>
+              <div class="nas-filter-btns">
+                <button class="btn btn-primary btn-sm" onclick="filterCases()">搜索</button>
+                <button class="btn btn-secondary btn-sm" onclick="resetNASFilter()">重置</button>
+              </div>
+            </div>
           </div>
+
+          <!-- Directory tree card -->
+          <div class="nas-tree-card">
+            <div class="nas-tree-header collapsed" id="nasTreeHeader" onclick="toggleNASTree()">
+              📂 NAS目录结构 <span class="arrow">▼</span>
+            </div>
+            <div class="nas-tree-body hidden" id="nasTreeBody"></div>
+          </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="nas-right">
+          <div class="result-count" id="nasResultCount"></div>
+          <div class="case-card-grid" id="nasCaseGrid"></div>
         </div>
       </div>
 
@@ -77,11 +123,11 @@
       <div class="card" style="margin-top:16px;">
         <div class="card-title" style="margin-bottom:12px;">NAS 使用量统计</div>
         <div style="margin-bottom:12px;">
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>总使用量: 156 GB / 500 GB</span><span>31.2%</span></div>
-          <div class="stat-card-progress"><div class="stat-card-progress-bar orange" style="width:31.2%"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>总使用量: <span id="nasTotalUsed">156</span> GB / 500 GB</span><span id="nasTotalPct">31.2%</span></div>
+          <div class="stat-card-progress"><div class="stat-card-progress-bar orange" id="nasTotalBar" style="width:31.2%"></div></div>
         </div>
         <div style="font-size:12px;color:var(--text-secondary);">部门配额分布:</div>
-        <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;">
+        <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;" id="nasDeptStats">
           <div style="display:flex;align-items:center;gap:10px;"><span style="width:80px;text-align:right;font-size:12px;">设计一部</span><div style="flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;"><div style="width:45%;height:100%;background:linear-gradient(90deg,#4f46e5,#818cf8);border-radius:4px;"></div></div><span style="font-size:11px;color:var(--text-muted);">45GB / 100GB</span></div>
           <div style="display:flex;align-items:center;gap:10px;"><span style="width:80px;text-align:right;font-size:12px;">设计二部</span><div style="flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;"><div style="width:32%;height:100%;background:linear-gradient(90deg,#10b981,#34d399);border-radius:4px;"></div></div><span style="font-size:11px;color:var(--text-muted);">32GB / 100GB</span></div>
           <div style="display:flex;align-items:center;gap:10px;"><span style="width:80px;text-align:right;font-size:12px;">设计三部</span><div style="flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;"><div style="width:28%;height:100%;background:linear-gradient(90deg,#f59e0b,#fcd34d);border-radius:4px;"></div></div><span style="font-size:11px;color:var(--text-muted);">28GB / 100GB</span></div>
@@ -93,121 +139,136 @@
   </div>
 </main>
 
+<!-- NAS Download Confirmation Modal -->
+<div class="modal-overlay" id="nasDownloadConfirmModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header"><h2>确认复制到我的NAS</h2><button class="modal-close" onclick="closeModal('nasDownloadConfirmModal')">✕</button></div>
+    <div class="modal-body">
+      <p style="font-size:14px;" id="nasConfirmMsg"></p>
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        <button class="btn btn-primary" id="nasConfirmBtn" onclick="startNASDownload()">确认复制</button>
+        <button class="btn btn-secondary" onclick="closeModal('nasDownloadConfirmModal')">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAS Download Progress Modal -->
+<div class="modal-overlay" id="nasDownloadModal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header"><h2>复制到我的NAS</h2><button class="modal-close" onclick="closeModal('nasDownloadModal')">✕</button></div>
+    <div class="modal-body" style="text-align:center;">
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;" id="nasDownloadStatus">正在创建副本目录...</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="nasDownloadBar" style="width:0%"></div></div>
+      <div style="font-size:12px;margin-top:6px;" id="nasDownloadPercent">0%</div>
+      <div style="margin-top:12px;display:flex;justify-content:center;gap:16px;">
+        <div class="reuse-step" id="ns1"><div class="reuse-step-icon">📋</div><div class="reuse-step-text">创建副本目录</div></div>
+        <div class="reuse-step" id="ns2"><div class="reuse-step-icon">📁</div><div class="reuse-step-text">拷贝文件</div></div>
+        <div class="reuse-step" id="ns3"><div class="reuse-step-icon">✅</div><div class="reuse-step-text">完成</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="history-panel" id="historyPanel"><div style="padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;"><strong>操作历史</strong><button class="btn btn-ghost btn-sm" onclick="toggleHistory()">✕</button></div><div id="historyList"></div></div>
 <div class="modal-overlay" id="shortcutsModal"><div class="modal" style="max-width:600px;"><div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div><div class="modal-body"><table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody><tr><td><kbd>?</kbd></td><td>显示快捷键</td></tr><tr><td><kbd>Ctrl/Cmd + N</kbd></td><td>NAS文件管理</td></tr><tr><td><kbd>Esc</kbd></td><td>关闭弹窗</td></tr></tbody></table></div></div></div>
-<div class="modal-overlay" id="downloadModal"><div class="modal" style="max-width:400px;"><div class="modal-header"><h2>下载中...</h2><button class="modal-close" onclick="closeModal('downloadModal')">✕</button></div><div class="modal-body" style="text-align:center;"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;" id="downloadStatus">准备下载...</div><div class="progress-bar-wrap"><div class="progress-bar-fill" id="downloadProgressBar" style="width:0%"></div></div><div style="font-size:12px;margin-top:6px;" id="downloadPercent">0%</div></div></div></div>
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="common.js"></script>
 <script>
-// ========== NAS DATA — 5-level structure ==========
+// ========== NAS DATA ==========
 const nasData = {
-  '设计一部': {
-    designers: {
-      '陈磊': { id:'001', countries: {
-        '美国': { cases: { '001-America-案例001': {}, '001-America-案例008': {} } },
-        '新加坡': { cases: { '001-Singapore-案例002': {} } },
-        '马来西亚': { cases: { '001-Malaysia-案例003': {}, '001-Malaysia-案例017': {}, '001-Malaysia-案例022': {} } },
-        '欧美': { cases: { '001-Europe-案例015': {} } }
-      }},
-      '林悦': { id:'002', countries: {
-        '欧美': { cases: { '002-Europe-案例004': {}, '002-Europe-案例021': {} } },
-        '新加坡': { cases: { '002-Singapore-案例009': {} } },
-        '日本': { cases: { '002-Japan-案例016': {} } }
-      }}
-    }
-  },
-  '设计二部': {
-    designers: {
-      '王明远': { id:'003', countries: {
-        '日本': { cases: { '003-Japan-案例006': {} } },
-        '美国': { cases: { '003-America-案例007': {} } },
-        '欧美': { cases: { '003-Europe-案例011': {} } },
-        '非洲': { cases: { '003-Africa-案例020': {} } }
-      }}
-    }
-  },
-  '设计三部': {
-    designers: {
-      '张薇': { id:'004', countries: {
-        '马来西亚': { cases: { '004-Malaysia-案例010': {} } },
-        '非洲': { cases: { '004-Africa-案例012': {} } },
-        '欧美': { cases: { '004-Europe-案例018': {} } }
-      }}
-    }
-  },
-  '设计四部': {
-    designers: {
-      '李强': { id:'005', countries: {
-        '美国': { cases: { '005-America-案例013': {} } },
-        '新加坡': { cases: { '005-Singapore-案例014': {}, '005-Singapore-案例019': {} } }
-      }}
-    }
-  },
-  '设计五部': {
-    designers: {
-      '赵工': { id:'006', countries: {
-        '非洲': { cases: { '006-Africa-案例030': {} } }
-      }},
-      '孙敏': { id:'007', countries: {
-        '马来西亚': { cases: { '007-Malaysia-案例031': {} } }
-      }}
+  '设计一部': { designers: {
+    '陈磊': { id:'001', countries: { '美国':['001-America-案例001','001-America-案例008'], '新加坡':['001-Singapore-案例002'], '马来西亚':['001-Malaysia-案例003','001-Malaysia-案例017','001-Malaysia-案例022'], '欧美':['001-Europe-案例015'] }},
+    '林悦': { id:'002', countries: { '欧美':['002-Europe-案例004','002-Europe-案例021'], '新加坡':['002-Singapore-案例009'], '日本':['002-Japan-案例016'] }}
+  }},
+  '设计二部': { designers: {
+    '王明远': { id:'003', countries: { '日本':['003-Japan-案例006'], '美国':['003-America-案例007'], '欧美':['003-Europe-案例011'], '非洲':['003-Africa-案例020'] }}
+  }},
+  '设计三部': { designers: {
+    '张薇': { id:'004', countries: { '马来西亚':['004-Malaysia-案例010'], '非洲':['004-Africa-案例012'], '欧美':['004-Europe-案例018'] }}
+  }},
+  '设计四部': { designers: {
+    '李强': { id:'005', countries: { '美国':['005-America-案例013'], '新加坡':['005-Singapore-案例014','005-Singapore-案例019'] }}
+  }},
+  '设计五部': { designers: {
+    '赵工': { id:'006', countries: { '非洲':['006-Africa-案例030'] }},
+    '孙敏': { id:'007', countries: { '马来西亚':['007-Malaysia-案例031'] }}
+  }}
+};
+
+// Build flat case list from nasData
+const nasCases = [];
+const themeMap = { '现代简约':'modern','北欧':'nordic','新中式':'chinese','轻奢':'luxury','工业风':'industrial','日式':'japanese','美式':'american' };
+const styleMap = {
+  '陈磊':['现代简约','北欧','新中式'], '林悦':['轻奢','工业风','日式'],
+  '王明远':['美式','现代简约','日式'], '张薇':['新中式','轻奢'],
+  '李强':['工业风','美式','轻奢'], '赵工':['美式'], '孙敏':['北欧']
+};
+
+for (const dept in nasData) {
+  for (const designer in nasData[dept].designers) {
+    const dObj = nasData[dept].designers[designer];
+    for (const country in dObj.countries) {
+      dObj.countries[country].forEach((caseName, idx) => {
+        const styles = styleMap[designer] || ['现代简约'];
+        const style = styles[idx % styles.length];
+        nasCases.push({ name:caseName, dept, designer, designerId:dObj.id, country, style, theme:themeMap[style]||'modern', size:Math.floor(Math.random()*80+20) });
+      });
     }
   }
-};
-
-const subDirs = ['product_data', 'design_source', 'client_delivery'];
-const mockFiles = {
-  'product_data': [
-    {name:'产品资料_SKU-SF-001.pdf',type:'pdf',size:'2.4 MB',time:'2026-05-20 14:30',icon:'config'},
-    {name:'3D模型_沙发.max',type:'max',size:'45.2 MB',time:'2026-05-19 10:15',icon:'model'},
-    {name:'3D模型_沙发.fbx',type:'fbx',size:'28.1 MB',time:'2026-05-19 10:16',icon:'model'},
-  ],
-  'design_source': [
-    {name:'客厅场景.max',type:'max',size:'67.8 MB',time:'2026-05-18 09:00',icon:'model'},
-    {name:'客厅场景.skp',type:'skp',size:'42.3 MB',time:'2026-05-18 09:05',icon:'model'},
-    {name:'效果图.psd',type:'psd',size:'156.2 MB',time:'2026-05-17 16:30',icon:'psd'},
-    {name:'材质贴图_木纹.png',type:'png',size:'8.5 MB',time:'2026-05-16 11:20',icon:'texture'},
-  ],
-  'client_delivery': [
-    {name:'设计提案.pptx',type:'pptx',size:'12.5 MB',time:'2026-05-15 15:00',icon:'archive'},
-    {name:'VR体验链接.txt',type:'txt',size:'2 KB',time:'2026-05-15 15:05',icon:'config'},
-    {name:'客户交付清单.pdf',type:'pdf',size:'1.8 MB',time:'2026-05-14 10:00',icon:'config'},
-  ]
-};
-
-let currentNASPath = '';
-
-function getFileTag(f) {
-  const m = {max:'tag-purple',skp:'tag-purple',fbx:'tag-purple',obj:'tag-purple',dwg:'tag-red',psd:'tag-blue',png:'tag-green',pdf:'tag-red',pptx:'tag-orange',txt:'tag-cyan',zip:'tag-amber'};
-  return m[f] || '';
 }
 
-function buildDirTree() {
-  const tree = document.getElementById('nasDirTree');
+// ========== INIT ==========
+function buildDesignerDropdown() {
+  const designers = new Set();
+  nasCases.forEach(c => designers.add(JSON.stringify({name:c.designer,id:c.designerId})));
+  const sel = document.getElementById('nasDesignerFilter');
+  sel.innerHTML = '<option value="">全部设计师</option>' +
+    [...designers].map(d => { const o = JSON.parse(d); return `<option value="${o.name}">${o.name} (ID:${o.id})</option>`; }).join('');
+}
+
+function onDeptChange() {
+  const dept = document.getElementById('nasDeptFilter').value;
+  const sel = document.getElementById('nasDesignerFilter');
+  sel.innerHTML = '<option value="">全部设计师</option>';
+  if (dept && nasData[dept]) {
+    for (const d in nasData[dept].designers) {
+      const id = nasData[dept].designers[d].id;
+      sel.innerHTML += `<option value="${d}">${d} (ID:${id})</option>`;
+    }
+  } else {
+    buildDesignerDropdown();
+  }
+  filterCases();
+}
+
+// ========== DIRECTORY TREE ==========
+function toggleNASTree() {
+  const header = document.getElementById('nasTreeHeader');
+  const body = document.getElementById('nasTreeBody');
+  header.classList.toggle('collapsed');
+  body.classList.toggle('hidden');
+}
+
+function buildNASTree() {
+  const tree = document.getElementById('nasTreeBody');
   let html = '';
   for (const dept in nasData) {
-    html += `<div class="dir-item" onclick="toggleDir(this,'${dept}')"><span class="dir-toggle">▶</span>📁 ${dept}</div>`;
-    html += `<div class="dir-children" id="children-${dept}" style="display:none;">`;
+    html += `<div class="dir-item" onclick="toggleDir(this,'n-${dept}')"><span class="dir-toggle">▶</span>📁 ${dept}</div>`;
+    html += `<div class="dir-children" id="children-n-${dept}" style="display:none;">`;
     for (const designer in nasData[dept].designers) {
-      const d = nasData[dept].designers[designer];
-      const dKey = dept + '/' + designer;
-      html += `<div class="dir-item" onclick="toggleDir(this,'${dKey}')"><span class="dir-toggle">▶</span>👤 ${designer}（ID:${d.id}）</div>`;
+      const dObj = nasData[dept].designers[designer];
+      const dKey = `n-${dept}/${designer}`;
+      html += `<div class="dir-item" onclick="toggleDir(this,'${dKey}')"><span class="dir-toggle">▶</span>👤 ${designer}（ID:${dObj.id}）</div>`;
       html += `<div class="dir-children" id="children-${dKey}" style="display:none;">`;
-      for (const country in d.countries) {
-        const cKey = dKey + '/' + country;
+      for (const country in dObj.countries) {
+        const cKey = `${dKey}/${country}`;
         html += `<div class="dir-item" onclick="toggleDir(this,'${cKey}')"><span class="dir-toggle">▶</span>🌍 ${country}</div>`;
         html += `<div class="dir-children" id="children-${cKey}" style="display:none;">`;
-        for (const caseName in d.countries[country].cases) {
-          const csKey = cKey + '/' + caseName;
-          html += `<div class="dir-item" onclick="toggleDir(this,'${csKey}')"><span class="dir-toggle">▶</span>📋 ${caseName}</div>`;
-          html += `<div class="dir-children" id="children-${csKey}" style="display:none;">`;
-          subDirs.forEach(sd => {
-            const fdKey = csKey + '/' + sd;
-            html += `<div class="dir-item" onclick="selectNASDir(this,'${fdKey}')">📄 ${sd}</div>`;
-          });
-          html += `</div>`;
-        }
+        dObj.countries[country].forEach(cn => {
+          html += `<div class="dir-item" onclick="selectTreeCase('${dept}','${designer}','${country}','${cn}')">📋 ${cn}</div>`;
+        });
         html += `</div>`;
       }
       html += `</div>`;
@@ -227,64 +288,135 @@ function toggleDir(el, key) {
   }
 }
 
-function selectNASDir(el, path) {
-  document.querySelectorAll('#nasDirTree .dir-item').forEach(i => i.classList.remove('active'));
-  el.classList.add('active');
-  currentNASPath = path;
-  document.getElementById('nasBreadcrumb').textContent = ' / ' + path.replace(/\//g, ' / ');
-  renderNASFiles();
+function selectTreeCase(dept, designer, country, caseName) {
+  document.getElementById('nasDeptFilter').value = dept;
+  onDeptChange();
+  document.getElementById('nasDesignerFilter').value = designer;
+  document.getElementById('nasCountryFilter').value = country;
+  filterCases();
+  document.querySelectorAll('#nasTreeBody .dir-item').forEach(i => i.classList.remove('active'));
 }
 
-function renderNASFiles() {
-  const tbody = document.querySelector('#nasFileTable');
-  const title = document.getElementById('nasFileTitle');
-  const search = document.getElementById('nasSearch').value.toLowerCase();
+// ========== FILTER & RENDER ==========
+function filterCases() {
+  const dept = document.getElementById('nasDeptFilter').value;
+  const designer = document.getElementById('nasDesignerFilter').value;
+  const country = document.getElementById('nasCountryFilter').value;
 
-  if (!currentNASPath) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:40px;">请从左侧目录树选择</td></tr>';
-    title.textContent = '请选择目录';
-    return;
-  }
+  let filtered = nasCases.filter(c =>
+    (!dept || c.dept === dept) &&
+    (!designer || c.designer === designer) &&
+    (!country || c.country === country)
+  );
 
-  const parts = currentNASPath.split('/');
-  const subDir = parts[parts.length - 1];
-  const files = mockFiles[subDir] || [];
-  const filtered = files.filter(f => f.name.toLowerCase().includes(search));
-
-  title.textContent = currentNASPath + (filtered.length ? ` (${filtered.length}个文件)` : '');
-
-  if (!filtered.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:40px;">暂无文件</td></tr>';
-    return;
-  }
-
-  tbody.innerHTML = filtered.map(f => `
-    <tr>
-      <td><div style="display:flex;align-items:center;gap:10px;"><span class="file-icon ${f.icon}" data-ext="${f.type.toUpperCase().slice(0,3)}"></span>${f.name}</div></td>
-      <td><span class="tag ${getFileTag(f.type)}">.${f.type}</span></td>
-      <td>${f.size}</td>
-      <td>${f.time}</td>
-      <td>
-        <button class="btn btn-ghost btn-sm" onclick="simulateDownload('${f.name}')">⬇ 下载</button>
-        <button class="btn btn-ghost btn-sm" onclick="showToast('warning','文件删除已移至回收站');">🗑 删除</button>
-        <button class="btn btn-ghost btn-sm" onclick="showToast('info','预览: ${f.name}')">👁 预览</button>
-      </td>
-    </tr>
-  `).join('');
+  document.getElementById('nasResultCount').textContent = `共 ${filtered.length} 个案例`;
+  document.getElementById('nasCaseGrid').innerHTML = filtered.map(renderNASCaseCard).join('')
+    || '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:60px;">暂无匹配案例</p>';
 }
 
-function createNewFolder() {
-  const name = prompt('请输入新文件夹名称：');
-  if (name) showToast('success', '文件夹「' + name + '」已创建（模拟）');
+function resetNASFilter() {
+  document.getElementById('nasDeptFilter').value = '';
+  document.getElementById('nasDesignerFilter').value = '';
+  document.getElementById('nasCountryFilter').value = '';
+  buildDesignerDropdown();
+  filterCases();
 }
 
-function copyToMyNAS() {
-  if (!currentNASPath) { showToast('warning', '请先选择目录'); return; }
-  showToast('info', '正在复制「' + currentNASPath + '」到我的NAS...');
-  setTimeout(() => showToast('success', '已成功复制到我的NAS'), 1500);
+function getTagClass(s) {
+  const m = {'现代简约':'tag-blue','北欧':'tag-green','新中式':'tag-purple','轻奢':'tag-orange','工业风':'tag-red','日式':'tag-pink','美式':'tag-cyan'};
+  return m[s] || 'tag-blue';
 }
 
-buildDirTree();
+function renderNASCaseCard(c) {
+  return `<div class="nas-case-card">
+    <div class="card-thumb"><div class="card-thumb-placeholder theme-${c.theme}"></div></div>
+    <div class="card-body">
+      <div class="card-body-title">${c.name}</div>
+      <div class="card-body-info">
+        <span class="user-avatar chen" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">${c.designer[0]}</span> ${c.designer}
+        <span class="tag tag-blue">${c.dept}</span>
+        <span class="tag tag-green">${c.country}</span>
+      </div>
+      <div class="card-body-tags">
+        <span class="tag ${getTagClass(c.style)}">${c.style}</span>
+        <span style="font-size:11px;color:var(--text-muted);">${c.size} MB</span>
+      </div>
+      <div class="card-body-footer">
+        <button class="btn btn-primary btn-sm" onclick="confirmNASDownload('${c.name.replace(/'/g,"\\'")}','${c.dept.replace(/'/g,"\\'")}','${c.designer.replace(/'/g,"\\'")}','${c.country.replace(/'/g,"\\'")}')">📥 一键下载到我的NAS</button>
+        <button class="btn btn-ghost btn-sm" onclick="showToast('info','查看详情: ${c.name.replace(/'/g,"\\'")}')">查看详情</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ========== NAS DOWNLOAD FLOW ==========
+let nasDownloadTarget = null;
+
+function confirmNASDownload(name, dept, designer, country) {
+  nasDownloadTarget = { name, dept, designer, country };
+  document.getElementById('nasConfirmMsg').innerHTML =
+    `确认将【<strong>${name}</strong>】复制到您的NAS？<br><br>
+    目标路径：<code style="font-size:12px;">/个人/陈磊/${country}/${name}/</code><br>
+    包含：产品资料 + 设计源文件 + 客户交付资料`;
+  openModal('nasDownloadConfirmModal');
+}
+
+function startNASDownload() {
+  closeModal('nasDownloadConfirmModal');
+  if (!nasDownloadTarget) return;
+  const t = nasDownloadTarget;
+
+  openModal('nasDownloadModal');
+  document.getElementById('nasDownloadBar').style.width = '0%';
+  document.getElementById('nasDownloadPercent').textContent = '0%';
+  document.getElementById('nasDownloadStatus').textContent = '正在创建副本目录...';
+  ['ns1','ns2','ns3'].forEach(id => document.getElementById(id).className = 'reuse-step');
+
+  // Stage 1: create dir
+  setTimeout(() => {
+    document.getElementById('ns1').classList.add('active');
+    setTimeout(() => document.getElementById('ns1').classList.add('done'), 500);
+    document.getElementById('nasDownloadBar').style.width = '33%';
+    document.getElementById('nasDownloadPercent').textContent = '33%';
+    document.getElementById('nasDownloadStatus').textContent = '正在拷贝产品资料...';
+  }, 400);
+
+  // Stage 2: copy files
+  setTimeout(() => {
+    document.getElementById('ns2').classList.add('active');
+    setTimeout(() => document.getElementById('ns2').classList.add('done'), 600);
+    document.getElementById('nasDownloadBar').style.width = '66%';
+    document.getElementById('nasDownloadPercent').textContent = '66%';
+    document.getElementById('nasDownloadStatus').textContent = '正在拷贝设计源文件 + 交付资料...';
+  }, 1400);
+
+  // Stage 3: complete
+  setTimeout(() => {
+    document.getElementById('ns3').classList.add('active');
+    setTimeout(() => document.getElementById('ns3').classList.add('done'), 600);
+    document.getElementById('nasDownloadBar').style.width = '100%';
+    document.getElementById('nasDownloadPercent').textContent = '100%';
+    document.getElementById('nasDownloadStatus').textContent = '复制完成！';
+    setTimeout(() => {
+      closeModal('nasDownloadModal');
+      showToast('success', `已将【${t.name}】复制到您的NAS目录 /个人/陈磊/${t.country}/${t.name}/`);
+      updateNASStats();
+    }, 800);
+  }, 2400);
+}
+
+function updateNASStats() {
+  const newTotal = 156 + Math.floor(Math.random() * 10 + 5);
+  const pct = (newTotal / 500 * 100).toFixed(1);
+  document.getElementById('nasTotalUsed').textContent = newTotal;
+  document.getElementById('nasTotalPct').textContent = pct + '%';
+  document.getElementById('nasTotalBar').style.width = pct + '%';
+}
+
+// Init
+buildNASTree();
+buildDesignerDropdown();
+filterCases();
 </script>
 </body>
 </html>
