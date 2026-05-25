@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人中心 - George Design</title>
+<link rel="stylesheet" href="common.css">
+<style>
+.profile-layout { display:flex; gap:24px; }
+.profile-sidebar { width:200px; flex-shrink:0; }
+.profile-sidebar-nav { display:flex; flex-direction:column; gap:4px; }
+.profile-sidebar-item { padding:12px 16px; border-radius:var(--radius); cursor:pointer; transition:background .2s; display:flex; align-items:center; gap:10px; }
+.profile-sidebar-item:hover { background:var(--bg-hover); }
+.profile-sidebar-item.active { background:var(--primary); color:#fff; font-weight:500; }
+.profile-sidebar-item .icon { font-size:18px; }
+.profile-content { flex:1; }
+.profile-panel { display:none; animation:fadeIn .3s ease; }
+.profile-panel.active { display:block; }
+
+/* 数字分身卡片 */
+.avatar-card { display:flex; align-items:center; gap:20px; padding:20px; background:var(--card-bg); border-radius:var(--radius-lg); margin-bottom:24px; }
+.avatar-preview { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,#8b5cf6,#6366f1); display:flex; align-items:center; justify-content:center; color:#fff; font-size:32px; font-weight:700; }
+.avatar-info { flex:1; }
+.avatar-name { font-size:20px; font-weight:600; margin-bottom:4px; }
+.avatar-title { font-size:13px; color:var(--text-secondary); margin-bottom:8px; }
+.avatar-progress { margin-top:12px; }
+.avatar-progress-label { display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; }
+.progress-bar-wrap { height:8px; background:var(--border); border-radius:4px; overflow:hidden; }
+.progress-bar-fill { height:100%; background:linear-gradient(90deg,#10b981,#34d399); transition:width .4s; }
+
+/* 步骤卡片 */
+.step-card { background:var(--card-bg); border-radius:var(--radius); padding:20px; margin-bottom:20px; border-left:4px solid var(--primary); }
+.step-header { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+.step-number { width:28px; height:28px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; }
+.step-title { font-size:16px; font-weight:600; }
+.step-desc { font-size:13px; color:var(--text-secondary); margin-top:4px; }
+.step-content { margin-top:16px; }
+
+/* 上传区域 */
+.upload-zone { border:2px dashed var(--border); border-radius:var(--radius); padding:40px; text-align:center; cursor:pointer; transition:border-color .2s; }
+.upload-zone:hover { border-color:var(--primary); }
+.upload-zone .icon { font-size:32px; color:var(--text-secondary); margin-bottom:8px; }
+.upload-zone .hint { font-size:13px; color:var(--text-secondary); margin-top:8px; }
+.upload-list { margin-top:16px; }
+.upload-item { display:flex; align-items:center; gap:12px; padding:8px 12px; background:var(--bg); border-radius:var(--radius-sm); margin-bottom:6px; }
+.upload-item .name { flex:1; font-size:13px; }
+.upload-item .size { font-size:11px; color:var(--text-secondary); }
+.upload-item .progress { width:60px; height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+.upload-item .progress-fill { height:100%; background:var(--primary); }
+
+/* 标签选择器 */
+.tag-selector { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+.tag-selector-item { padding:6px 12px; background:var(--bg); border-radius:var(--radius-sm); font-size:13px; cursor:pointer; transition:background .2s; }
+.tag-selector-item:hover { background:var(--bg-hover); }
+.tag-selector-item.selected { background:var(--primary); color:#fff; }
+
+/* 颜色选择器 */
+.color-picker { display:flex; gap:8px; margin-top:8px; }
+.color-option { width:32px; height:32px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:transform .2s; }
+.color-option:hover { transform:scale(1.1); }
+.color-option.selected { border-color:var(--text); }
+
+/* 训练日志 */
+.train-log { background:var(--bg); border-radius:var(--radius-sm); padding:12px; max-height:200px; overflow-y:auto; font-size:12px; font-family:monospace; line-height:1.5; }
+.log-entry { margin-bottom:4px; color:var(--text-secondary); }
+.log-entry.success { color:var(--green); }
+.log-entry.warning { color:var(--orange); }
+.log-entry.error { color:var(--red); }
+
+/* 分身能力预览 */
+.ability-card { background:var(--card-bg); border-radius:var(--radius); padding:16px; margin-bottom:16px; }
+.ability-score { font-size:32px; font-weight:700; color:var(--primary); text-align:center; margin-bottom:8px; }
+.ability-label { font-size:12px; color:var(--text-secondary); text-align:center; }
+.ability-features { margin-top:16px; }
+.ability-feature { display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:13px; }
+.ability-feature .dot { width:8px; height:8px; border-radius:50%; background:var(--primary); }
+
+/* 对话测试 */
+.chat-box { background:var(--bg); border-radius:var(--radius); padding:16px; margin-top:20px; }
+.chat-messages { max-height:200px; overflow-y:auto; margin-bottom:12px; }
+.chat-message { margin-bottom:12px; padding:8px 12px; border-radius:12px; max-width:80%; font-size:13px; }
+.chat-message.user { background:var(--primary); color:#fff; margin-left:auto; }
+.chat-message.ai { background:var(--card-bg); margin-right:auto; }
+.chat-input { display:flex; gap:8px; }
+.chat-input input { flex:1; }
+
+/* 同步设置简化 */
+.sync-simple { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; }
+.sync-card { background:var(--card-bg); border-radius:var(--radius); padding:20px; }
+.sync-card-title { font-size:16px; font-weight:600; margin-bottom:12px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon">G</div><div class="sidebar-logo-text">George Design</div></div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">主菜单</div>
+      <a href="dashboard.html" class="nav-item" data-page="dashboard"><span class="nav-icon">⊞</span> 工作台</a>
+      <a href="products.html" class="nav-item" data-page="products"><span class="nav-icon">⊡</span> 产品库</a>
+      <a href="cases.html" class="nav-item" data-page="cases"><span class="nav-icon">⊟</span> 案例库</a>
+      <a href="mycases.html" class="nav-item" data-page="mycases"><span class="nav-icon">⊠</span> 我的案例</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">文件与数据</div>
+      <a href="nas.html" class="nav-item" data-page="nas"><span class="nav-icon">⊡</span> NAS文件管理</a>
+      <a href="analytics.html" class="nav-item" data-page="analytics"><span class="nav-icon">📊</span> 数据看板</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">管理</div>
+      <a href="admin.html" class="nav-item" data-page="admin"><span class="nav-icon">⚙</span> 系统管理</a>
+      <a href="profile.html" class="nav-item active" data-page="profile"><span class="nav-icon">👤</span> 个人中心</a>
+    </div>
+  </nav>
+  <div class="sidebar-user"><div class="sidebar-avatar chen">陈</div>陈磊 · 部门主管</div>
+</aside>
+
+<main class="main">
+  <header class="header">
+    <h1 class="header-title">个人中心</h1>
+    <div class="header-actions">
+      <button class="dark-toggle" onclick="toggleDarkMode()">🌙</button>
+      <button class="btn btn-ghost" onclick="showShortcuts()">⌨</button>
+    </div>
+  </header>
+
+  <div class="page-content">
+    <div class="profile-layout">
+      <!-- 左侧导航 -->
+      <div class="profile-sidebar">
+        <div class="profile-sidebar-nav">
+          <div class="profile-sidebar-item active" onclick="switchProfileTab('avatar')">
+            <span class="icon">🤖</span> 数字分身
+          </div>
+          <div class="profile-sidebar-item" onclick="switchProfileTab('sync')">
+            <span class="icon">🔄</span> 同步设置
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧内容 -->
+      <div class="profile-content">
+        <!-- 数字分身面板 -->
+        <div class="profile-panel active" id="panel-avatar">
+          <!-- 分身训练状态卡片 -->
+          <div class="avatar-card">
+            <div class="avatar-preview">陈</div>
+            <div class="avatar-info">
+              <div class="avatar-name">陈磊的数字分身</div>
+              <div class="avatar-title">部门主管 · 设计一部</div>
+              <div class="avatar-progress">
+                <div class="avatar-progress-label">
+                  <span>训练进度</span>
+                  <span id="avatarProgressPercent">45%</span>
+                </div>
+                <div class="progress-bar-wrap">
+                  <div class="progress-bar-fill" id="avatarProgressBar" style="width:45%"></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-primary" onclick="startAvatarTraining()" id="trainBtn">▶ 继续训练</button>
+              <div style="font-size:11px;color:var(--text-secondary);margin-top:6px;text-align:center;">已收集 8/12 项资料</div>
+            </div>
+          </div>
+
+          <!-- 步骤1: 基础信息 -->
+          <div class="step-card">
+            <div class="step-header">
+              <div class="step-number">1</div>
+              <div>
+                <div class="step-title">基础信息</div>
+                <div class="step-desc">填写个人基本信息与设计理念</div>
+              </div>
+            </div>
+            <div class="step-content">
+              <div class="form-row">
+                <div class="form-group"><label>姓名</label><input type="text" value="陈磊" id="avatarName"></div>
+                <div class="form-group"><label>职称</label><input type="text" value="部门主管" id="avatarTitle"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>专业方向</label><input type="text" value="室内设计 · 商业空间" id="avatarSpecialty"></div>
+                <div class="form-group"><label>擅长领域</label><input type="text" value="现代简约 · 新中式 · 轻奢" id="avatarExpertise"></div>
+              </div>
+              <div class="form-group"><label>个人简介</label>
+                <textarea rows="3" id="avatarBio">10年室内设计经验，专注于商业空间与高端住宅设计。曾主导多个大型商业综合体项目，擅长现代简约与新中式风格的融合创新。</textarea>
+              </div>
+              <div class="form-group"><label>设计理念</label>
+                <textarea rows="3" id="avatarPhilosophy">设计是空间与情感的对话。我追求功能与美学的平衡，注重细节与材质的质感表达，为每个空间注入独特的灵魂与温度。</textarea>
+              </div>
+              <button class="btn btn-secondary" onclick="saveStep(1)">保存</button>
+            </div>
+          </div>
+
+          <!-- 步骤2: 风格样本 -->
+          <div class="step-card">
+            <div class="step-header">
+              <div class="step-number">2</div>
+              <div>
+                <div class="step-title">风格样本</div>
+                <div class="step-desc">上传作品集与选择设计偏好</div>
+              </div>
+            </div>
+            <div class="step-content">
+              <div class="form-group">
+                <label>作品集上传</label>
+                <div class="upload-zone" onclick="document.getElementById('portfolioUpload').click()">
+                  <div class="icon">📁</div>
+                  <div>点击或拖拽文件上传</div>
+                  <div class="hint">支持 .jpg .png .pdf .max .skp 等格式，单个文件不超过100MB</div>
+                </div>
+                <input type="file" id="portfolioUpload" multiple style="display:none" onchange="handlePortfolioUpload(this.files)">
+                <div class="upload-list" id="portfolioList">
+                  <div class="upload-item"><div class="name">客厅方案_现代简约.max</div><div class="size">42 MB</div><div class="progress"><div class="progress-fill" style="width:100%"></div></div></div>
+                  <div class="upload-item"><div class="name">商业空间_效果图集.pdf</div><div class="size">18 MB</div><div class="progress"><div class="progress-fill" style="width:100%"></div></div></div>
+                  <div class="upload-item"><div class="name">材质库_精选.skp</div><div class="size">65 MB</div><div class="progress"><div class="progress-fill" style="width:78%"></div></div></div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>色彩偏好</label>
+                <div class="color-picker">
+                  <div class="color-option selected" style="background:#6366f1" data-color="#6366f1"></div>
+                  <div class="color-option" style="background:#10b981" data-color="#10b981"></div>
+                  <div class="color-option" style="background:#f59e0b" data-color="#f59e0b"></div>
+                  <div class="color-option" style="background:#ef4444" data-color="#ef4444"></div>
+                  <div class="color-option" style="background:#8b5cf6" data-color="#8b5cf6"></div>
+                  <div class="color-option" style="background:#06b6d4" data-color="#06b6d4"></div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>常用材质</label>
+                <div class="tag-selector" id="materialTags">
+                  <div class="tag-selector-item selected">木材</div>
+                  <div class="tag-selector-item selected">金属</div>
+                  <div class="tag-selector-item">玻璃</div>
+                  <div class="tag-selector-item selected">布艺</div>
+                  <div class="tag-selector-item">石材</div>
+                  <div class="tag-selector-item">皮革</div>
+                  <div class="tag-selector-item">陶瓷</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>设计风格偏好</label>
+                <div class="tag-selector" id="styleTags">
+                  <div class="tag-selector-item selected">现代简约</div>
+                  <div class="tag-selector-item">北欧</div>
+                  <div class="tag-selector-item selected">新中式</div>
+                  <div class="tag-selector-item selected">轻奢</div>
+                  <div class="tag-selector-item">工业风</div>
+                  <div class="tag-selector-item">日式</div>
+                  <div class="tag-selector-item">美式</div>
+                </div>
+              </div>
+              <button class="btn btn-secondary" onclick="saveStep(2)">保存</button>
+            </div>
+          </div>
+
+          <!-- 步骤3: 行为数据授权 -->
+          <div class="step-card">
+            <div class="step-header">
+              <div class="step-number">3</div>
+              <div>
+                <div class="step-title">行为数据授权</div>
+                <div class="step-desc">授权AI学习您的设计行为模式</div>
+              </div>
+            </div>
+            <div class="step-content">
+              <div class="form-group">
+                <label class="checkbox">
+                  <input type="checkbox" id="dataConsent" checked>
+                  <span>同意收集我的历史操作数据用于AI训练</span>
+                </label>
+                <div style="font-size:12px;color:var(--text-secondary);margin-top:8px;padding-left:24px;">
+                  数据范围包括：案例浏览记录、产品选择偏好、设计复用模式、搜索关键词、操作频率等。所有数据将匿名化处理，仅用于提升您的数字分身个性化能力。
+                </div>
+              </div>
+              <div class="form-group">
+                <label>授权期限</label>
+                <select id="dataDuration">
+                  <option>永久</option>
+                  <option>1年</option>
+                  <option>6个月</option>
+                  <option>3个月</option>
+                </select>
+              </div>
+              <button class="btn btn-secondary" onclick="saveStep(3)">保存授权</button>
+            </div>
+          </div>
+
+          <!-- 步骤4: 训练控制 -->
+          <div class="step-card">
+            <div class="step-header">
+              <div class="step-number">4</div>
+              <div>
+                <div class="step-title">训练控制</div>
+                <div class="step-desc">启动并监控分身训练过程</div>
+              </div>
+            </div>
+            <div class="step-content">
+              <div style="margin-bottom:16px;">
+                <button class="btn btn-primary" onclick="startAvatarTraining()" id="startTrainBtn">🚀 开始训练</button>
+                <span style="font-size:13px;color:var(--text-secondary);margin-left:12px;">所有资料准备完成后可开始训练</span>
+              </div>
+              
+              <div class="form-group">
+                <label>训练进度</label>
+                <div class="progress-bar-wrap" style="height:12px;margin-bottom:8px;">
+                  <div class="progress-bar-fill" id="trainingProgressBar" style="width:0%"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;">
+                  <span>数据处理</span>
+                  <span>模型训练</span>
+                  <span>优化完成</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>训练日志</label>
+                <div class="train-log" id="trainingLog">
+                  <div class="log-entry">等待训练开始...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 分身能力预览 -->
+          <div class="step-card">
+            <div class="step-header">
+              <div class="step-number">★</div>
+              <div>
+                <div class="step-title">分身能力预览</div>
+                <div class="step-desc">基于当前训练进度的能力评估</div>
+              </div>
+            </div>
+            <div class="step-content">
+              <div class="ability-card">
+                <div class="ability-score">78%</div>
+                <div class="ability-label">风格匹配度</div>
+                <div class="ability-features">
+                  <div class="ability-feature"><span class="dot"></span> 现代简约风格识别</div>
+                  <div class="ability-feature"><span class="dot"></span> 新中式元素理解</div>
+                  <div class="ability-feature"><span class="dot"></span> 商业空间布局建议</div>
+                  <div class="ability-feature"><span class="dot"></span> 材质搭配推荐</div>
+                  <div class="ability-feature"><span class="dot"></span> 色彩方案生成</div>
+                </div>
+              </div>
+
+              <div class="chat-box">
+                <div class="chat-messages" id="chatMessages">
+                  <div class="chat-message ai">你好！我是你的数字分身，已经学习了你的设计风格和偏好。有什么设计问题可以问我。</div>
+                  <div class="chat-message user">推荐一个适合小户型的现代简约方案</div>
+                  <div class="chat-message ai">基于你的偏好，我建议：1) 浅色系墙面扩大空间感 2) 多功能家具节省空间 3) 局部深色点缀增加层次 4) 自然光最大化利用。</div>
+                </div>
+                <div class="chat-input">
+                  <input type="text" id="chatInput" placeholder="向数字分身提问..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+                  <button class="btn btn-primary" onclick="sendChatMessage()">发送</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 同步设置面板 -->
+        <div class="profile-panel" id="panel-sync">
+          <div class="sync-simple">
+            <div class="sync-card">
+              <div class="sync-card-title">本地路径配置</div>
+              <div class="form-group">
+                <label>本地同步文件夹</label>
+                <div style="display:flex;gap:8px;">
+                  <input type="text" value="D:\GeorgeDesign\LocalSync" style="flex:1;">
+                  <button class="btn btn-secondary" onclick="showToast('info','路径选择器已打开（模拟）')">📁 浏览</button>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>NAS目标路径</label>
+                <input type="text" value="/个人/陈磊/同步/" readonly>
+              </div>
+            </div>
+
+            <div class="sync-card">
+              <div class="sync-card-title">同步规则</div>
+              <div class="form-group">
+                <label>同步方向</label>
+                <select>
+                  <option>双向同步</option>
+                  <option>仅上传</option>
+                  <option>仅下载</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="checkbox">
+                  <input type="checkbox" checked>
+                  <span>自动同步</span>
+                </label>
+              </div>
+              <div class="form-group">
+                <label>同步频率</label>
+                <select>
+                  <option>实时</option>
+                  <option selected>每小时</option>
+                  <option>每天</option>
+                  <option>手动</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" onclick="startSync()">🔄 立即同步</button>
+            </div>
+
+            <div class="sync-card">
+              <div class="sync-card-title">同步状态</div>
+              <div style="margin-bottom:12px;">
+                <div style="font-size:12px;color:var(--text-secondary);">上次同步</div>
+                <div style="font-size:16px;font-weight:600;">3分钟前</div>
+              </div>
+              <div style="margin-bottom:12px;">
+                <div style="font-size:12px;color:var(--text-secondary);">待同步文件</div>
+                <div style="font-size:16px;font-weight:600;">12 个</div>
+              </div>
+              <div style="margin-bottom:12px;">
+                <div style="font-size:12px;color:var(--text-secondary);">NAS连接</div>
+                <div style="font-size:16px;font-weight:600;color:var(--green);">在线</div>
+              </div>
+              <button class="btn btn-ghost" onclick="showSyncLog()">查看同步日志</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- 同步进度模态框 -->
+<div class="modal-overlay" id="syncModal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header"><h2>正在同步...</h2><button class="modal-close" onclick="closeModal('syncModal')">✕</button></div>
+    <div class="modal-body" style="text-align:center;">
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;" id="syncStatus">正在扫描本地文件...</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="syncProgressBar" style="width:0%;background:linear-gradient(90deg,#10b981,#34d399);"></div></div>
+      <div style="font-size:12px;margin-top:6px;" id="syncPercent">0%</div>
+    </div>
+  </div>
+</div>
+
+<!-- 同步日志模态框 -->
+<div class="modal-overlay" id="syncLogModal">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header"><h2>同步日志</h2><button class="modal-close" onclick="closeModal('syncLogModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>时间</th><th>操作</th><th>文件</th><th>状态</th></tr></thead>
+          <tbody>
+            <tr><td>2026-05-23 14:32</td><td>上传</td><td>客厅场景_v3.max</td><td><span class="tag tag-green">成功</span></td></tr>
+            <tr><td>2026-05-23 14:30</td><td>上传</td><td>效果图_角度2.psd</td><td><span class="tag tag-green">成功</span></td></tr>
+            <tr><td>2026-05-23 13:15</td><td>下载</td><td>素材包_绿植.zip</td><td><span class="tag tag-green">成功</span></td></tr>
+            <tr><td>2026-05-23 11:00</td><td>冲突</td><td>户型图_v2.dwg</td><td><span class="tag tag-orange">已解决</span></td></tr>
+            <tr><td>2026-05-22 09:00</td><td>上传</td><td>产品表_2026Q2.xlsx</td><td><span class="tag tag-red">失败</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="history-panel" id="historyPanel"><div style="padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;"><strong>操作历史</strong><button class="btn btn-ghost btn-sm" onclick="toggleHistory()">✕</button></div><div id="historyList"></div></div>
+<div class="modal-overlay" id="shortcutsModal"><div class="modal" style="max-width:600px;"><div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div><div class="modal-body"><table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody><tr><td><kbd>?</kbd></td><td>显示快捷键</td></tr><tr><td><kbd>Ctrl/Cmd + P</kbd></td><td>个人中心</td></tr><tr><td><kbd>Esc</kbd></td><td>关闭弹窗</td></tr></tbody></table></div></div></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="common.js"></script>
+<script>
+// 个人中心页面逻辑
+let trainingActive = false;
+let trainingProgress = 0;
+const trainingLogs = [];
+
+// 切换标签页
+function switchProfileTab(tab) {
+  document.querySelectorAll('.profile-sidebar-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.profile-panel').forEach(el => el.classList.remove('active'));
+  
+  document.querySelector(`.profile-sidebar-item[onclick*="${tab}"]`).classList.add('active');
+  document.getElementById(`panel-${tab}`).classList.add('active');
+  
+  if (tab === 'sync') {
+    showToast('info', '已切换到同步设置');
+  } else {
+    showToast('info', '已切换到数字分身');
+  }
+}
+
+// 保存步骤
+function saveStep(step) {
+  showToast('success', `步骤 ${step} 已保存`);
+  updateProgress();
+}
+
+// 更新训练进度
+function updateProgress() {
+  const steps = [1,2,3,4];
+  let completed = 0;
+  steps.forEach(s => {
+    if (localStorage.getItem(`avatar_step_${s}`) === 'done') completed++;
+  });
+  const percent = Math.floor((completed / steps.length) * 100);
+  document.getElementById('avatarProgressBar').style.width = percent + '%';
+  document.getElementById('avatarProgressPercent').textContent = percent + '%';
+  document.getElementById('trainBtn').textContent = percent === 100 ? '🚀 开始训练' : '▶ 继续训练';
+}
+
+// 处理作品集上传
+function handlePortfolioUpload(files) {
+  if (!files.length) return;
+  const list = document.getElementById('portfolioList');
+  Array.from(files).forEach(file => {
+    const item = document.createElement('div');
+    item.className = 'upload-item';
+    item.innerHTML = `
+      <div class="name">${file.name}</div>
+      <div class="size">${(file.size / 1024 / 1024).toFixed(1)} MB</div>
+      <div class="progress"><div class="progress-fill" style="width:0%"></div></div>
+    `;
+    list.appendChild(item);
+    
+    // 模拟上传进度
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 20 + 5;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(interval);
+        item.querySelector('.progress-fill').style.width = '100%';
+        showToast('success', `${file.name} 上传完成`);
+      } else {
+        item.querySelector('.progress-fill').style.width = progress + '%';
+      }
+    }, 200);
+  });
+  showToast('info', `开始上传 ${files.length} 个文件`);
+}
+
+// 开始分身训练
+function startAvatarTraining() {
+  if (trainingActive) {
+    showToast('warning', '训练已在进行中');
+    return;
+  }
+  
+  trainingActive = true;
+  document.getElementById('startTrainBtn').disabled = true;
+  document.getElementById('startTrainBtn').textContent = '训练中...';
+  
+  const logArea = document.getElementById('trainingLog');
+  const progressBar = document.getElementById('trainingProgressBar');
+  
+  function addLog(msg, type = '') {
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${type}`;
+    entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    logArea.appendChild(entry);
+    logArea.scrollTop = logArea.scrollHeight;
+    trainingLogs.push(msg);
+  }
+  
+  addLog('开始数字分身训练...');
+  addLog('检查资料完整性...', 'success');
+  
+  // 三阶段训练模拟
+  const stages = [
+    { name: '数据处理', duration: 2000, progress: 33 },
+    { name: '模型训练', duration: 3000, progress: 66 },
+    { name: '优化完成', duration: 1500, progress: 100 }
+  ];
+  
+  let currentStage = 0;
+  function runStage() {
+    if (currentStage >= stages.length) {
+      trainingActive = false;
+      document.getElementById('startTrainBtn').disabled = false;
+      document.getElementById('startTrainBtn').textContent = '训练完成';
+      addLog('数字分身训练完成！', 'success');
+      showToast('success', '数字分身训练完成，已更新能力预览');
+      return;
+    }
+    
+    const stage = stages[currentStage];
+    addLog(`阶段 ${currentStage + 1}: ${stage.name}...`);
+    
+    let stageProgress = 0;
+    const interval = setInterval(() => {
+      stageProgress += 5;
+      const totalProgress = Math.min(
+        currentStage * 33 + Math.floor(stageProgress * 0.33),
+        100
+      );
+      progressBar.style.width = totalProgress + '%';
+      
+      if (stageProgress >= 100) {
+        clearInterval(interval);
+        addLog(`${stage.name} 完成`, 'success');
+        currentStage++;
+        setTimeout(runStage, 500);
+      }
+    }, stage.duration / 20);
+  }
+  
+  runStage();
+}
+
+// 发送聊天消息
+function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  
+  const chatArea = document.getElementById('chatMessages');
+  
+  // 用户消息
+  const userMsg = document.createElement('div');
+  userMsg.className = 'chat-message user';
+  userMsg.textContent = msg;
+  chatArea.appendChild(userMsg);
+  
+  input.value = '';
+  
+  // AI回复（模拟）
+  setTimeout(() => {
+    const responses = [
+      "基于你的设计风格，我建议采用现代简约手法，注重空间流动性与功能性。",
+      "这个方案可以考虑使用浅色系打底，局部深色点缀，增加空间层次感。",
+      "从你的作品集分析，你擅长新中式与现代的融合，这个方向可以继续深化。",
+      "材质方面推荐使用木材与金属的搭配，既有温度又有现代感。",
+      "色彩方案可以参考你偏爱的#6366f1主色调，搭配中性色平衡。"
+    ];
+    const aiMsg = document.createElement('div');
+    aiMsg.className = 'chat-message ai';
+    aiMsg.textContent = responses[Math.floor(Math.random() * responses.length)];
+    chatArea.appendChild(aiMsg);
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }, 800);
+}
+
+// 同步功能
+function startSync() {
+  openModal('syncModal');
+  let p = 0;
+  const steps = [
+    [15, '正在扫描本地文件...'],
+    [35, '正在比对NAS文件差异...'],
+    [55, '正在传输文件...'],
+    [78, '正在校验文件完整性...'],
+    [95, '正在更新同步记录...'],
+    [100, '同步完成！']
+  ];
+  steps.forEach(([percent, msg], i) => {
+    setTimeout(() => {
+      document.getElementById('syncProgressBar').style.width = percent + '%';
+      document.getElementById('syncPercent').textContent = percent + '%';
+      document.getElementById('syncStatus').textContent = msg;
+      if (percent === 100) {
+        setTimeout(() => { closeModal('syncModal'); showToast('success', '同步完成！12个文件已同步'); }, 800);
+      }
+    }, i * 800);
+  });
+}
+
+function showSyncLog() {
+  openModal('syncLogModal');
+}
+
+// 初始化标签选择器
+document.addEventListener('DOMContentLoaded', function() {
+  // 颜色选择器
+  document.querySelectorAll('.color-option').forEach(opt => {
+    opt.addEventListener('click', function() {
+      document.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
+      this.classList.add('selected');
+      showToast('info', `已选择颜色: ${this.dataset.color}`);
+    });
+  });
+  
+  // 标签选择器
+  document.querySelectorAll('.tag-selector-item').forEach(tag => {
+    tag.addEventListener('click', function() {
+      this.classList.toggle('selected');
+    });
+  });
+  
+  // 聊天输入框回车发送
+  document.getElementById('chatInput')?.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') sendChatMessage();
+  });
+  
+  // 初始化进度
+  updateProgress();
+});
+</script>
+</body>
+</html>

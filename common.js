@@ -36,7 +36,7 @@ function highlightCurrentNav() {
     'nas.html': 'nas',
     'analytics.html': 'analytics',
     'admin.html': 'admin',
-    'settings.html': 'settings',
+    'profile.html': 'profile',
   };
 
   const page = pageMap[filename] || 'dashboard';
