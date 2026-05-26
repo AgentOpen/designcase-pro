@@ -312,13 +312,13 @@
 
     <div class="profile-tabs">
 
-      <div class="profile-tab active" onclick="switchProfileTab('avatar')">
+      <div class="profile-tab active" data-tab="avatar" onclick="switchProfileTab('avatar')">
 
         <span class="tab-icon">🤖</span> 数字分身
 
       </div>
 
-      <div class="profile-tab" onclick="switchProfileTab('sync')">
+      <div class="profile-tab" data-tab="sync" onclick="switchProfileTab('sync')">
 
         <span class="tab-icon">🔄</span> 同步设置
 
@@ -639,7 +639,7 @@
                 <div class="form-group">
 
                   <div class="checkbox">
-                  <input type="checkbox" checked id="autoSync">
+                  <input type="checkbox" checked id="autoSyncAvatar">
                   <span>自动同步</span>
                 </div>
 
@@ -775,6 +775,124 @@
 
   </div>
 
+
+
+    <!-- 同步设置面板 -->
+    <div class="profile-panel" id="panel-sync">
+      <div class="profile-header">
+        <h1>同步设置</h1>
+        <p class="profile-subtitle">管理文件同步与备份</p>
+      </div>
+
+      <div class="sync-simple">
+        <div class="sync-card">
+          <div class="sync-card-title">自动同步</div>
+          <div class="checkbox">
+            <input type="checkbox" id="autoSync" checked>
+            <label for="autoSync">开启后自动同步文件到云端</label>
+          </div>
+          <div style="font-size:13px;color:var(--text-secondary);margin-top:12px;">
+            检测到文件变更时自动上传，确保数据安全
+          </div>
+        </div>
+
+        <div class="sync-card">
+          <div class="sync-card-title">同步频率</div>
+          <div style="margin-bottom:12px;">
+            <select style="width:100%;padding:8px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg);color:var(--text);">
+              <option value="realtime">实时同步</option>
+              <option value="hourly" selected>每小时</option>
+              <option value="daily">每天</option>
+              <option value="weekly">每周</option>
+            </select>
+          </div>
+          <div style="font-size:13px;color:var(--text-secondary);">
+            下次同步时间：今天 15:30
+          </div>
+        </div>
+
+        <div class="sync-card">
+          <div class="sync-card-title">存储空间</div>
+          <div style="margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+              <span>已使用</span>
+              <span>24.8 GB / 100 GB</span>
+            </div>
+            <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+              <div style="width:24.8%;height:100%;background:linear-gradient(90deg,#3b82f6,#60a5fa);"></div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:var(--text-secondary);">
+            剩余 75.2 GB 可用空间
+          </div>
+        </div>
+      </div>
+
+      <div class="sync-log-container">
+        <div class="sync-log-title">
+          <span>同步日志</span>
+          <button class="btn btn-outline" style="font-size:12px;padding:4px 12px;" onclick="openModal('syncLogModal')">查看完整日志</button>
+        </div>
+        <div class="table-wrap">
+          <table class="sync-log-table">
+            <thead>
+              <tr>
+                <th>编号</th>
+                <th>时间</th>
+                <th>操作</th>
+                <th>文件</th>
+                <th>状态</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="log-id">#001</td>
+                <td>2026-05-26 09:15</td>
+                <td>上传</td>
+                <td>设计方案_最终版.pdf</td>
+                <td><span class="status-success">成功</span></td>
+              </tr>
+              <tr>
+                <td class="log-id">#002</td>
+                <td>2026-05-26 08:45</td>
+                <td>下载</td>
+                <td>素材库_v2.zip</td>
+                <td><span class="status-success">成功</span></td>
+              </tr>
+              <tr>
+                <td class="log-id">#003</td>
+                <td>2026-05-26 08:20</td>
+                <td>冲突解决</td>
+                <td>户型图.dwg</td>
+                <td><span class="status-pending">已解决</span></td>
+              </tr>
+              <tr>
+                <td class="log-id">#004</td>
+                <td>2026-05-26 07:55</td>
+                <td>上传</td>
+                <td>渲染图_角度1.png</td>
+                <td><span class="status-success">成功</span></td>
+              </tr>
+              <tr>
+                <td class="log-id">#005</td>
+                <td>2026-05-26 07:30</td>
+                <td>备份</td>
+                <td>项目文档</td>
+                <td><span class="status-success">成功</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;display:flex;gap:12px;">
+        <button class="btn btn-primary" onclick="openModal('syncModal')">🔄 立即同步</button>
+        <button class="btn btn-outline">⚙️ 高级设置</button>
+        <button class="btn btn-outline" style="margin-left:auto;">📊 查看统计</button>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 
@@ -868,31 +986,22 @@ const trainingLogs = [];
 
 
 // 切换标签页
-
 function switchProfileTab(tab) {
-
   document.querySelectorAll('.profile-tab').forEach(el => el.classList.remove('active'));
-
   document.querySelectorAll('.profile-panel').forEach(el => el.classList.remove('active'));
-
   
-
-  document.querySelector(`.profile-tab[onclick*="${tab}"]`).classList.add('active');
-
-  document.getElementById(`panel-${tab}`).classList.add('active');
-
+  // 使用 data-tab 属性定位，避免 onclick 子串匹配的不确定性
+  const targetTab = document.querySelector(`.profile-tab[data-tab="${tab}"]`);
+  if (targetTab) targetTab.classList.add('active');
   
-
+  const targetPanel = document.getElementById(`panel-${tab}`);
+  if (targetPanel) targetPanel.classList.add('active');
+  
   if (tab === 'sync') {
-
     showToast('info', '已切换到同步设置');
-
   } else {
-
     showToast('info', '已切换到数字分身');
-
   }
-
 }
 
 
