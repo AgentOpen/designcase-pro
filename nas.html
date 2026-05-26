@@ -36,6 +36,31 @@
 .nas-case-card .card-body-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
 .nas-case-card .card-body-footer { display:flex; gap:10px; padding-top:12px; border-top:1px solid var(--border); }
 .result-count { font-size:13px; color:var(--text-secondary); margin-bottom:16px; padding:8px 0; border-bottom:1px solid var(--border); }
+/* Pagination */
+.nas-pagination { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:20px; padding:16px 0; border-top:1px solid var(--border); }
+.nas-pagination button { width:36px; height:36px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--card-bg); color:var(--text); cursor:pointer; font-size:13px; display:flex; align-items:center; justify-content:center; transition:all var(--transition); }
+.nas-pagination button:hover { border-color:var(--primary); color:var(--primary); }
+.nas-pagination button.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+.nas-pagination button:disabled { opacity:.4; cursor:default; }
+.nas-pagination .page-info { font-size:12px; color:var(--text-muted); padding:0 8px; }
+/* PPT Proposal */
+.ppt-proposal-layout { display:flex; height:calc(85vh - 120px); }
+.ppt-sidebar { width:200px; min-width:200px; border-right:1px solid var(--border); overflow-y:auto; background:var(--bg); padding:8px 0; }
+.ppt-sidebar .ppt-chapter { padding:10px 16px; cursor:pointer; font-size:13px; border-left:3px solid transparent; transition:all var(--transition); display:flex; align-items:center; gap:8px; }
+.ppt-sidebar .ppt-chapter:hover { background:var(--card-bg); }
+.ppt-sidebar .ppt-chapter.active { background:var(--card-bg); border-left-color:var(--primary); color:var(--primary); font-weight:600; }
+.ppt-sidebar .ppt-subchapter { padding:7px 16px 7px 36px; cursor:pointer; font-size:12px; color:var(--text-secondary); transition:all var(--transition); }
+.ppt-sidebar .ppt-subchapter:hover { color:var(--primary); background:var(--card-bg); }
+.ppt-sidebar .ppt-subchapter.active { color:var(--primary); background:var(--card-bg); font-weight:500; }
+.ppt-main { flex:1; display:flex; flex-direction:column; }
+.ppt-canvas { flex:1; display:flex; align-items:center; justify-content:center; padding:20px; background:var(--bg); }
+.ppt-slide-placeholder { text-align:center; color:var(--text-muted); }
+.ppt-slide-icon { font-size:48px; margin-bottom:12px; }
+.ppt-slide-label { font-size:14px; }
+.ppt-slide-image { max-width:100%; max-height:100%; border-radius:var(--radius); box-shadow:var(--shadow-md); }
+.ppt-slide-caption { text-align:center; font-size:13px; color:var(--text-secondary); margin-top:10px; }
+.ppt-nav { display:flex; align-items:center; justify-content:center; gap:16px; padding:12px; border-top:1px solid var(--border); background:var(--card-bg); }
+.ppt-slide-info { font-size:12px; color:var(--text-muted); }
 </style>
 </head>
 <body>
@@ -119,22 +144,8 @@
         </div>
       </div>
 
-      <!-- NAS Stats -->
-      <div class="card" style="margin-top:16px;">
-        <div class="card-title" style="margin-bottom:12px;">NAS 使用量统计</div>
-        <div style="margin-bottom:12px;">
-          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>总使用量: <span id="nasTotalUsed">156</span> GB / 500 GB</span><span id="nasTotalPct">31.2%</span></div>
-          <div class="stat-card-progress"><div class="stat-card-progress-bar orange" id="nasTotalBar" style="width:31.2%"></div></div>
-        </div>
-        <div style="font-size:12px;color:var(--text-secondary);">部门配额分布:</div>
-        <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;" id="nasDeptStats">
-          <div style="display:flex;align-items:center;gap:10px;"><span style="width:80px;text-align:right;font-size:12px;">设计一部</span><div style="flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;"><div style="width:45%;height:100%;background:linear-gradient(90deg,#4f46e5,#818cf8);border-radius:4px;"></div></div><span style="font-size:11px;color:var(--text-muted);">45GB / 100GB</span></div>
-          <div style="display:flex;align-items:center;gap:10px;"><span style="width:80px;text-align:right;font-size:12px;">设计二部</span><div style="flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;"><div style="width:32%;height:100%;background:linear-gradient(90deg,#10b981,#34d399);border-radius:4px;"></div></div><span style="font-size:11px;color:var(--text-muted);">32GB / 100GB</span></div>
-          <div style="display:flex;align-items:center;gap:10px;"><span style="width:80px;text-align:right;font-size:12px;">设计三部</span><div style="flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;"><div style="width:28%;height:100%;background:linear-gradient(90deg,#f59e0b,#fcd34d);border-radius:4px;"></div></div><span style="font-size:11px;color:var(--text-muted);">28GB / 100GB</span></div>
-          <div style="display:flex;align-items:center;gap:10px;"><span style="width:80px;text-align:right;font-size:12px;">设计四部</span><div style="flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;"><div style="width:20%;height:100%;background:linear-gradient(90deg,#ec4899,#f472b6);border-radius:4px;"></div></div><span style="font-size:11px;color:var(--text-muted);">20GB / 100GB</span></div>
-          <div style="display:flex;align-items:center;gap:10px;"><span style="width:80px;text-align:right;font-size:12px;">设计五部</span><div style="flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;"><div style="width:31%;height:100%;background:linear-gradient(90deg,#3b82f6,#60a5fa);border-radius:4px;"></div></div><span style="font-size:11px;color:var(--text-muted);">31GB / 100GB</span></div>
-        </div>
-      </div>
+      <!-- Pagination -->
+      <div class="nas-pagination" id="nasPagination"></div>
     </div>
   </div>
 </main>
@@ -165,6 +176,41 @@
         <div class="reuse-step" id="ns1"><div class="reuse-step-icon">📋</div><div class="reuse-step-text">创建副本目录</div></div>
         <div class="reuse-step" id="ns2"><div class="reuse-step-icon">📁</div><div class="reuse-step-text">拷贝文件</div></div>
         <div class="reuse-step" id="ns3"><div class="reuse-step-icon">✅</div><div class="reuse-step-text">完成</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VR Panorama Modal -->
+<div class="modal-overlay" id="vrPanoramaModal">
+  <div class="modal" style="max-width:1100px;width:95vw;height:85vh;">
+    <div class="modal-header"><h2 id="vrPanoramaTitle">VR 全景</h2><button class="modal-close" onclick="closeVRPanorama()">✕</button></div>
+    <div class="modal-body" style="padding:0;height:calc(100% - 60px);">
+      <iframe id="vrPanoramaFrame" style="width:100%;height:100%;border:none;" allow="fullscreen"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- PPT Proposal Modal -->
+<div class="modal-overlay" id="pptProposalModal">
+  <div class="modal" style="max-width:1000px;width:90vw;max-height:85vh;">
+    <div class="modal-header"><h2 id="pptProposalTitle">PPT 设计提案</h2><button class="modal-close" onclick="closeModal('pptProposalModal')">✕</button></div>
+    <div class="modal-body" style="padding:0;">
+      <div class="ppt-proposal-layout">
+        <div class="ppt-sidebar" id="pptSidebar"></div>
+        <div class="ppt-main">
+          <div class="ppt-canvas" id="pptCanvas">
+            <div class="ppt-slide-placeholder">
+              <div class="ppt-slide-icon">📊</div>
+              <div class="ppt-slide-label">选择左侧章节查看设计提案</div>
+            </div>
+          </div>
+          <div class="ppt-nav">
+            <button class="btn btn-ghost btn-sm" onclick="pptPrevSlide()">◀ 上一页</button>
+            <span class="ppt-slide-info" id="pptSlideInfo"></span>
+            <button class="btn btn-ghost btn-sm" onclick="pptNextSlide()">下一页 ▶</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -206,6 +252,35 @@ const styleMap = {
   '李强':['工业风','美式','轻奢'], '赵工':['美式'], '孙敏':['北欧']
 };
 
+// VR panorama data - cases that have VR tours
+const vrPanoramaMap = {
+  '001-America-案例001': 'https://img.gbuilderchina.com/panorama/direct-86c6862f-b698-4fd0-893c-355d0ba0e4a4/tour.html',
+  '002-Europe-案例004': 'https://img.gbuilderchina.com/panorama/direct-86c6862f-b698-4fd0-893c-355d0ba0e4a4/tour.html',
+  '003-Japan-案例006': 'https://img.gbuilderchina.com/panorama/direct-86c6862f-b698-4fd0-893c-355d0ba0e4a4/tour.html',
+  '004-Malaysia-案例010': 'https://img.gbuilderchina.com/panorama/direct-86c6862f-b698-4fd0-893c-355d0ba0e4a4/tour.html',
+  '005-America-案例013': 'https://img.gbuilderchina.com/panorama/direct-86c6862f-b698-4fd0-893c-355d0ba0e4a4/tour.html',
+  '001-Singapore-案例002': 'https://img.gbuilderchina.com/panorama/direct-86c6862f-b698-4fd0-893c-355d0ba0e4a4/tour.html',
+  '003-Europe-案例011': 'https://img.gbuilderchina.com/panorama/direct-86c6862f-b698-4fd0-893c-355d0ba0e4a4/tour.html',
+  '005-Singapore-案例014': 'https://img.gbuilderchina.com/panorama/direct-86c6862f-b698-4fd0-893c-355d0ba0e4a4/tour.html',
+};
+
+// PPT proposal data - based on the PDF analysis
+const pptProposalData = {
+  title: 'American Villa Design',
+  chapters: [
+    { name: '封面', pages: 1, icon: '🏠' },
+    { name: '过渡页', pages: 1, icon: '🖼️' },
+    { name: 'FLOOR PLAN 平面图', pages: 2, icon: '📐' },
+    { name: 'LIVING 客厅', pages: 5, icon: '🛋️' },
+    { name: 'DINING 餐厅', pages: 5, icon: '🍽️' },
+    { name: 'FOYER 门厅', pages: 3, icon: '🚪' },
+    { name: 'MASTER BEDROOM 主卧', pages: 4, icon: '🛏️' },
+    { name: 'GUEST ROOM 客卧', pages: 5, icon: '🛏️' },
+    { name: 'OFFICE 办公室', pages: 3, icon: '💼' },
+    { name: 'W.I.C 衣帽间', pages: 4, icon: '👔' }
+  ]
+};
+
 for (const dept in nasData) {
   for (const designer in nasData[dept].designers) {
     const dObj = nasData[dept].designers[designer];
@@ -213,7 +288,8 @@ for (const dept in nasData) {
       dObj.countries[country].forEach((caseName, idx) => {
         const styles = styleMap[designer] || ['现代简约'];
         const style = styles[idx % styles.length];
-        nasCases.push({ name:caseName, dept, designer, designerId:dObj.id, country, style, theme:themeMap[style]||'modern', size:Math.floor(Math.random()*80+20) });
+        const hasVR = !!vrPanoramaMap[caseName];
+        nasCases.push({ name:caseName, dept, designer, designerId:dObj.id, country, style, theme:themeMap[style]||'modern', size:Math.floor(Math.random()*80+20), hasVR });
       });
     }
   }
@@ -297,8 +373,49 @@ function selectTreeCase(dept, designer, country, caseName) {
   document.querySelectorAll('#nasTreeBody .dir-item').forEach(i => i.classList.remove('active'));
 }
 
-// ========== FILTER & RENDER ==========
-function filterCases() {
+// ========== PAGINATION ==========
+let currentPage = 1;
+const pageSize = 12;
+
+function renderPagination(totalItems) {
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const pagination = document.getElementById('nasPagination');
+  if (totalPages <= 1) {
+    pagination.innerHTML = '';
+    return;
+  }
+
+  let html = `<button onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>◀◀</button>
+              <button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>◀</button>`;
+
+  // Show page numbers
+  const maxVisible = 5;
+  let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+  let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+  
+  if (endPage - startPage + 1 < maxVisible) {
+    startPage = Math.max(1, endPage - maxVisible + 1);
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    html += `<button onclick="goToPage(${i})" class="${currentPage === i ? 'active' : ''}">${i}</button>`;
+  }
+
+  html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>▶</button>
+           <button onclick="goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>▶▶</button>
+           <span class="page-info">第 ${currentPage} 页 / 共 ${totalPages} 页</span>`;
+
+  pagination.innerHTML = html;
+}
+
+function goToPage(page) {
+  const totalPages = Math.ceil(nasCases.length / pageSize);
+  if (page < 1 || page > totalPages) return;
+  currentPage = page;
+  filterCases();
+}
+
+function getCurrentPageCases() {
   const dept = document.getElementById('nasDeptFilter').value;
   const designer = document.getElementById('nasDesignerFilter').value;
   const country = document.getElementById('nasCountryFilter').value;
@@ -309,15 +426,114 @@ function filterCases() {
     (!country || c.country === country)
   );
 
+  const start = (currentPage - 1) * pageSize;
+  const end = start + pageSize;
+  return { filtered, paginated: filtered.slice(start, end) };
+}
+
+// ========== CASE DETAIL ==========
+function showCaseDetail(caseName, hasVR) {
+  if (hasVR) {
+    openVRPanorama(caseName);
+  } else {
+    openPPTProposal(caseName);
+  }
+}
+
+function openVRPanorama(caseName) {
+  const url = vrPanoramaMap[caseName] || 'https://img.gbuilderchina.com/panorama/direct-86c6862f-b698-4fd0-893c-355d0ba0e4a4/tour.html';
+  document.getElementById('vrPanoramaTitle').textContent = `VR 全景 - ${caseName}`;
+  document.getElementById('vrPanoramaFrame').src = url;
+  openModal('vrPanoramaModal');
+}
+
+function closeVRPanorama() {
+  document.getElementById('vrPanoramaFrame').src = '';
+  closeModal('vrPanoramaModal');
+}
+
+function openPPTProposal(caseName) {
+  document.getElementById('pptProposalTitle').textContent = `PPT 设计提案 - ${caseName}`;
+  renderPPTProposal();
+  openModal('pptProposalModal');
+}
+
+function renderPPTProposal() {
+  const sidebar = document.getElementById('pptSidebar');
+  let html = '';
+  pptProposalData.chapters.forEach((chapter, idx) => {
+    html += `<div class="ppt-chapter" onclick="selectPPTChapter(${idx})">
+              <span>${chapter.icon}</span>
+              <span>${chapter.name}</span>
+            </div>`;
+  });
+  sidebar.innerHTML = html;
+  selectPPTChapter(0);
+}
+
+let currentPPTChapter = 0;
+let currentPPTSlide = 0;
+
+function selectPPTChapter(idx) {
+  currentPPTChapter = idx;
+  currentPPTSlide = 0;
+  document.querySelectorAll('.ppt-chapter').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+  });
+  renderPPTSlide();
+}
+
+function renderPPTSlide() {
+  const chapter = pptProposalData.chapters[currentPPTChapter];
+  const canvas = document.getElementById('pptCanvas');
+  canvas.innerHTML = `
+    <div style="text-align:center;">
+      <div style="font-size:20px;margin-bottom:10px;color:var(--text);">${chapter.name}</div>
+      <div style="font-size:14px;color:var(--text-secondary);margin-bottom:20px;">第 ${currentPPTSlide + 1} / ${chapter.pages} 页</div>
+      <div style="width:600px;height:400px;background:linear-gradient(135deg,#f0f0f0,#e0e0e0);border-radius:12px;margin:0 auto;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-lg);">
+        <div style="text-align:center;">
+          <div style="font-size:48px;margin-bottom:16px;">${chapter.icon}</div>
+          <div style="font-size:16px;color:var(--text);">${chapter.name}</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">页面 ${currentPPTSlide + 1} / ${chapter.pages}</div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('pptSlideInfo').textContent = `${chapter.name} - 第 ${currentPPTSlide + 1} / ${chapter.pages} 页`;
+}
+
+function pptPrevSlide() {
+  const chapter = pptProposalData.chapters[currentPPTChapter];
+  if (currentPPTSlide > 0) {
+    currentPPTSlide--;
+    renderPPTSlide();
+  }
+}
+
+function pptNextSlide() {
+  const chapter = pptProposalData.chapters[currentPPTChapter];
+  if (currentPPTSlide < chapter.pages - 1) {
+    currentPPTSlide++;
+    renderPPTSlide();
+  }
+}
+
+// ========== FILTER & RENDER ==========
+function filterCases() {
+  const { filtered, paginated } = getCurrentPageCases();
+  
   document.getElementById('nasResultCount').textContent = `共 ${filtered.length} 个案例`;
-  document.getElementById('nasCaseGrid').innerHTML = filtered.map(renderNASCaseCard).join('')
+  document.getElementById('nasCaseGrid').innerHTML = paginated.map(renderNASCaseCard).join('')
     || '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:60px;">暂无匹配案例</p>';
+  
+  renderPagination(filtered.length);
 }
 
 function resetNASFilter() {
   document.getElementById('nasDeptFilter').value = '';
   document.getElementById('nasDesignerFilter').value = '';
   document.getElementById('nasCountryFilter').value = '';
+  currentPage = 1;
   buildDesignerDropdown();
   filterCases();
 }
@@ -328,10 +544,11 @@ function getTagClass(s) {
 }
 
 function renderNASCaseCard(c) {
+  const vrBadge = c.hasVR ? '<span class="tag tag-orange" style="font-size:10px;padding:2px 6px;">VR全景</span>' : '';
   return `<div class="nas-case-card">
     <div class="card-thumb"><div class="card-thumb-placeholder theme-${c.theme}"></div></div>
     <div class="card-body">
-      <div class="card-body-title">${c.name}</div>
+      <div class="card-body-title">${c.name} ${vrBadge}</div>
       <div class="card-body-info">
         <span class="user-avatar chen" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">${c.designer[0]}</span> ${c.designer}
         <span class="tag tag-blue">${c.dept}</span>
@@ -343,10 +560,11 @@ function renderNASCaseCard(c) {
       </div>
       <div class="card-body-footer">
         <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); nasDownloadFromButton(this)" data-name="${c.name}" data-dept="${c.dept}" data-designer="${c.designer}" data-country="${c.country}">📥 一键下载到我的NAS</button>
-        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); showToast('info',this.dataset.info)" data-info="查看详情: ${c.name}">查看详情</button>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); showCaseDetail('${c.name}', ${c.hasVR})">查看详情</button>
       </div>
     </div>
   </div>`;
+}
 }
 
 // ========== NAS DOWNLOAD FLOW ==========
