@@ -6,36 +6,36 @@
 <title>NAS文件管理 - George Design</title>
 <link rel="stylesheet" href="common.css">
 <style>
-.nas-layout { display:flex; gap:16px; flex-wrap:wrap; }
-.nas-left { width:280px; min-width:280px; display:flex; flex-direction:column; gap:12px; }
-.nas-right { flex:1; min-width:400px; }
-.nas-filter-card { background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--border); padding:16px; }
-.nas-filter-card .card-title { margin-bottom:12px; font-size:14px; }
-.nas-filter-row { display:flex; flex-direction:column; gap:8px; }
-.nas-filter-row select, .nas-filter-row input { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:12px; background:var(--card-bg); color:var(--text); }
-.nas-filter-row select:focus, .nas-filter-row input:focus { outline:none; border-color:var(--primary); }
-.nas-filter-btns { display:flex; gap:8px; margin-top:4px; }
-.nas-tree-card { background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--border); flex:1; overflow-y:auto; max-height:500px; }
-.nas-tree-header { padding:10px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; cursor:pointer; font-size:13px; font-weight:600; }
-.nas-tree-header .arrow { font-size:10px; transition:transform .2s; }
+.nas-layout { display:flex; gap:20px; flex-wrap:nowrap; height:calc(100vh - 180px); }
+.nas-left { width:300px; min-width:300px; display:flex; flex-direction:column; gap:16px; position:sticky; top:0; height:100%; }
+.nas-right { flex:1; min-width:400px; overflow-y:auto; padding-right:8px; }
+.nas-filter-card { background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--border); padding:20px; flex-shrink:0; }
+.nas-filter-card .card-title { margin-bottom:16px; font-size:15px; font-weight:600; }
+.nas-filter-row { display:flex; flex-direction:column; gap:12px; }
+.nas-filter-row select, .nas-filter-row input { width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:13px; background:var(--card-bg); color:var(--text); }
+.nas-filter-row select:focus, .nas-filter-row input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(79,70,229,.1); }
+.nas-filter-btns { display:flex; gap:10px; margin-top:8px; }
+.nas-tree-card { background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--border); flex:1; overflow-y:auto; display:flex; flex-direction:column; }
+.nas-tree-header { padding:12px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; cursor:pointer; font-size:14px; font-weight:600; background:var(--bg); }
+.nas-tree-header .arrow { font-size:11px; transition:transform .2s; }
 .nas-tree-header.collapsed .arrow { transform:rotate(-90deg); }
-.nas-tree-body { padding:8px; font-size:12px; }
+.nas-tree-body { padding:12px; font-size:13px; overflow-y:auto; flex:1; }
 .nas-tree-body.hidden { display:none; }
-.nas-tree-body .dir-item { padding:5px 8px; cursor:pointer; border-radius:4px; display:flex; align-items:center; gap:6px; font-size:12px; }
+.nas-tree-body .dir-item { padding:6px 10px; cursor:pointer; border-radius:var(--radius-sm); display:flex; align-items:center; gap:8px; font-size:13px; margin-bottom:2px; }
 .nas-tree-body .dir-item:hover { background:var(--bg); }
 .nas-tree-body .dir-item.active { background:var(--primary-light); color:var(--primary); font-weight:500; }
-.nas-tree-body .dir-children { padding-left:20px; }
-.nas-tree-body .dir-toggle { width:14px; display:inline-block; text-align:center; cursor:pointer; font-size:9px; }
-.case-card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+.nas-tree-body .dir-children { padding-left:24px; margin-top:2px; }
+.nas-tree-body .dir-toggle { width:16px; display:inline-block; text-align:center; cursor:pointer; font-size:10px; }
+.case-card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
 .nas-case-card { background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--border); overflow:hidden; transition:all var(--transition); }
-.nas-case-card:hover { box-shadow:var(--shadow-md); transform:translateY(-1px); }
-.nas-case-card .card-thumb { height:160px; }
-.nas-case-card .card-body { padding:14px; }
-.nas-case-card .card-body-title { font-size:14px; font-weight:600; margin-bottom:6px; }
-.nas-case-card .card-body-info { font-size:11px; color:var(--text-secondary); margin-bottom:6px; display:flex; flex-wrap:wrap; gap:4px; align-items:center; }
-.nas-case-card .card-body-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
-.nas-case-card .card-body-footer { display:flex; gap:8px; padding-top:8px; border-top:1px solid var(--border); }
-.result-count { font-size:12px; color:var(--text-secondary); margin-bottom:12px; }
+.nas-case-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); }
+.nas-case-card .card-thumb { height:180px; }
+.nas-case-card .card-body { padding:18px; }
+.nas-case-card .card-body-title { font-size:15px; font-weight:600; margin-bottom:8px; }
+.nas-case-card .card-body-info { font-size:12px; color:var(--text-secondary); margin-bottom:8px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.nas-case-card .card-body-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+.nas-case-card .card-body-footer { display:flex; gap:10px; padding-top:12px; border-top:1px solid var(--border); }
+.result-count { font-size:13px; color:var(--text-secondary); margin-bottom:16px; padding:8px 0; border-bottom:1px solid var(--border); }
 </style>
 </head>
 <body>
@@ -105,10 +105,10 @@
 
           <!-- Directory tree card -->
           <div class="nas-tree-card">
-            <div class="nas-tree-header collapsed" id="nasTreeHeader" onclick="toggleNASTree()">
+            <div class="nas-tree-header" id="nasTreeHeader" onclick="toggleNASTree()">
               📂 NAS目录结构 <span class="arrow">▼</span>
             </div>
-            <div class="nas-tree-body hidden" id="nasTreeBody"></div>
+            <div class="nas-tree-body" id="nasTreeBody"></div>
           </div>
         </div>
 
@@ -255,17 +255,17 @@ function buildNASTree() {
   const tree = document.getElementById('nasTreeBody');
   let html = '';
   for (const dept in nasData) {
-    html += `<div class="dir-item" onclick="toggleDir(this,'n-${dept}')"><span class="dir-toggle">▶</span>📁 ${dept}</div>`;
-    html += `<div class="dir-children" id="children-n-${dept}" style="display:none;">`;
+    html += `<div class="dir-item" onclick="toggleDir(this,'n-${dept}')"><span class="dir-toggle">▼</span>📁 ${dept}</div>`;
+    html += `<div class="dir-children" id="children-n-${dept}" style="display:block;">`;
     for (const designer in nasData[dept].designers) {
       const dObj = nasData[dept].designers[designer];
       const dKey = `n-${dept}/${designer}`;
-      html += `<div class="dir-item" onclick="toggleDir(this,'${dKey}')"><span class="dir-toggle">▶</span>👤 ${designer}（ID:${dObj.id}）</div>`;
-      html += `<div class="dir-children" id="children-${dKey}" style="display:none;">`;
+      html += `<div class="dir-item" onclick="toggleDir(this,'${dKey}')"><span class="dir-toggle">▼</span>👤 ${designer}（ID:${dObj.id}）</div>`;
+      html += `<div class="dir-children" id="children-${dKey}" style="display:block;">`;
       for (const country in dObj.countries) {
         const cKey = `${dKey}/${country}`;
-        html += `<div class="dir-item" onclick="toggleDir(this,'${cKey}')"><span class="dir-toggle">▶</span>🌍 ${country}</div>`;
-        html += `<div class="dir-children" id="children-${cKey}" style="display:none;">`;
+        html += `<div class="dir-item" onclick="toggleDir(this,'${cKey}')"><span class="dir-toggle">▼</span>🌍 ${country}</div>`;
+        html += `<div class="dir-children" id="children-${cKey}" style="display:block;">`;
         dObj.countries[country].forEach(cn => {
           html += `<div class="dir-item" onclick="selectTreeCase('${dept}','${designer}','${country}','${cn}')">📋 ${cn}</div>`;
         });
