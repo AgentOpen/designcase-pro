@@ -260,12 +260,12 @@ function buildNASTree() {
     for (const designer in nasData[dept].designers) {
       const dObj = nasData[dept].designers[designer];
       const dKey = `n-${dept}/${designer}`;
-      html += `<div class="dir-item" onclick="toggleDir(this,'${dKey}')"><span class="dir-toggle">▼</span>👤 ${designer}（ID:${dObj.id}）</div>`;
-      html += `<div class="dir-children" id="children-${dKey}" style="display:block;">`;
+      html += `<div class="dir-item" onclick="toggleDir(this,'${dKey}')"><span class="dir-toggle">▶</span>👤 ${designer}（ID:${dObj.id}）</div>`;
+      html += `<div class="dir-children" id="children-${dKey}" style="display:none;">`;
       for (const country in dObj.countries) {
         const cKey = `${dKey}/${country}`;
-        html += `<div class="dir-item" onclick="toggleDir(this,'${cKey}')"><span class="dir-toggle">▼</span>🌍 ${country}</div>`;
-        html += `<div class="dir-children" id="children-${cKey}" style="display:block;">`;
+        html += `<div class="dir-item" onclick="toggleDir(this,'${cKey}')"><span class="dir-toggle">▶</span>🌍 ${country}</div>`;
+        html += `<div class="dir-children" id="children-${cKey}" style="display:none;">`;
         dObj.countries[country].forEach(cn => {
           html += `<div class="dir-item" onclick="selectTreeCase('${dept}','${designer}','${country}','${cn}')">📋 ${cn}</div>`;
         });
