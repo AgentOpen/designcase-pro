@@ -324,18 +324,31 @@ body {
   background-color: #d1f0e3;
 }
 
-/* ========== Banner 区域 ========== */
+/* ========== Banner 轮播区域 ========== */
 .znz-banner {
   width: calc(100% - 12px);
   height: 440px;
-  background: linear-gradient(var(--znz-white), #FBFAF9);
   border-radius: var(--znz-radius-banner);
   margin: 0 auto var(--znz-spacing-3xl);
   position: relative;
   overflow: hidden;
+}
+
+.znz-banner-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.znz-banner-slide.active {
+  opacity: 1;
 }
 
 .znz-banner-content {
@@ -348,27 +361,42 @@ body {
 .znz-banner-title {
   font-size: 48px;
   font-weight: 800;
-  color: var(--znz-black);
+  color: #fff;
   margin-bottom: var(--znz-spacing-lg);
   line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .znz-banner-subtitle {
   font-size: 20px;
-  color: var(--znz-text-gray);
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: var(--znz-spacing-4xl);
   line-height: 1.5;
 }
 
-.znz-banner-bg {
+.znz-banner-dots {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(22, 119, 255, 0.05), rgba(124, 58, 237, 0.05));
-  opacity: 0.3;
-  z-index: 0;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+.znz-banner-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.znz-banner-dot.active {
+  background: #fff;
+  width: 24px;
+  border-radius: 4px;
 }
 
 /* ========== 分类标签区 ========== */
@@ -892,12 +920,30 @@ body {
       <button class="znz-search-btn">搜户型</button>
     </div>
     
-    <!-- Banner 区域 -->
+    <!-- Banner 轮播区域 -->
     <section class="znz-banner">
-      <div class="znz-banner-bg"></div>
-      <div class="znz-banner-content">
-        <h2 class="znz-banner-title">George Design</h2>
-        <p class="znz-banner-subtitle">设计师的灵感资源库 · 发现、收藏、创造</p>
+      <div class="znz-banner-slide active" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="znz-banner-content">
+          <h2 class="znz-banner-title">George Design</h2>
+          <p class="znz-banner-subtitle">设计师的灵感资源库 · 发现、收藏、创造</p>
+        </div>
+      </div>
+      <div class="znz-banner-slide" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+        <div class="znz-banner-content">
+          <h2 class="znz-banner-title">3D 模型</h2>
+          <p class="znz-banner-subtitle">超百万高质量 3D 模型 · 每日更新</p>
+        </div>
+      </div>
+      <div class="znz-banner-slide" style="background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);">
+        <div class="znz-banner-content">
+          <h2 class="znz-banner-title">AI 智能体</h2>
+          <p class="znz-banner-subtitle">AI 驱动的室内设计工作台 · 即刻体验</p>
+        </div>
+      </div>
+      <div class="znz-banner-dots">
+        <span class="znz-banner-dot active" data-index="0"></span>
+        <span class="znz-banner-dot" data-index="1"></span>
+        <span class="znz-banner-dot" data-index="2"></span>
       </div>
     </section>
     
@@ -1116,7 +1162,36 @@ function updateAuthUI() {
   }
 }
 
+function initBannerCarousel() {
+  const slides = document.querySelectorAll('.znz-banner-slide');
+  const dots = document.querySelectorAll('.znz-banner-dot');
+  let currentSlide = 0;
+  const totalSlides = slides.length;
+  
+  function goToSlide(index) {
+    slides.forEach(s => s.classList.remove('active'));
+    dots.forEach(d => d.classList.remove('active'));
+    slides[index].classList.add('active');
+    dots[index].classList.add('active');
+    currentSlide = index;
+  }
+  
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      goToSlide(parseInt(dot.dataset.index));
+    });
+  });
+  
+  // 自动轮播
+  setInterval(() => {
+    goToSlide((currentSlide + 1) % totalSlides);
+  }, 5000);
+}
+
 function initEventListeners() {
+  // Banner 轮播
+  initBannerCarousel();
+  
   // 搜索框
   const searchInput = document.getElementById('searchInput');
   searchInput.addEventListener('keydown', (e) => {
