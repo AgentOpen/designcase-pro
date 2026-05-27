@@ -6,356 +6,567 @@
 <title>George Design - 设计师的灵感资源库</title>
 <link rel="stylesheet" href="common.css">
 <style>
-/* ========== 首页专用样式 ========== */
-.homepage {
-  background: var(--bg);
-  color: var(--text);
+/* ========== 知末网 1:1 仿照样式 ========== */
+
+/* 全局重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* 知末网颜色系统 */
+  --znz-bg: #F5F5F5;
+  --znz-sidebar-bg: #F3F3F3;
+  --znz-white: #FFFFFF;
+  --znz-black: #000000;
+  --znz-text-dark: #222222;
+  --znz-text-gray: #333333;
+  --znz-text-light: #999999;
+  --znz-footer-bg: #1E1E1F;
+  --znz-hot-text: #E92027;
+  --znz-hot-bg: #FFE4E5;
+  --znz-search-btn-bg: #E2F3EC;
+  --znz-search-btn-text: #2B6150;
+  --znz-primary: #1677FF; /* 知末网主蓝 */
+  
+  /* 圆角系统 */
+  --znz-radius-search: 50px;
+  --znz-radius-search-btn: 999px;
+  --znz-radius-banner: 16px;
+  --znz-radius-menu: 8px;
+  --znz-radius-card: 12px;
+  --znz-radius-hot: 4px 4px 4px 0px;
+  
+  /* 字体系统 */
+  --znz-font-family: "PingFang SC", "Microsoft YaHei", SimSun, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --znz-font-size-base: 14px;
+  --znz-font-size-lg: 16px;
+  --znz-font-size-sm: 12px;
+  --znz-font-size-xs: 9px;
+  
+  /* 间距系统 */
+  --znz-spacing-xs: 4px;
+  --znz-spacing-sm: 8px;
+  --znz-spacing-md: 12px;
+  --znz-spacing-lg: 16px;
+  --znz-spacing-xl: 20px;
+  --znz-spacing-2xl: 24px;
+  --znz-spacing-3xl: 32px;
+  --znz-spacing-4xl: 40px;
+  --znz-spacing-5xl: 46px;
+}
+
+body {
+  font-family: var(--znz-font-family);
+  font-size: var(--znz-font-size-base);
+  color: rgba(0, 0, 0, 0.85);
+  background-color: var(--znz-bg);
+  line-height: 1.5;
+}
+
+/* ========== 全站布局 ========== */
+.znz-layout {
+  display: flex;
   min-height: 100vh;
+  background-color: var(--znz-sidebar-bg);
 }
 
-/* 顶部导航栏 */
-.homepage-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-  background: var(--card-bg);
-  border-bottom: 1px solid var(--border);
+/* ========== 左侧栏菜单 (206px) ========== */
+.znz-sidebar {
+  width: 206px;
+  background-color: var(--znz-sidebar-bg);
+  flex-shrink: 0;
+  padding: var(--znz-spacing-xl) var(--znz-spacing-sm);
+}
+
+.znz-logo {
   display: flex;
   align-items: center;
-  padding: 0 24px;
-  z-index: 1000;
-  box-shadow: var(--shadow-sm);
+  gap: var(--znz-spacing-sm);
+  padding: var(--znz-spacing-md) var(--znz-spacing-sm);
+  margin-bottom: var(--znz-spacing-xl);
 }
 
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text);
-  text-decoration: none;
-}
-
-.nav-logo-icon {
+.znz-logo-icon {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, var(--primary), #7c3aed);
-  border-radius: 8px;
+  background: linear-gradient(135deg, var(--znz-primary), #7c3aed);
+  border-radius: var(--znz-radius-menu);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--znz-white);
   font-weight: 700;
-  font-size: 14px;
-}
-
-.nav-logo-text {
   font-size: 16px;
 }
 
-.nav-spacer {
+.znz-logo-text {
+  font-size: var(--znz-font-size-lg);
+  font-weight: 600;
+  color: var(--znz-black);
+}
+
+.znz-menu-group {
+  margin-bottom: var(--znz-spacing-xl);
+}
+
+.znz-menu-group-title {
+  font-size: var(--znz-font-size-sm);
+  color: var(--znz-text-light);
+  padding: 0 var(--znz-spacing-sm);
+  margin-bottom: var(--znz-spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.znz-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--znz-spacing-sm);
+  padding: var(--znz-spacing-md) var(--znz-spacing-sm);
+  margin-bottom: var(--znz-spacing-sm);
+  border-radius: var(--znz-radius-menu);
+  color: var(--znz-black);
+  font-size: var(--znz-font-size-lg);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 42px;
+  position: relative;
+}
+
+.znz-menu-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.znz-menu-item.active {
+  background-color: var(--znz-white);
+  color: var(--znz-black);
+  font-weight: 500;
+}
+
+.znz-menu-item-tag {
+  font-size: var(--znz-font-size-xs);
+  font-weight: 600;
+  color: var(--znz-hot-text);
+  background-color: var(--znz-hot-bg);
+  border-radius: var(--znz-radius-hot);
+  padding: 1px 4px;
+  height: 15px;
+  line-height: 1.2;
+  margin-left: 5px;
+}
+
+.znz-menu-item-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--znz-text-gray);
+}
+
+.znz-menu-item-text {
   flex: 1;
 }
 
-.nav-search-trigger {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 8px 16px;
-  font-size: 14px;
-  color: var(--text-secondary);
+/* ========== 右侧内容区 ========== */
+.znz-content {
+  flex: 1;
+  padding: var(--znz-spacing-sm) var(--znz-spacing-sm) var(--znz-spacing-sm) 0;
+  background-color: var(--znz-sidebar-bg);
+  min-width: 0;
+}
+
+/* ========== 顶部操作栏 ========== */
+.znz-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  margin-bottom: var(--znz-spacing-lg);
+}
+
+.znz-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--znz-spacing-lg);
+}
+
+.znz-header-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--znz-black);
+}
+
+.znz-header-filter {
+  font-size: var(--znz-font-size-base);
+  color: var(--znz-text-gray);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: all var(--transition);
+  gap: var(--znz-spacing-xs);
 }
 
-.nav-search-trigger:hover {
-  background: var(--bg-hover);
-  border-color: var(--primary);
-}
-
-.nav-actions {
+.znz-header-right {
   display: flex;
-  gap: 12px;
-  margin-left: 16px;
+  align-items: center;
+  gap: var(--znz-spacing-md);
+  width: 373px;
+  justify-content: flex-end;
 }
 
-.nav-btn {
-  padding: 8px 16px;
-  border-radius: var(--radius);
-  font-size: 14px;
+.znz-header-btn {
+  padding: var(--znz-spacing-sm) var(--znz-spacing-lg);
+  border-radius: var(--znz-radius-menu);
+  font-size: var(--znz-font-size-base);
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: all 0.2s ease;
   border: 1px solid transparent;
+  white-space: nowrap;
 }
 
-.nav-btn-login {
-  background: var(--primary);
-  color: #fff;
+.znz-header-btn-primary {
+  background-color: var(--znz-primary);
+  color: var(--znz-white);
 }
 
-.nav-btn-login:hover {
-  background: var(--primary-hover);
+.znz-header-btn-primary:hover {
+  background-color: #0958d9;
 }
 
-.nav-btn-register {
-  background: transparent;
-  border-color: var(--border);
-  color: var(--text);
+.znz-header-btn-outline {
+  background-color: transparent;
+  border-color: var(--znz-text-light);
+  color: var(--znz-text-gray);
 }
 
-.nav-btn-register:hover {
-  background: var(--bg-hover);
-  border-color: var(--text-secondary);
+.znz-header-btn-outline:hover {
+  border-color: var(--znz-primary);
+  color: var(--znz-primary);
 }
 
-.nav-btn-dashboard {
-  background: var(--primary-light);
-  color: var(--primary);
-  border: 1px solid rgba(79, 70, 229, 0.2);
+.znz-header-btn-vip {
+  background-color: #FFD700;
+  color: #8B4513;
+  font-weight: 600;
+}
+
+.znz-header-btn-vip:hover {
+  background-color: #FFC107;
+}
+
+.znz-header-user {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--znz-spacing-sm);
+  cursor: pointer;
 }
 
-.nav-btn-dashboard:hover {
-  background: rgba(79, 70, 229, 0.1);
+.znz-header-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--znz-primary);
+  color: var(--znz-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
 }
 
-/* Hero Banner */
-.hero {
-  margin-top: 64px;
-  padding: 80px 24px;
-  background: linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%);
-  color: #fff;
-  text-align: center;
+/* ========== 搜索区域 ========== */
+.znz-search-container {
+  width: 900px;
+  height: 60px;
+  margin: var(--znz-spacing-lg) auto var(--znz-spacing-3xl);
+  position: relative;
+}
+
+.znz-search-box {
+  width: 100%;
+  height: 100%;
+  background-color: var(--znz-white);
+  border-radius: var(--znz-radius-search);
+  padding: var(--znz-spacing-xs) 200px var(--znz-spacing-xs) 30px;
+  border: none;
+  font-size: var(--znz-font-size-lg);
+  color: var(--znz-text-dark);
+  outline: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.znz-search-box::placeholder {
+  color: var(--znz-text-light);
+}
+
+.znz-search-btn {
+  position: absolute;
+  right: var(--znz-spacing-xs);
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--znz-search-btn-bg);
+  color: var(--znz-search-btn-text);
+  border-radius: var(--znz-radius-search-btn);
+  padding: var(--znz-spacing-sm) var(--znz-spacing-lg);
+  font-size: var(--znz-font-size-sm);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.znz-search-btn:hover {
+  background-color: #d1f0e3;
+}
+
+/* ========== Banner 区域 ========== */
+.znz-banner {
+  width: calc(100% - 12px);
+  height: 440px;
+  background: linear-gradient(var(--znz-white), #FBFAF9);
+  border-radius: var(--znz-radius-banner);
+  margin: 0 auto var(--znz-spacing-3xl);
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.hero::before {
-  content: '';
+.znz-banner-content {
+  text-align: center;
+  z-index: 1;
+  max-width: 800px;
+  padding: var(--znz-spacing-4xl);
+}
+
+.znz-banner-title {
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--znz-black);
+  margin-bottom: var(--znz-spacing-lg);
+  line-height: 1.2;
+}
+
+.znz-banner-subtitle {
+  font-size: 20px;
+  color: var(--znz-text-gray);
+  margin-bottom: var(--znz-spacing-4xl);
+  line-height: 1.5;
+}
+
+.znz-banner-bg {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('data:image/svg+xml,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 L100,0 L100,100 L0,100 Z" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></svg>');
-  background-size: 100px 100px;
+  background: linear-gradient(135deg, rgba(22, 119, 255, 0.05), rgba(124, 58, 237, 0.05));
   opacity: 0.3;
+  z-index: 0;
 }
 
-.hero-content {
-  position: relative;
-  z-index: 1;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.hero-title {
-  font-size: 48px;
-  font-weight: 800;
-  margin-bottom: 16px;
-  line-height: 1.2;
-}
-
-.hero-subtitle {
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 40px;
-  line-height: 1.5;
-}
-
-/* 搜索框 */
-.search-container {
-  background: var(--card-bg);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  box-shadow: var(--shadow-lg);
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.search-tabs {
+/* ========== 分类标签区 ========== */
+.znz-category-tabs {
   display: flex;
   gap: 0;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  margin-bottom: var(--znz-spacing-xl);
   overflow-x: auto;
+  padding: 0 var(--znz-spacing-sm);
 }
 
-.search-tab {
-  padding: 12px 20px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-secondary);
+.znz-category-tab {
+  padding: var(--znz-spacing-md) var(--znz-spacing-xl);
+  font-size: var(--znz-font-size-base);
+  color: var(--znz-text-gray);
   cursor: pointer;
   border-bottom: 2px solid transparent;
   white-space: nowrap;
-  transition: all var(--transition);
+  transition: all 0.2s ease;
+  position: relative;
 }
 
-.search-tab:hover {
-  color: var(--text);
+.znz-category-tab:hover {
+  color: var(--znz-black);
 }
 
-.search-tab.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
-}
-
-.search-box {
-  display: flex;
-  gap: 12px;
-}
-
-.search-input {
-  flex: 1;
-  padding: 14px 20px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 16px;
-  background: var(--bg);
-  color: var(--text);
-  transition: all var(--transition);
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-}
-
-.search-btn {
-  padding: 14px 32px;
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius);
-  font-size: 16px;
+.znz-category-tab.active {
+  color: var(--znz-text-dark);
+  border-bottom-color: var(--znz-primary);
   font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition);
 }
 
-.search-btn:hover {
-  background: var(--primary-hover);
-}
-
-/* 分类过滤器 */
-.filters-section {
-  padding: 40px 24px 0;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.filter-group {
-  margin-bottom: 24px;
-}
-
-.filter-label {
-  font-size: 14px;
+.znz-category-tab-hot {
+  position: absolute;
+  top: -8px;
+  right: 4px;
+  font-size: var(--znz-font-size-xs);
+  color: var(--znz-hot-text);
+  background-color: var(--znz-hot-bg);
+  padding: 1px 4px;
+  border-radius: var(--znz-radius-hot);
   font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 12px;
-  display: block;
 }
 
-.filter-tags {
+/* ========== 一级分类过滤 ========== */
+.znz-primary-categories {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--znz-spacing-sm);
+  margin-bottom: var(--znz-spacing-xl);
+  padding: 0 var(--znz-spacing-sm);
 }
 
-.filter-tag {
-  padding: 8px 16px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 14px;
-  color: var(--text);
+.znz-category-link {
+  padding: var(--znz-spacing-sm) var(--znz-spacing-lg);
+  font-size: var(--znz-font-size-base);
+  color: var(--znz-text-gray);
   cursor: pointer;
-  transition: all var(--transition);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  border-radius: var(--znz-radius-menu);
+}
+
+.znz-category-link:hover {
+  color: var(--znz-black);
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.znz-category-link.active {
+  color: var(--znz-text-dark);
+  font-weight: 600;
+  background-color: rgba(22, 119, 255, 0.08);
+}
+
+/* ========== 风格过滤 ========== */
+.znz-style-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--znz-spacing-sm);
+  margin-bottom: var(--znz-spacing-3xl);
+  padding: 0 var(--znz-spacing-sm);
+}
+
+.znz-style-tag {
+  padding: var(--znz-spacing-xs) var(--znz-spacing-md);
+  font-size: var(--znz-font-size-base);
+  color: var(--znz-text-gray);
+  cursor: pointer;
+  transition: all 0.2s ease;
   white-space: nowrap;
 }
 
-.filter-tag:hover {
-  background: var(--bg-hover);
-  border-color: var(--text-secondary);
+.znz-style-tag:hover {
+  color: var(--znz-black);
 }
 
-.filter-tag.active {
-  background: var(--primary);
-  color: #fff;
-  border-color: var(--primary);
-}
-
-/* 结果网格 */
-.results-section {
-  padding: 40px 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  margin-bottom: 40px;
-}
-
-.resource-card {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  overflow: hidden;
-  border: 1px solid var(--border);
-  transition: all var(--transition);
-  cursor: pointer;
-}
-
-.resource-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--primary);
-}
-
-.resource-thumb {
-  height: 180px;
-  background: linear-gradient(135deg, #8b5cf6, #6366f1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 32px;
-  font-weight: 700;
-  position: relative;
-  overflow: hidden;
-}
-
-.resource-thumb::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 24px;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.resource-info {
-  padding: 16px;
-}
-
-.resource-name {
-  font-size: 16px;
+.znz-style-tag.active {
+  color: var(--znz-text-dark);
   font-weight: 600;
-  margin-bottom: 8px;
+}
+
+/* ========== 资源卡片网格 ========== */
+.znz-results-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--znz-spacing-xl);
+  padding: 0 var(--znz-spacing-sm);
+  margin-bottom: var(--znz-spacing-4xl);
+}
+
+.znz-resource-card {
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.znz-card-wrapper {
+  width: 100%;
+  background-color: var(--znz-white);
+  border-radius: var(--znz-radius-card);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.znz-resource-card:hover .znz-card-wrapper {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.znz-card-image {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 87%; /* 287:250 ≈ 1.148 */
+  overflow: hidden;
+  border-radius: var(--znz-radius-card);
+  transition: all 0.5s ease;
+}
+
+.znz-resource-card:hover .znz-card-image {
+  transform: scale(1.05);
+}
+
+.znz-card-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.5s ease;
+}
+
+.znz-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  opacity: 0;
+  transition: all 1s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--znz-spacing-md);
+  color: var(--znz-white);
+  border-radius: var(--znz-radius-card);
+}
+
+.znz-resource-card:hover .znz-card-overlay {
+  opacity: 1;
+}
+
+.znz-card-title {
+  font-size: var(--znz-font-size-base);
+  font-weight: 600;
+  margin-bottom: var(--znz-spacing-xs);
+  line-height: 1.3;
+}
+
+.znz-card-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--znz-font-size-sm);
+  opacity: 0.9;
+}
+
+.znz-card-info {
+  padding: var(--znz-spacing-md);
+}
+
+.znz-card-name {
+  font-size: var(--znz-font-size-base);
+  font-weight: 500;
+  color: var(--znz-text-dark);
+  margin-bottom: var(--znz-spacing-xs);
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -363,435 +574,456 @@
   overflow: hidden;
 }
 
-.resource-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.resource-type {
-  font-size: 12px;
-  padding: 4px 8px;
-  background: var(--bg);
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
-}
-
-.resource-downloads {
-  font-size: 12px;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.resource-tags {
+.znz-card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--znz-spacing-xs);
+  margin-bottom: var(--znz-spacing-sm);
 }
 
-.resource-tag {
-  font-size: 11px;
+.znz-card-tag {
+  font-size: var(--znz-font-size-xs);
   padding: 2px 6px;
-  background: var(--bg);
+  background-color: rgba(0, 0, 0, 0.04);
   border-radius: 4px;
-  color: var(--text-secondary);
+  color: var(--znz-text-gray);
 }
 
-.resource-tag.free {
-  background: rgba(16, 185, 129, 0.1);
-  color: var(--success);
+.znz-card-tag.free {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
 }
 
-.resource-tag.hot {
-  background: rgba(245, 158, 11, 0.1);
-  color: var(--warning);
+.znz-card-tag.hot {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
 }
 
-.resource-tag.premium {
-  background: rgba(79, 70, 229, 0.1);
-  color: var(--primary);
+.znz-card-tag.premium {
+  background-color: rgba(22, 119, 255, 0.1);
+  color: var(--znz-primary);
 }
 
-.loading {
-  text-align: center;
-  padding: 40px;
-  color: var(--text-secondary);
-  font-size: 14px;
-}
-
-.load-more {
-  text-align: center;
-  padding: 20px;
-}
-
-/* 模态框 */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+.znz-card-stats {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  opacity: 0;
-  visibility: hidden;
-  transition: all var(--transition);
-}
-
-.modal-overlay.active {
-  opacity: 1;
-  visibility: visible;
-}
-
-.modal {
-  background: var(--card-bg);
-  border-radius: var(--radius-lg);
-  width: 100%;
-  max-width: 400px;
-  box-shadow: var(--shadow-lg);
-  transform: translateY(20px);
-  transition: transform var(--transition);
-}
-
-.modal-overlay.active .modal {
-  transform: translateY(0);
-}
-
-.modal-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
+  font-size: var(--znz-font-size-sm);
+  color: var(--znz-text-light);
 }
 
-.modal-title {
-  font-size: 18px;
-  font-weight: 600;
+.znz-card-type {
+  font-weight: 500;
 }
 
-.modal-close {
-  background: none;
-  border: none;
-  font-size: 20px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  padding: 0;
-  width: 32px;
-  height: 32px;
+.znz-card-downloads {
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: var(--radius);
+  gap: var(--znz-spacing-xs);
 }
 
-.modal-close:hover {
-  background: var(--bg-hover);
-  color: var(--text);
+/* ========== 加载更多 ========== */
+.znz-load-more {
+  text-align: center;
+  padding: var(--znz-spacing-3xl) 0;
 }
 
-.modal-body {
-  padding: 24px;
-}
-
-.modal-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.form-label {
-  font-size: 14px;
+.znz-load-btn {
+  padding: var(--znz-spacing-md) var(--znz-spacing-3xl);
+  background-color: transparent;
+  border: 1px solid var(--znz-text-light);
+  border-radius: var(--znz-radius-menu);
+  color: var(--znz-text-gray);
+  font-size: var(--znz-font-size-base);
   font-weight: 500;
-  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.form-input {
-  padding: 12px 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 14px;
-  background: var(--bg);
-  color: var(--text);
-  transition: all var(--transition);
+.znz-load-btn:hover {
+  border-color: var(--znz-primary);
+  color: var(--znz-primary);
 }
 
-.form-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+/* ========== 页脚 ========== */
+.znz-footer {
+  background-color: var(--znz-footer-bg);
+  color: var(--znz-text-light);
+  padding-top: var(--znz-spacing-5xl);
+  margin-top: var(--znz-spacing-4xl);
 }
 
-.modal-footer {
-  padding: 20px 24px 24px;
-  border-top: 1px solid var(--border);
+.znz-footer-top {
+  max-width: 1146px;
+  margin: 0 auto;
+  padding-bottom: var(--znz-spacing-4xl);
+}
+
+.znz-footer-links {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: var(--znz-spacing-3xl);
 }
 
-.modal-btn {
-  padding: 12px 24px;
-  border-radius: var(--radius);
-  font-size: 14px;
+.znz-footer-column {
+  flex: 1;
+  min-width: 150px;
+}
+
+.znz-footer-title {
+  font-size: var(--znz-font-size-base);
   font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition);
-  border: none;
+  color: var(--znz-white);
+  margin-bottom: var(--znz-spacing-lg);
 }
 
-.modal-btn-primary {
-  background: var(--primary);
-  color: #fff;
+.znz-footer-list {
+  list-style: none;
 }
 
-.modal-btn-primary:hover {
-  background: var(--primary-hover);
+.znz-footer-list li {
+  margin-bottom: var(--znz-spacing-sm);
 }
 
-.modal-btn-secondary {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
+.znz-footer-list a {
+  color: var(--znz-text-light);
+  text-decoration: none;
+  font-size: var(--znz-font-size-base);
+  transition: color 0.2s ease;
 }
 
-.modal-btn-secondary:hover {
-  background: var(--bg-hover);
+.znz-footer-list a:hover {
+  color: var(--znz-white);
 }
 
-.modal-link {
+.znz-footer-bottom {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: var(--znz-spacing-lg) 0;
   text-align: center;
-  font-size: 13px;
-  color: var(--text-secondary);
-  cursor: pointer;
+  font-size: var(--znz-font-size-sm);
 }
 
-.modal-link:hover {
-  color: var(--primary);
+.znz-footer-copyright {
+  color: rgba(255, 255, 255, 0.6);
 }
 
-/* 页脚 */
-.homepage-footer {
-  padding: 40px 24px;
-  background: var(--card-bg);
-  border-top: 1px solid var(--border);
-  text-align: center;
-  color: var(--text-secondary);
-  font-size: 14px;
+/* ========== 响应式 ========== */
+@media (max-width: 1600px) {
+  .znz-results-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
-/* 响应式 */
-@media (max-width: 1024px) {
-  .results-grid {
+@media (max-width: 1200px) {
+  .znz-results-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .znz-search-container {
+    width: 100%;
+    max-width: 600px;
   }
 }
 
 @media (max-width: 768px) {
-  .hero-title {
-    font-size: 36px;
-  }
-  
-  .hero-subtitle {
-    font-size: 16px;
-  }
-  
-  .search-box {
+  .znz-layout {
     flex-direction: column;
   }
   
-  .results-grid {
+  .znz-sidebar {
+    width: 100%;
+    padding: var(--znz-spacing-md);
+  }
+  
+  .znz-menu-group {
+    display: none;
+  }
+  
+  .znz-menu-group:first-child {
+    display: block;
+  }
+  
+  .znz-results-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    gap: var(--znz-spacing-md);
   }
   
-  .nav-actions {
-    display: none;
+  .znz-header-right {
+    width: auto;
   }
   
-  .nav-search-trigger {
-    padding: 8px 12px;
+  .znz-header-btn {
+    padding: var(--znz-spacing-sm);
+    font-size: var(--znz-font-size-sm);
   }
   
-  .nav-search-trigger span {
-    display: none;
+  .znz-banner {
+    height: 300px;
+  }
+  
+  .znz-banner-title {
+    font-size: 32px;
+  }
+  
+  .znz-banner-subtitle {
+    font-size: 16px;
   }
 }
 
 @media (max-width: 480px) {
-  .results-grid {
+  .znz-results-grid {
     grid-template-columns: 1fr;
   }
   
-  .hero {
-    padding: 60px 16px;
+  .znz-category-tabs {
+    padding: 0;
   }
   
-  .search-container {
-    padding: 16px;
-  }
-  
-  .filters-section,
-  .results-section {
-    padding-left: 16px;
-    padding-right: 16px;
+  .znz-category-tab {
+    padding: var(--znz-spacing-md) var(--znz-spacing-lg);
   }
 }
 </style>
 </head>
-<body class="homepage">
-<!-- 顶部导航栏 -->
-<nav class="homepage-nav">
-  <a href="#" class="nav-logo">
-    <div class="nav-logo-icon">G</div>
-    <div class="nav-logo-text">George Design</div>
-  </a>
-  <div class="nav-spacer"></div>
-  <div class="nav-search-trigger" onclick="focusSearch()">
-    <span>🔍</span>
-    <span>搜索设计资源...</span>
-  </div>
-  <div class="nav-actions" id="navActions">
-    <!-- 未登录时显示 -->
-    <button class="nav-btn nav-btn-login" onclick="openLoginModal()">登录</button>
-    <button class="nav-btn nav-btn-register" onclick="openRegisterModal()">注册</button>
-    <!-- 登录后显示 -->
-    <!-- <button class="nav-btn nav-btn-dashboard" onclick="goToDashboard()">🏠 控制台</button> -->
-  </div>
-</nav>
-
-<!-- Hero Banner -->
-<section class="hero">
-  <div class="hero-content">
-    <h1 class="hero-title">George Design</h1>
-    <p class="hero-subtitle">设计师的灵感资源库 · 发现、收藏、创造</p>
+<body>
+<div class="znz-layout">
+  <!-- 左侧栏菜单 -->
+  <aside class="znz-sidebar">
+    <div class="znz-logo">
+      <div class="znz-logo-icon">G</div>
+      <div class="znz-logo-text">George Design</div>
+    </div>
     
-    <div class="search-container">
-      <div class="search-tabs" id="searchTabs">
-        <div class="search-tab active" data-type="all">全部</div>
-        <div class="search-tab" data-type="3dmodel">3D模型</div>
-        <div class="search-tab" data-type="sumodel">SU模型</div>
-        <div class="search-tab" data-type="texture">贴图</div>
-        <div class="search-tab" data-type="case">案例</div>
-        <div class="search-tab" data-type="material">素材</div>
-        <div class="search-tab" data-type="cad">CAD</div>
+    <div class="znz-menu-group">
+      <div class="znz-menu-group-title">导航</div>
+      <div class="znz-menu-item active">
+        <div class="znz-menu-item-icon">🏠</div>
+        <div class="znz-menu-item-text">首页</div>
+      </div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-icon">📚</div>
+        <div class="znz-menu-item-text">素材库</div>
+      </div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-icon">💡</div>
+        <div class="znz-menu-item-text">灵感库</div>
+      </div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-icon">🎨</div>
+        <div class="znz-menu-item-text">AI生图</div>
+        <div class="znz-menu-item-tag">HOT</div>
+      </div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-icon">🤖</div>
+        <div class="znz-menu-item-text">AI智能体</div>
+      </div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-icon">☁️</div>
+        <div class="znz-menu-item-text">云渲染</div>
+      </div>
+    </div>
+    
+    <div class="znz-menu-group">
+      <div class="znz-menu-group-title">分类</div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-text">发现</div>
+      </div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-text">3D模型</div>
+      </div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-text">SU模型</div>
+      </div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-text">贴图</div>
+      </div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-text">CAD</div>
+      </div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-text">文本</div>
+      </div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-text">PS素材</div>
+      </div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-text">校园素材</div>
+      </div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-text">软件</div>
+      </div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-text">课程</div>
+      </div>
+      <div class="znz-menu-item">
+        <div class="znz-menu-item-text">雕塑</div>
+      </div>
+    </div>
+  </aside>
+  
+  <!-- 右侧内容区 -->
+  <main class="znz-content">
+    <!-- 顶部操作栏 -->
+    <header class="znz-header">
+      <div class="znz-header-left">
+        <h1 class="znz-header-title">素材库</h1>
+        <div class="znz-header-filter">
+          <span>全部</span>
+          <span>▼</span>
+        </div>
       </div>
       
-      <div class="search-box">
-        <input type="text" class="search-input" id="searchInput" placeholder="搜索你需要的设计资源...">
-        <button class="search-btn" onclick="performSearch()">搜索</button>
+      <div class="znz-header-right">
+        <button class="znz-header-btn znz-header-btn-primary">新建项目</button>
+        <button class="znz-header-btn znz-header-btn-outline">我的收藏</button>
+        <button class="znz-header-btn znz-header-btn-outline">我的下载</button>
+        <button class="znz-header-btn znz-header-btn-outline">充值</button>
+        <button class="znz-header-btn znz-header-btn-vip">VIP</button>
+        <button class="znz-header-btn znz-header-btn-primary">上传</button>
+        <div class="znz-header-user">
+          <div class="znz-header-avatar">登</div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- 搜索区域 -->
+    <div class="znz-search-container">
+      <input type="text" class="znz-search-box" placeholder="搜索你需要的设计资源..." id="searchInput">
+      <button class="znz-search-btn">搜户型</button>
+    </div>
+    
+    <!-- Banner 区域 -->
+    <section class="znz-banner">
+      <div class="znz-banner-bg"></div>
+      <div class="znz-banner-content">
+        <h2 class="znz-banner-title">George Design</h2>
+        <p class="znz-banner-subtitle">设计师的灵感资源库 · 发现、收藏、创造</p>
+      </div>
+    </section>
+    
+    <!-- 分类标签区 -->
+    <div class="znz-category-tabs">
+      <div class="znz-category-tab active" data-tab="all">全部</div>
+      <div class="znz-category-tab" data-tab="3dmodel">3D模型</div>
+      <div class="znz-category-tab" data-tab="sumodel">SU模型</div>
+      <div class="znz-category-tab" data-tab="texture">贴图</div>
+      <div class="znz-category-tab" data-tab="case">案例</div>
+      <div class="znz-category-tab" data-tab="material">素材</div>
+      <div class="znz-category-tab" data-tab="cad">CAD</div>
+      <div class="znz-category-tab" data-tab="ai">
+        AI生图
+        <span class="znz-category-tab-hot">HOT</span>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- 分类过滤器 -->
-<section class="filters-section">
-  <div class="filter-group">
-    <label class="filter-label">一级分类</label>
-    <div class="filter-tags" id="category1Tags">
-      <!-- JS动态生成 -->
+    
+    <!-- 一级分类过滤 -->
+    <div class="znz-primary-categories">
+      <div class="znz-category-link active">推荐</div>
+      <div class="znz-category-link">家具</div>
+      <div class="znz-category-link">家装</div>
+      <div class="znz-category-link">工装</div>
+      <div class="znz-category-link">硬装构件</div>
+      <div class="znz-category-link">装饰品</div>
+      <div class="znz-category-link">灯具</div>
+      <div class="znz-category-link">用品/器材</div>
+      <div class="znz-category-link">景观</div>
+      <div class="znz-category-link">植物</div>
+      <div class="znz-category-link">窗帘布艺</div>
+      <div class="znz-category-link">建筑</div>
+      <div class="znz-category-link">人物/动物</div>
+      <div class="znz-category-link">展厅/展台</div>
+      <div class="znz-category-link">广告/美陈</div>
+      <div class="znz-category-link">舞台</div>
+      <div class="znz-category-link">其他模型</div>
+      <div class="znz-category-link">3D材质</div>
+      <div class="znz-category-link">家装鸟瞰</div>
     </div>
-  </div>
-  
-  <div class="filter-group">
-    <label class="filter-label">风格</label>
-    <div class="filter-tags" id="category2Tags">
-      <!-- JS动态生成 -->
+    
+    <!-- 风格过滤 -->
+    <div class="znz-style-tags">
+      <div class="znz-style-tag active">全部</div>
+      <div class="znz-style-tag">现代</div>
+      <div class="znz-style-tag">新中式</div>
+      <div class="znz-style-tag">中式</div>
+      <div class="znz-style-tag">法式</div>
+      <div class="znz-style-tag">美式</div>
+      <div class="znz-style-tag">欧式</div>
+      <div class="znz-style-tag">日式</div>
+      <div class="znz-style-tag">意式</div>
+      <div class="znz-style-tag">轻奢</div>
+      <div class="znz-style-tag">复古</div>
+      <div class="znz-style-tag">极简</div>
+      <div class="znz-style-tag">中古</div>
+      <div class="znz-style-tag">奶油</div>
+      <div class="znz-style-tag">简约</div>
+      <div class="znz-style-tag">侘寂</div>
+      <div class="znz-style-tag">原木</div>
+      <div class="znz-style-tag">北欧</div>
+      <div class="znz-style-tag">禅意</div>
+      <div class="znz-style-tag">简欧</div>
+      <div class="znz-style-tag">工业</div>
     </div>
-  </div>
-  
-  <div class="filter-group">
-    <label class="filter-label">品质</label>
-    <div class="filter-tags" id="category3Tags">
-      <!-- JS动态生成 -->
+    
+    <!-- 资源卡片网格 -->
+    <div class="znz-results-grid" id="resultsGrid">
+      <!-- 卡片由JS动态生成 -->
     </div>
-  </div>
-</section>
-
-<!-- 结果网格 -->
-<section class="results-section">
-  <div class="results-grid" id="resultsGrid">
-    <!-- JS动态生成 -->
-  </div>
-  <div class="loading" id="loadingIndicator">加载中...</div>
-  <div class="load-more" id="loadMoreTrigger" style="display: none;">
-    <button class="btn btn-outline" onclick="loadMore()">加载更多</button>
-  </div>
-</section>
-
-<!-- 页脚 -->
-<footer class="homepage-footer">
-  <p>© 2026 George Design · 设计师内部SaaS系统</p>
-  <p style="font-size: 12px; margin-top: 8px; opacity: 0.6;">本页面为演示版本，数据为模拟数据</p>
-</footer>
-
-<!-- 登录模态框 -->
-<div class="modal-overlay" id="loginModal">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 class="modal-title">登录</h3>
-      <button class="modal-close" onclick="closeLoginModal()">✕</button>
+    
+    <!-- 加载更多 -->
+    <div class="znz-load-more">
+      <button class="znz-load-btn" id="loadMoreBtn">加载更多</button>
     </div>
-    <div class="modal-body">
-      <form class="modal-form" id="loginForm" onsubmit="return false;">
-        <div class="form-group">
-          <label class="form-label">账号</label>
-          <input type="text" class="form-input" id="loginUsername" placeholder="输入任意账号" required>
+    
+    <!-- 页脚 -->
+    <footer class="znz-footer">
+      <div class="znz-footer-top">
+        <div class="znz-footer-links">
+          <div class="znz-footer-column">
+            <h3 class="znz-footer-title">发现AI创作</h3>
+            <ul class="znz-footer-list">
+              <li><a href="#">关于我们</a></li>
+              <li><a href="#">知末协议</a></li>
+              <li><a href="#">品牌来源</a></li>
+              <li><a href="#">关于我们</a></li>
+              <li><a href="#">联系我们</a></li>
+              <li><a href="#">加入我们</a></li>
+            </ul>
+          </div>
+          <div class="znz-footer-column">
+            <h3 class="znz-footer-title">常见问题</h3>
+            <ul class="znz-footer-list">
+              <li><a href="#">上传要求</a></li>
+              <li><a href="#">下载问题</a></li>
+              <li><a href="#">充值支付</a></li>
+              <li><a href="#">提现收益</a></li>
+              <li><a href="#">帮助中心</a></li>
+            </ul>
+          </div>
+          <div class="znz-footer-column">
+            <h3 class="znz-footer-title">法律声明</h3>
+            <ul class="znz-footer-list">
+              <li><a href="#">免责声明</a></li>
+              <li><a href="#">本网站内容由用户自行上传，如权利人发现存在误传其他作品情形，请及时与本站联系。</a></li>
+            </ul>
+          </div>
+          <div class="znz-footer-column">
+            <h3 class="znz-footer-title">许可证明</h3>
+            <ul class="znz-footer-list">
+              <li><a href="#">增值电信业务经营许可证（ICP）苏ICP备18050492号</a></li>
+              <li><a href="#">苏公网安备32011302320646号</a></li>
+              <li><a href="#">@2026 znzmo.com</a></li>
+              <li><a href="#">知末网保留所有权利</a></li>
+              <li><a href="#">苏ICP备18050492号</a></li>
+              <li><a href="#">南京喵熊网络科技有限公司</a></li>
+            </ul>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">密码</label>
-          <input type="password" class="form-input" id="loginPassword" placeholder="输入任意密码" required>
-        </div>
-      </form>
-    </div>
-    <div class="modal-footer">
-      <button class="modal-btn modal-btn-primary" onclick="handleLogin()">登录</button>
-      <div class="modal-link" onclick="switchToRegister()">还没有账号？注册</div>
-    </div>
-  </div>
-</div>
-
-<!-- 注册模态框 -->
-<div class="modal-overlay" id="registerModal">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 class="modal-title">注册</h3>
-      <button class="modal-close" onclick="closeRegisterModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <form class="modal-form" id="registerForm" onsubmit="return false;">
-        <div class="form-group">
-          <label class="form-label">账号</label>
-          <input type="text" class="form-input" id="registerUsername" placeholder="设置账号" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">密码</label>
-          <input type="password" class="form-input" id="registerPassword" placeholder="设置密码" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">确认密码</label>
-          <input type="password" class="form-input" id="registerConfirm" placeholder="再次输入密码" required>
-        </div>
-      </form>
-    </div>
-    <div class="modal-footer">
-      <button class="modal-btn modal-btn-primary" onclick="handleRegister()">注册</button>
-      <div class="modal-link" onclick="switchToLogin()">已有账号？登录</div>
-    </div>
-  </div>
+      </div>
+      <div class="znz-footer-bottom">
+        <p class="znz-footer-copyright">© 2026 George Design · 设计师内部SaaS系统</p>
+      </div>
+    </footer>
+  </main>
 </div>
 
 <script src="common.js"></script>
@@ -806,32 +1038,24 @@ let AppState = {
   
   filters: {
     searchKeyword: '',
-    activeSearchTab: 'all',
-    activeCategory1: 'all',
-    activeCategory2: 'all',
-    activeCategory3: 'all'
+    activeTab: 'all',
+    activeCategory: '推荐',
+    activeStyle: '全部'
   },
   
   pagination: {
     currentPage: 1,
-    pageSize: 12,
+    pageSize: 20,
     hasMore: false
   }
 };
 
 // ========== 初始化 ==========
 document.addEventListener('DOMContentLoaded', async () => {
-  // 加载数据
   await loadResources();
-  
-  // 初始化UI
-  initSearchTabs();
-  initCategoryTags();
-  updateAuthUI();
+  initUI();
   renderResults();
-  
-  // 初始化无限滚动监听
-  initInfiniteScroll();
+  initEventListeners();
 });
 
 // ========== 数据加载 ==========
@@ -843,14 +1067,12 @@ async function loadResources() {
     AppState.filteredResources = [...AppState.resources];
   } catch (error) {
     console.error('加载资源数据失败:', error);
-    // 使用备用数据
     AppState.resources = getFallbackResources();
     AppState.filteredResources = [...AppState.resources];
   }
 }
 
 function getFallbackResources() {
-  // 备用数据，如果JSON加载失败
   return [
     { id: 1, name: '现代意式极简餐厅', type: '3dmodel', category1: '家装', category2: '意式', category3: '精品', downloads: 2340, isFree: false, isHot: true },
     { id: 2, name: '新中式客厅沙发组合', type: '3dmodel', category1: '家具', category2: '新中式', category3: '精品', downloads: 1890, isFree: false, isHot: true },
@@ -865,123 +1087,153 @@ function getFallbackResources() {
     { id: 11, name: '金属材质素材', type: 'material', category1: '硬装构件', category2: '现代', category3: '免费', downloads: 1450, isFree: true, isHot: true },
     { id: 12, name: '布艺窗帘素材', type: 'material', category1: '装饰品', category2: '奶油', category3: '推荐', downloads: 1100, isFree: true, isHot: false },
     { id: 13, name: '建筑平面图CAD', type: 'cad', category1: '建筑', category2: '现代', category3: '精品', downloads: 670, isFree: false, isHot: false },
-    { id: 14, name: '卫生间详图CAD', type: 'cad', category1: '家装', category2: '现代', category3: '免费', downloads: 540, isFree: true, isHot: false }
+    { id: 14, name: '卫生间详图CAD', type: 'cad', category1: '家装', category2: '现代', category3: '免费', downloads: 540, isFree: true, isHot: false },
+    { id: 15, name: '奶油风客厅', type: '3dmodel', category1: '家装', category2: '奶油', category3: '热门', downloads: 1680, isFree: true, isHot: true },
+    { id: 16, name: '原木风卧室', type: '3dmodel', category1: '家装', category2: '原木', category3: '免费', downloads: 1250, isFree: true, isHot: true },
+    { id: 17, name: '复古风书房', type: '3dmodel', category1: '家装', category2: '复古', category3: '精品', downloads: 980, isFree: false, isHot: false },
+    { id: 18, name: '极简主义客厅', type: '3dmodel', category1: '家装', category2: '极简', category3: '推荐', downloads: 1320, isFree: true, isHot: true },
+    { id: 19, name: '商业展厅SU', type: 'sumodel', category1: '工装', category2: '现代', category3: '热门', downloads: 1450, isFree: false, isHot: true },
+    { id: 20, name: '医院空间SU', type: 'sumodel', category1: '工装', category2: '现代', category3: '免费', downloads: 780, isFree: true, isHot: false },
+    { id: 21, name: '学校教室SU', type: 'sumodel', category1: '工装', category2: '现代', category3: '推荐', downloads: 920, isFree: true, isHot: false },
+    { id: 22, name: '瓷砖纹理贴图', type: 'texture', category1: '硬装构件', category2: '现代', category3: '免费', downloads: 1950, isFree: true, isHot: true },
+    { id: 23, name: '石材墙面贴图', type: 'texture', category1: '硬装构件', category2: '侘寂', category3: '精品', downloads: 1450, isFree: false, isHot: true },
+    { id: 24, name: '玻璃材质贴图', type: 'texture', category1: '硬装构件', category2: '现代', category3: '免费', downloads: 1250, isFree: true, isHot: false },
+    { id: 25, name: '壁纸图案贴图', type: 'texture', category1: '装饰品', category2: '法式', category3: '推荐', downloads: 980, isFree: true, isHot: false }
   ];
 }
 
-// ========== 搜索与过滤 ==========
-function initSearchTabs() {
-  const tabs = document.querySelectorAll('.search-tab');
-  tabs.forEach(tab => {
+// ========== UI初始化 ==========
+function initUI() {
+  updateAuthUI();
+}
+
+function updateAuthUI() {
+  const userAvatar = document.querySelector('.znz-header-avatar');
+  if (AppState.isLoggedIn) {
+    userAvatar.textContent = AppState.username.charAt(0).toUpperCase();
+  } else {
+    userAvatar.textContent = '登';
+  }
+}
+
+function initEventListeners() {
+  // 搜索框
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      AppState.filters.searchKeyword = searchInput.value.trim();
+      applyFilters();
+    }
+  });
+  
+  // 分类标签
+  document.querySelectorAll('.znz-category-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.znz-category-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
-      AppState.filters.activeSearchTab = tab.dataset.type;
-      updateSearchPlaceholder();
+      AppState.filters.activeTab = tab.dataset.tab;
       applyFilters();
     });
   });
-  updateSearchPlaceholder();
-}
-
-function updateSearchPlaceholder() {
-  const input = document.getElementById('searchInput');
-  const type = AppState.filters.activeSearchTab;
-  const placeholders = {
-    all: '搜索所有设计资源...',
-    '3dmodel': '搜索3D模型...',
-    sumodel: '搜索SU模型...',
-    texture: '搜索贴图材质...',
-    case: '搜索设计案例...',
-    material: '搜索素材...',
-    cad: '搜索CAD图纸...'
-  };
-  input.placeholder = placeholders[type] || '搜索设计资源...';
-}
-
-function initCategoryTags() {
+  
   // 一级分类
-  const category1Tags = ['全部', '家具', '家装', '工装', '硬装构件', '装饰品', '灯具', '景观', '植物', '建筑'];
-  const container1 = document.getElementById('category1Tags');
-  category1Tags.forEach(tag => {
-    const el = document.createElement('div');
-    el.className = 'filter-tag' + (tag === '全部' ? ' active' : '');
-    el.textContent = tag;
-    el.dataset.value = tag === '全部' ? 'all' : tag;
-    el.addEventListener('click', () => {
-      document.querySelectorAll('#category1Tags .filter-tag').forEach(t => t.classList.remove('active'));
-      el.classList.add('active');
-      AppState.filters.activeCategory1 = el.dataset.value;
+  document.querySelectorAll('.znz-category-link').forEach(link => {
+    link.addEventListener('click', () => {
+      document.querySelectorAll('.znz-category-link').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      AppState.filters.activeCategory = link.textContent;
       applyFilters();
     });
-    container1.appendChild(el);
   });
   
-  // 二级分类（风格）
-  const category2Tags = ['全部', '现代', '新中式', '法式', '美式', '欧式', '日式', '意式', '轻奢', '复古', '极简', '中古', '奶油', '简约', '侘寂', '原木', '北欧', '禅意', '简欧', '工业'];
-  const container2 = document.getElementById('category2Tags');
-  category2Tags.forEach(tag => {
-    const el = document.createElement('div');
-    el.className = 'filter-tag' + (tag === '全部' ? ' active' : '');
-    el.textContent = tag;
-    el.dataset.value = tag === '全部' ? 'all' : tag;
-    el.addEventListener('click', () => {
-      document.querySelectorAll('#category2Tags .filter-tag').forEach(t => t.classList.remove('active'));
-      el.classList.add('active');
-      AppState.filters.activeCategory2 = el.dataset.value;
+  // 风格标签
+  document.querySelectorAll('.znz-style-tag').forEach(tag => {
+    tag.addEventListener('click', () => {
+      document.querySelectorAll('.znz-style-tag').forEach(t => t.classList.remove('active'));
+      tag.classList.add('active');
+      AppState.filters.activeStyle = tag.textContent;
       applyFilters();
     });
-    container2.appendChild(el);
   });
   
-  // 三级分类（品质）
-  const category3Tags = ['全部', '免费', '精品', '推荐', '热门'];
-  const container3 = document.getElementById('category3Tags');
-  category3Tags.forEach(tag => {
-    const el = document.createElement('div');
-    el.className = 'filter-tag' + (tag === '全部' ? ' active' : '');
-    el.textContent = tag;
-    el.dataset.value = tag === '全部' ? 'all' : tag;
-    el.addEventListener('click', () => {
-      document.querySelectorAll('#category3Tags .filter-tag').forEach(t => t.classList.remove('active'));
-      el.classList.add('active');
-      AppState.filters.activeCategory3 = el.dataset.value;
-      applyFilters();
+  // 加载更多
+  document.getElementById('loadMoreBtn').addEventListener('click', loadMore);
+  
+  // 用户操作
+  document.querySelector('.znz-header-user').addEventListener('click', () => {
+    if (!AppState.isLoggedIn) {
+      // 模拟登录弹窗
+      const username = prompt('请输入账号（任意值）:');
+      if (username) {
+        AppState.isLoggedIn = true;
+        AppState.username = username;
+        localStorage.setItem('gd-logged-in', 'true');
+        localStorage.setItem('gd-username', username);
+        updateAuthUI();
+        showToast('success', '登录成功！');
+      }
+    } else {
+      // 已登录，显示用户菜单
+      const action = confirm('是否退出登录？');
+      if (action) {
+        AppState.isLoggedIn = false;
+        AppState.username = '';
+        localStorage.removeItem('gd-logged-in');
+        localStorage.removeItem('gd-username');
+        updateAuthUI();
+        showToast('info', '已退出登录');
+      }
+    }
+  });
+  
+  // 其他按钮
+  document.querySelectorAll('.znz-header-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const text = e.target.textContent;
+      if (text === '新建项目' || text === '上传') {
+        if (!AppState.isLoggedIn) {
+          showToast('warning', '请先登录');
+        } else {
+          showToast('success', `开始${text}...`);
+        }
+      } else if (text === 'VIP') {
+        showToast('info', 'VIP功能正在开发中');
+      } else {
+        showToast('info', `${text}功能正在开发中`);
+      }
     });
-    container3.appendChild(el);
   });
 }
 
+// ========== 过滤逻辑 ==========
 function applyFilters() {
-  const { searchKeyword, activeSearchTab, activeCategory1, activeCategory2, activeCategory3 } = AppState.filters;
+  const { searchKeyword, activeTab, activeCategory, activeStyle } = AppState.filters;
   
   AppState.filteredResources = AppState.resources.filter(resource => {
-    // 搜索关键词过滤
+    // 搜索关键词
     if (searchKeyword && !resource.name.toLowerCase().includes(searchKeyword.toLowerCase())) {
       return false;
     }
     
-    // 搜索Tab类型过滤
-    if (activeSearchTab !== 'all' && resource.type !== activeSearchTab) {
+    // 分类标签
+    if (activeTab !== 'all') {
+      if (activeTab === '3dmodel' && resource.type !== '3dmodel') return false;
+      if (activeTab === 'sumodel' && resource.type !== 'sumodel') return false;
+      if (activeTab === 'texture' && resource.type !== 'texture') return false;
+      if (activeTab === 'case' && resource.type !== 'case') return false;
+      if (activeTab === 'material' && resource.type !== 'material') return false;
+      if (activeTab === 'cad' && resource.type !== 'cad') return false;
+      if (activeTab === 'ai') return false; // AI生图特殊处理
+    }
+    
+    // 一级分类
+    if (activeCategory !== '推荐' && resource.category1 !== activeCategory) {
       return false;
     }
     
-    // 一级分类过滤
-    if (activeCategory1 !== 'all' && resource.category1 !== activeCategory1) {
+    // 风格
+    if (activeStyle !== '全部' && resource.category2 !== activeStyle) {
       return false;
-    }
-    
-    // 二级分类过滤
-    if (activeCategory2 !== 'all' && resource.category2 !== activeCategory2) {
-      return false;
-    }
-    
-    // 三级分类过滤
-    if (activeCategory3 !== 'all') {
-      if (activeCategory3 === '免费' && !resource.isFree) return false;
-      if (activeCategory3 === '精品' && (resource.isFree || !resource.isHot)) return false;
-      if (activeCategory3 === '推荐' && !resource.isHot) return false;
-      if (activeCategory3 === '热门' && !resource.isHot) return false;
     }
     
     return true;
@@ -997,13 +1249,11 @@ function applyFilters() {
 // ========== 渲染结果 ==========
 function renderResults() {
   const grid = document.getElementById('resultsGrid');
-  const loading = document.getElementById('loadingIndicator');
-  const loadMore = document.getElementById('loadMoreTrigger');
+  const loadMoreBtn = document.getElementById('loadMoreBtn');
   
   if (AppState.filteredResources.length === 0) {
-    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:60px; color:var(--text-secondary);">没有找到匹配的资源</div>';
-    loading.style.display = 'none';
-    loadMore.style.display = 'none';
+    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px; color:var(--znz-text-light);">没有找到匹配的资源</div>';
+    loadMoreBtn.style.display = 'none';
     return;
   }
   
@@ -1016,11 +1266,11 @@ function renderResults() {
   
   // 更新加载更多按钮
   if (end < AppState.filteredResources.length) {
-    loading.style.display = 'none';
-    loadMore.style.display = 'block';
+    loadMoreBtn.style.display = 'block';
+    AppState.pagination.hasMore = true;
   } else {
-    loading.style.display = 'none';
-    loadMore.style.display = 'none';
+    loadMoreBtn.style.display = 'none';
+    AppState.pagination.hasMore = false;
   }
 }
 
@@ -1038,25 +1288,34 @@ function createResourceCard(resource) {
   const thumbColor = getThumbColor(resource.type);
   
   let tags = [];
-  if (resource.isFree) tags.push('<span class="resource-tag free">免费</span>');
-  if (resource.isHot) tags.push('<span class="resource-tag hot">热门</span>');
-  if (!resource.isFree && resource.isHot) tags.push('<span class="resource-tag premium">精品</span>');
+  if (resource.isFree) tags.push('<span class="znz-card-tag free">免费</span>');
+  if (resource.isHot) tags.push('<span class="znz-card-tag hot">热门</span>');
+  if (!resource.isFree && resource.isHot) tags.push('<span class="znz-card-tag premium">精品</span>');
   
   return `
-    <div class="resource-card" onclick="handleResourceClick(${resource.id})">
-      <div class="resource-thumb" data-text="${thumbText}" style="background: ${thumbColor};">
-        ${thumbText}
-      </div>
-      <div class="resource-info">
-        <div class="resource-name">${resource.name}</div>
-        <div class="resource-meta">
-          <span class="resource-type">${typeText}</span>
-          <span class="resource-downloads">⬇ ${resource.downloads.toLocaleString()}</span>
+    <div class="znz-resource-card" onclick="handleResourceClick(${resource.id})">
+      <div class="znz-card-wrapper">
+        <div class="znz-card-image" style="background: ${thumbColor};">
+          <div class="znz-card-overlay">
+            <div class="znz-card-title">${resource.name}</div>
+            <div class="znz-card-meta">
+              <span>${typeText}</span>
+              <span>⬇ ${resource.downloads.toLocaleString()}</span>
+            </div>
+          </div>
+          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:32px; color:rgba(255,255,255,0.9); font-weight:700;">${thumbText}</div>
         </div>
-        <div class="resource-tags">
-          ${tags.join('')}
-          <span class="resource-tag">${resource.category1}</span>
-          <span class="resource-tag">${resource.category2}</span>
+        <div class="znz-card-info">
+          <div class="znz-card-name">${resource.name}</div>
+          <div class="znz-card-tags">
+            ${tags.join('')}
+            <span class="znz-card-tag">${resource.category1}</span>
+            <span class="znz-card-tag">${resource.category2}</span>
+          </div>
+          <div class="znz-card-stats">
+            <span class="znz-card-type">${typeText}</span>
+            <span class="znz-card-downloads">⬇ ${resource.downloads.toLocaleString()}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -1075,18 +1334,7 @@ function getThumbColor(type) {
   return colors[type] || 'linear-gradient(135deg, #6b7280, #9ca3af)';
 }
 
-// ========== 分页与无限滚动 ==========
-function initInfiniteScroll() {
-  const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting && AppState.pagination.hasMore) {
-      loadMore();
-    }
-  }, { threshold: 0.1 });
-  
-  const trigger = document.getElementById('loadMoreTrigger');
-  if (trigger) observer.observe(trigger);
-}
-
+// ========== 分页 ==========
 function loadMore() {
   if (!AppState.pagination.hasMore) return;
   
@@ -1094,174 +1342,56 @@ function loadMore() {
   const start = (AppState.pagination.currentPage - 1) * AppState.pagination.pageSize;
   const end = AppState.pagination.currentPage * AppState.pagination.pageSize;
   
-  if (end >= AppState.filteredResources.length) {
-    AppState.pagination.hasMore = false;
-  }
-  
   const newResources = AppState.filteredResources.slice(start, end);
   const grid = document.getElementById('resultsGrid');
   
   newResources.forEach(resource => {
     const card = document.createElement('div');
-    card.className = 'resource-card';
+    card.className = 'znz-resource-card';
     card.innerHTML = createResourceCard(resource);
     card.onclick = () => handleResourceClick(resource.id);
     grid.appendChild(card);
   });
   
-  // 隐藏加载更多按钮
-  if (!AppState.pagination.hasMore) {
-    document.getElementById('loadMoreTrigger').style.display = 'none';
+  // 更新加载更多按钮
+  if (end >= AppState.filteredResources.length) {
+    document.getElementById('loadMoreBtn').style.display = 'none';
+    AppState.pagination.hasMore = false;
   }
 }
 
-// ========== 用户交互 ==========
-function focusSearch() {
-  document.getElementById('searchInput').focus();
-}
-
-function performSearch() {
-  const keyword = document.getElementById('searchInput').value.trim();
-  AppState.filters.searchKeyword = keyword;
-  applyFilters();
-}
-
+// ========== 交互处理 ==========
 function handleResourceClick(resourceId) {
   if (!AppState.isLoggedIn) {
-    openLoginModal();
+    showToast('warning', '请先登录查看详情');
     return;
   }
-  // 已登录：跳转详情页（待实现）
-  alert(`已登录，查看资源 ${resourceId} 详情`);
+  showToast('info', `查看资源 ${resourceId} 详情（功能开发中）`);
 }
 
-// ========== 登录/注册 ==========
-function updateAuthUI() {
-  const navActions = document.getElementById('navActions');
-  if (AppState.isLoggedIn) {
-    navActions.innerHTML = `
-      <button class="nav-btn nav-btn-dashboard" onclick="goToDashboard()">
-        🏠 控制台
-      </button>
-    `;
-  } else {
-    navActions.innerHTML = `
-      <button class="nav-btn nav-btn-login" onclick="openLoginModal()">登录</button>
-      <button class="nav-btn nav-btn-register" onclick="openRegisterModal()">注册</button>
-    `;
-  }
-}
-
-function openLoginModal() {
-  document.getElementById('loginModal').classList.add('active');
-  document.getElementById('loginUsername').focus();
-}
-
-function closeLoginModal() {
-  document.getElementById('loginModal').classList.remove('active');
-}
-
-function openRegisterModal() {
-  document.getElementById('registerModal').classList.add('active');
-  document.getElementById('registerUsername').focus();
-}
-
-function closeRegisterModal() {
-  document.getElementById('registerModal').classList.remove('active');
-}
-
-function switchToRegister() {
-  closeLoginModal();
-  openRegisterModal();
-}
-
-function switchToLogin() {
-  closeRegisterModal();
-  openLoginModal();
-}
-
-function handleLogin() {
-  const username = document.getElementById('loginUsername').value.trim();
-  const password = document.getElementById('loginPassword').value.trim();
-  
-  if (!username || !password) {
-    alert('请输入账号和密码');
-    return;
-  }
-  
-  // 模拟登录
-  AppState.isLoggedIn = true;
-  AppState.username = username;
-  
-  localStorage.setItem('gd-logged-in', 'true');
-  localStorage.setItem('gd-username', username);
-  
-  closeLoginModal();
-  updateAuthUI();
-  showToast('success', '登录成功！');
-}
-
-function handleRegister() {
-  const username = document.getElementById('registerUsername').value.trim();
-  const password = document.getElementById('registerPassword').value.trim();
-  const confirm = document.getElementById('registerConfirm').value.trim();
-  
-  if (!username || !password) {
-    alert('请输入账号和密码');
-    return;
-  }
-  
-  if (password !== confirm) {
-    alert('两次输入的密码不一致');
-    return;
-  }
-  
-  // 模拟注册
-  AppState.isLoggedIn = true;
-  AppState.username = username;
-  
-  localStorage.setItem('gd-logged-in', 'true');
-  localStorage.setItem('gd-username', username);
-  
-  closeRegisterModal();
-  updateAuthUI();
-  showToast('success', '注册成功！已自动登录');
-}
-
-function goToDashboard() {
-  window.location.href = 'dashboard.html';
-}
-
-// ========== 工具函数 ==========
 function showToast(type, message) {
-  // 使用 common.js 中的 showToast 函数
   if (typeof window.showToast === 'function') {
     window.showToast(type, message);
   } else {
-    // 简单实现
     const toast = document.createElement('div');
     toast.style.cssText = `
       position: fixed;
       top: 20px;
       right: 20px;
-      background: ${type === 'success' ? '#10b981' : '#3b82f6'};
+      background: ${type === 'success' ? '#10b981' : type === 'warning' ? '#f59e0b' : '#3b82f6'};
       color: white;
       padding: 12px 20px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      border-radius: var(--znz-radius-menu);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       z-index: 10000;
       font-size: 14px;
+      animation: fadeIn 0.3s;
     `;
     toast.textContent = message;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
   }
 }
-
-// 搜索框回车触发搜索
-document.getElementById('searchInput')?.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') performSearch();
-});
 </script>
 </body>
 </html>
