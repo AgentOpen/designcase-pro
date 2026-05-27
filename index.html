@@ -2,10 +2,1266 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0;url=dashboard.html">
-<title>George Design - 设计师内部SaaS系统</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>George Design - 设计师的灵感资源库</title>
+<link rel="stylesheet" href="common.css">
+<style>
+/* ========== 首页专用样式 ========== */
+.homepage {
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* 顶部导航栏 */
+.homepage-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 1000;
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav-logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--primary), #7c3aed);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.nav-logo-text {
+  font-size: 16px;
+}
+
+.nav-spacer {
+  flex: 1;
+}
+
+.nav-search-trigger {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition);
+}
+
+.nav-search-trigger:hover {
+  background: var(--bg-hover);
+  border-color: var(--primary);
+}
+
+.nav-actions {
+  display: flex;
+  gap: 12px;
+  margin-left: 16px;
+}
+
+.nav-btn {
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  border: 1px solid transparent;
+}
+
+.nav-btn-login {
+  background: var(--primary);
+  color: #fff;
+}
+
+.nav-btn-login:hover {
+  background: var(--primary-hover);
+}
+
+.nav-btn-register {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.nav-btn-register:hover {
+  background: var(--bg-hover);
+  border-color: var(--text-secondary);
+}
+
+.nav-btn-dashboard {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid rgba(79, 70, 229, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-btn-dashboard:hover {
+  background: rgba(79, 70, 229, 0.1);
+}
+
+/* Hero Banner */
+.hero {
+  margin-top: 64px;
+  padding: 80px 24px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%);
+  color: #fff;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 L100,0 L100,100 L0,100 Z" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></svg>');
+  background-size: 100px 100px;
+  opacity: 0.3;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 40px;
+  line-height: 1.5;
+}
+
+/* 搜索框 */
+.search-container {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.search-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+.search-tab {
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all var(--transition);
+}
+
+.search-tab:hover {
+  color: var(--text);
+}
+
+.search-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.search-box {
+  display: flex;
+  gap: 12px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 14px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 16px;
+  background: var(--bg);
+  color: var(--text);
+  transition: all var(--transition);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.search-btn {
+  padding: 14px 32px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.search-btn:hover {
+  background: var(--primary-hover);
+}
+
+/* 分类过滤器 */
+.filters-section {
+  padding: 40px 24px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.filter-group {
+  margin-bottom: 24px;
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-tag {
+  padding: 8px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.filter-tag:hover {
+  background: var(--bg-hover);
+  border-color: var(--text-secondary);
+}
+
+.filter-tag.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+/* 结果网格 */
+.results-section {
+  padding: 40px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.resource-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.resource-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
+}
+
+.resource-thumb {
+  height: 180px;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 32px;
+  font-weight: 700;
+  position: relative;
+  overflow: hidden;
+}
+
+.resource-thumb::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.resource-info {
+  padding: 16px;
+}
+
+.resource-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.resource-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.resource-type {
+  font-size: 12px;
+  padding: 4px 8px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+}
+
+.resource-downloads {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.resource-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.resource-tag {
+  font-size: 11px;
+  padding: 2px 6px;
+  background: var(--bg);
+  border-radius: 4px;
+  color: var(--text-secondary);
+}
+
+.resource-tag.free {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+.resource-tag.hot {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+
+.resource-tag.premium {
+  background: rgba(79, 70, 229, 0.1);
+  color: var(--primary);
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.load-more {
+  text-align: center;
+  padding: 20px;
+}
+
+/* 模态框 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(20px);
+  transition: transform var(--transition);
+}
+
+.modal-overlay.active .modal {
+  transform: translateY(0);
+}
+
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+}
+
+.modal-close:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.form-input {
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--text);
+  transition: all var(--transition);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.modal-footer {
+  padding: 20px 24px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-btn {
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  border: none;
+}
+
+.modal-btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.modal-btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.modal-btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.modal-btn-secondary:hover {
+  background: var(--bg-hover);
+}
+
+.modal-link {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.modal-link:hover {
+  color: var(--primary);
+}
+
+/* 页脚 */
+.homepage-footer {
+  padding: 40px 24px;
+  background: var(--card-bg);
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* 响应式 */
+@media (max-width: 1024px) {
+  .results-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 36px;
+  }
+  
+  .hero-subtitle {
+    font-size: 16px;
+  }
+  
+  .search-box {
+    flex-direction: column;
+  }
+  
+  .results-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .nav-actions {
+    display: none;
+  }
+  
+  .nav-search-trigger {
+    padding: 8px 12px;
+  }
+  
+  .nav-search-trigger span {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .hero {
+    padding: 60px 16px;
+  }
+  
+  .search-container {
+    padding: 16px;
+  }
+  
+  .filters-section,
+  .results-section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+</style>
 </head>
-<body>
-<p>正在跳转到 <a href="dashboard.html">George Design 工作台</a>进入中</p>
+<body class="homepage">
+<!-- 顶部导航栏 -->
+<nav class="homepage-nav">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">G</div>
+    <div class="nav-logo-text">George Design</div>
+  </a>
+  <div class="nav-spacer"></div>
+  <div class="nav-search-trigger" onclick="focusSearch()">
+    <span>🔍</span>
+    <span>搜索设计资源...</span>
+  </div>
+  <div class="nav-actions" id="navActions">
+    <!-- 未登录时显示 -->
+    <button class="nav-btn nav-btn-login" onclick="openLoginModal()">登录</button>
+    <button class="nav-btn nav-btn-register" onclick="openRegisterModal()">注册</button>
+    <!-- 登录后显示 -->
+    <!-- <button class="nav-btn nav-btn-dashboard" onclick="goToDashboard()">🏠 控制台</button> -->
+  </div>
+</nav>
+
+<!-- Hero Banner -->
+<section class="hero">
+  <div class="hero-content">
+    <h1 class="hero-title">George Design</h1>
+    <p class="hero-subtitle">设计师的灵感资源库 · 发现、收藏、创造</p>
+    
+    <div class="search-container">
+      <div class="search-tabs" id="searchTabs">
+        <div class="search-tab active" data-type="all">全部</div>
+        <div class="search-tab" data-type="3dmodel">3D模型</div>
+        <div class="search-tab" data-type="sumodel">SU模型</div>
+        <div class="search-tab" data-type="texture">贴图</div>
+        <div class="search-tab" data-type="case">案例</div>
+        <div class="search-tab" data-type="material">素材</div>
+        <div class="search-tab" data-type="cad">CAD</div>
+      </div>
+      
+      <div class="search-box">
+        <input type="text" class="search-input" id="searchInput" placeholder="搜索你需要的设计资源...">
+        <button class="search-btn" onclick="performSearch()">搜索</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 分类过滤器 -->
+<section class="filters-section">
+  <div class="filter-group">
+    <label class="filter-label">一级分类</label>
+    <div class="filter-tags" id="category1Tags">
+      <!-- JS动态生成 -->
+    </div>
+  </div>
+  
+  <div class="filter-group">
+    <label class="filter-label">风格</label>
+    <div class="filter-tags" id="category2Tags">
+      <!-- JS动态生成 -->
+    </div>
+  </div>
+  
+  <div class="filter-group">
+    <label class="filter-label">品质</label>
+    <div class="filter-tags" id="category3Tags">
+      <!-- JS动态生成 -->
+    </div>
+  </div>
+</section>
+
+<!-- 结果网格 -->
+<section class="results-section">
+  <div class="results-grid" id="resultsGrid">
+    <!-- JS动态生成 -->
+  </div>
+  <div class="loading" id="loadingIndicator">加载中...</div>
+  <div class="load-more" id="loadMoreTrigger" style="display: none;">
+    <button class="btn btn-outline" onclick="loadMore()">加载更多</button>
+  </div>
+</section>
+
+<!-- 页脚 -->
+<footer class="homepage-footer">
+  <p>© 2026 George Design · 设计师内部SaaS系统</p>
+  <p style="font-size: 12px; margin-top: 8px; opacity: 0.6;">本页面为演示版本，数据为模拟数据</p>
+</footer>
+
+<!-- 登录模态框 -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">登录</h3>
+      <button class="modal-close" onclick="closeLoginModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <form class="modal-form" id="loginForm" onsubmit="return false;">
+        <div class="form-group">
+          <label class="form-label">账号</label>
+          <input type="text" class="form-input" id="loginUsername" placeholder="输入任意账号" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">密码</label>
+          <input type="password" class="form-input" id="loginPassword" placeholder="输入任意密码" required>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn modal-btn-primary" onclick="handleLogin()">登录</button>
+      <div class="modal-link" onclick="switchToRegister()">还没有账号？注册</div>
+    </div>
+  </div>
+</div>
+
+<!-- 注册模态框 -->
+<div class="modal-overlay" id="registerModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">注册</h3>
+      <button class="modal-close" onclick="closeRegisterModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <form class="modal-form" id="registerForm" onsubmit="return false;">
+        <div class="form-group">
+          <label class="form-label">账号</label>
+          <input type="text" class="form-input" id="registerUsername" placeholder="设置账号" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">密码</label>
+          <input type="password" class="form-input" id="registerPassword" placeholder="设置密码" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">确认密码</label>
+          <input type="password" class="form-input" id="registerConfirm" placeholder="再次输入密码" required>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn modal-btn-primary" onclick="handleRegister()">注册</button>
+      <div class="modal-link" onclick="switchToLogin()">已有账号？登录</div>
+    </div>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script>
+// ========== 全局状态 ==========
+let AppState = {
+  isLoggedIn: localStorage.getItem('gd-logged-in') === 'true',
+  username: localStorage.getItem('gd-username') || '',
+  
+  resources: [],
+  filteredResources: [],
+  
+  filters: {
+    searchKeyword: '',
+    activeSearchTab: 'all',
+    activeCategory1: 'all',
+    activeCategory2: 'all',
+    activeCategory3: 'all'
+  },
+  
+  pagination: {
+    currentPage: 1,
+    pageSize: 12,
+    hasMore: false
+  }
+};
+
+// ========== 初始化 ==========
+document.addEventListener('DOMContentLoaded', async () => {
+  // 加载数据
+  await loadResources();
+  
+  // 初始化UI
+  initSearchTabs();
+  initCategoryTags();
+  updateAuthUI();
+  renderResults();
+  
+  // 初始化无限滚动监听
+  initInfiniteScroll();
+});
+
+// ========== 数据加载 ==========
+async function loadResources() {
+  try {
+    const response = await fetch('data/resources.json');
+    const data = await response.json();
+    AppState.resources = data.resources;
+    AppState.filteredResources = [...AppState.resources];
+  } catch (error) {
+    console.error('加载资源数据失败:', error);
+    // 使用备用数据
+    AppState.resources = getFallbackResources();
+    AppState.filteredResources = [...AppState.resources];
+  }
+}
+
+function getFallbackResources() {
+  // 备用数据，如果JSON加载失败
+  return [
+    { id: 1, name: '现代意式极简餐厅', type: '3dmodel', category1: '家装', category2: '意式', category3: '精品', downloads: 2340, isFree: false, isHot: true },
+    { id: 2, name: '新中式客厅沙发组合', type: '3dmodel', category1: '家具', category2: '新中式', category3: '精品', downloads: 1890, isFree: false, isHot: true },
+    { id: 3, name: '法式轻奢卧室吊灯', type: '3dmodel', category1: '灯具', category2: '法式', category3: '推荐', downloads: 1250, isFree: true, isHot: false },
+    { id: 4, name: '北欧简约书桌', type: '3dmodel', category1: '家具', category2: '北欧', category3: '免费', downloads: 980, isFree: true, isHot: true },
+    { id: 5, name: '工业风咖啡厅SU模型', type: 'sumodel', category1: '工装', category2: '工业', category3: '精品', downloads: 1560, isFree: false, isHot: true },
+    { id: 6, name: '现代简约住宅SU', type: 'sumodel', category1: '家装', category2: '现代', category3: '推荐', downloads: 2100, isFree: true, isHot: true },
+    { id: 7, name: '大理石纹理贴图', type: 'texture', category1: '硬装构件', category2: '现代', category3: '免费', downloads: 3200, isFree: true, isHot: true },
+    { id: 8, name: '木纹地板贴图', type: 'texture', category1: '硬装构件', category2: '原木', category3: '免费', downloads: 2800, isFree: true, isHot: true },
+    { id: 9, name: '商业空间案例', type: 'case', category1: '工装', category2: '现代', category3: '热门', downloads: 890, isFree: true, isHot: true },
+    { id: 10, name: '别墅庭院景观案例', type: 'case', category1: '景观', category2: '新中式', category3: '精品', downloads: 760, isFree: false, isHot: false },
+    { id: 11, name: '金属材质素材', type: 'material', category1: '硬装构件', category2: '现代', category3: '免费', downloads: 1450, isFree: true, isHot: true },
+    { id: 12, name: '布艺窗帘素材', type: 'material', category1: '装饰品', category2: '奶油', category3: '推荐', downloads: 1100, isFree: true, isHot: false },
+    { id: 13, name: '建筑平面图CAD', type: 'cad', category1: '建筑', category2: '现代', category3: '精品', downloads: 670, isFree: false, isHot: false },
+    { id: 14, name: '卫生间详图CAD', type: 'cad', category1: '家装', category2: '现代', category3: '免费', downloads: 540, isFree: true, isHot: false }
+  ];
+}
+
+// ========== 搜索与过滤 ==========
+function initSearchTabs() {
+  const tabs = document.querySelectorAll('.search-tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      AppState.filters.activeSearchTab = tab.dataset.type;
+      updateSearchPlaceholder();
+      applyFilters();
+    });
+  });
+  updateSearchPlaceholder();
+}
+
+function updateSearchPlaceholder() {
+  const input = document.getElementById('searchInput');
+  const type = AppState.filters.activeSearchTab;
+  const placeholders = {
+    all: '搜索所有设计资源...',
+    '3dmodel': '搜索3D模型...',
+    sumodel: '搜索SU模型...',
+    texture: '搜索贴图材质...',
+    case: '搜索设计案例...',
+    material: '搜索素材...',
+    cad: '搜索CAD图纸...'
+  };
+  input.placeholder = placeholders[type] || '搜索设计资源...';
+}
+
+function initCategoryTags() {
+  // 一级分类
+  const category1Tags = ['全部', '家具', '家装', '工装', '硬装构件', '装饰品', '灯具', '景观', '植物', '建筑'];
+  const container1 = document.getElementById('category1Tags');
+  category1Tags.forEach(tag => {
+    const el = document.createElement('div');
+    el.className = 'filter-tag' + (tag === '全部' ? ' active' : '');
+    el.textContent = tag;
+    el.dataset.value = tag === '全部' ? 'all' : tag;
+    el.addEventListener('click', () => {
+      document.querySelectorAll('#category1Tags .filter-tag').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      AppState.filters.activeCategory1 = el.dataset.value;
+      applyFilters();
+    });
+    container1.appendChild(el);
+  });
+  
+  // 二级分类（风格）
+  const category2Tags = ['全部', '现代', '新中式', '法式', '美式', '欧式', '日式', '意式', '轻奢', '复古', '极简', '中古', '奶油', '简约', '侘寂', '原木', '北欧', '禅意', '简欧', '工业'];
+  const container2 = document.getElementById('category2Tags');
+  category2Tags.forEach(tag => {
+    const el = document.createElement('div');
+    el.className = 'filter-tag' + (tag === '全部' ? ' active' : '');
+    el.textContent = tag;
+    el.dataset.value = tag === '全部' ? 'all' : tag;
+    el.addEventListener('click', () => {
+      document.querySelectorAll('#category2Tags .filter-tag').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      AppState.filters.activeCategory2 = el.dataset.value;
+      applyFilters();
+    });
+    container2.appendChild(el);
+  });
+  
+  // 三级分类（品质）
+  const category3Tags = ['全部', '免费', '精品', '推荐', '热门'];
+  const container3 = document.getElementById('category3Tags');
+  category3Tags.forEach(tag => {
+    const el = document.createElement('div');
+    el.className = 'filter-tag' + (tag === '全部' ? ' active' : '');
+    el.textContent = tag;
+    el.dataset.value = tag === '全部' ? 'all' : tag;
+    el.addEventListener('click', () => {
+      document.querySelectorAll('#category3Tags .filter-tag').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      AppState.filters.activeCategory3 = el.dataset.value;
+      applyFilters();
+    });
+    container3.appendChild(el);
+  });
+}
+
+function applyFilters() {
+  const { searchKeyword, activeSearchTab, activeCategory1, activeCategory2, activeCategory3 } = AppState.filters;
+  
+  AppState.filteredResources = AppState.resources.filter(resource => {
+    // 搜索关键词过滤
+    if (searchKeyword && !resource.name.toLowerCase().includes(searchKeyword.toLowerCase())) {
+      return false;
+    }
+    
+    // 搜索Tab类型过滤
+    if (activeSearchTab !== 'all' && resource.type !== activeSearchTab) {
+      return false;
+    }
+    
+    // 一级分类过滤
+    if (activeCategory1 !== 'all' && resource.category1 !== activeCategory1) {
+      return false;
+    }
+    
+    // 二级分类过滤
+    if (activeCategory2 !== 'all' && resource.category2 !== activeCategory2) {
+      return false;
+    }
+    
+    // 三级分类过滤
+    if (activeCategory3 !== 'all') {
+      if (activeCategory3 === '免费' && !resource.isFree) return false;
+      if (activeCategory3 === '精品' && (resource.isFree || !resource.isHot)) return false;
+      if (activeCategory3 === '推荐' && !resource.isHot) return false;
+      if (activeCategory3 === '热门' && !resource.isHot) return false;
+    }
+    
+    return true;
+  });
+  
+  // 重置分页
+  AppState.pagination.currentPage = 1;
+  AppState.pagination.hasMore = AppState.filteredResources.length > AppState.pagination.pageSize;
+  
+  renderResults();
+}
+
+// ========== 渲染结果 ==========
+function renderResults() {
+  const grid = document.getElementById('resultsGrid');
+  const loading = document.getElementById('loadingIndicator');
+  const loadMore = document.getElementById('loadMoreTrigger');
+  
+  if (AppState.filteredResources.length === 0) {
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:60px; color:var(--text-secondary);">没有找到匹配的资源</div>';
+    loading.style.display = 'none';
+    loadMore.style.display = 'none';
+    return;
+  }
+  
+  // 计算当前页显示的资源
+  const start = 0;
+  const end = AppState.pagination.currentPage * AppState.pagination.pageSize;
+  const currentResources = AppState.filteredResources.slice(start, end);
+  
+  grid.innerHTML = currentResources.map(resource => createResourceCard(resource)).join('');
+  
+  // 更新加载更多按钮
+  if (end < AppState.filteredResources.length) {
+    loading.style.display = 'none';
+    loadMore.style.display = 'block';
+  } else {
+    loading.style.display = 'none';
+    loadMore.style.display = 'none';
+  }
+}
+
+function createResourceCard(resource) {
+  const typeText = {
+    '3dmodel': '3D模型',
+    'sumodel': 'SU模型',
+    'texture': '贴图',
+    'case': '案例',
+    'material': '素材',
+    'cad': 'CAD'
+  }[resource.type] || resource.type;
+  
+  const thumbText = resource.name.substring(0, 2);
+  const thumbColor = getThumbColor(resource.type);
+  
+  let tags = [];
+  if (resource.isFree) tags.push('<span class="resource-tag free">免费</span>');
+  if (resource.isHot) tags.push('<span class="resource-tag hot">热门</span>');
+  if (!resource.isFree && resource.isHot) tags.push('<span class="resource-tag premium">精品</span>');
+  
+  return `
+    <div class="resource-card" onclick="handleResourceClick(${resource.id})">
+      <div class="resource-thumb" data-text="${thumbText}" style="background: ${thumbColor};">
+        ${thumbText}
+      </div>
+      <div class="resource-info">
+        <div class="resource-name">${resource.name}</div>
+        <div class="resource-meta">
+          <span class="resource-type">${typeText}</span>
+          <span class="resource-downloads">⬇ ${resource.downloads.toLocaleString()}</span>
+        </div>
+        <div class="resource-tags">
+          ${tags.join('')}
+          <span class="resource-tag">${resource.category1}</span>
+          <span class="resource-tag">${resource.category2}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function getThumbColor(type) {
+  const colors = {
+    '3dmodel': 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+    'sumodel': 'linear-gradient(135deg, #10b981, #34d399)',
+    'texture': 'linear-gradient(135deg, #f59e0b, #fbbf24)',
+    'case': 'linear-gradient(135deg, #3b82f6, #60a5fa)',
+    'material': 'linear-gradient(135deg, #ef4444, #f87171)',
+    'cad': 'linear-gradient(135deg, #8b5cf6, #a78bfa)'
+  };
+  return colors[type] || 'linear-gradient(135deg, #6b7280, #9ca3af)';
+}
+
+// ========== 分页与无限滚动 ==========
+function initInfiniteScroll() {
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && AppState.pagination.hasMore) {
+      loadMore();
+    }
+  }, { threshold: 0.1 });
+  
+  const trigger = document.getElementById('loadMoreTrigger');
+  if (trigger) observer.observe(trigger);
+}
+
+function loadMore() {
+  if (!AppState.pagination.hasMore) return;
+  
+  AppState.pagination.currentPage++;
+  const start = (AppState.pagination.currentPage - 1) * AppState.pagination.pageSize;
+  const end = AppState.pagination.currentPage * AppState.pagination.pageSize;
+  
+  if (end >= AppState.filteredResources.length) {
+    AppState.pagination.hasMore = false;
+  }
+  
+  const newResources = AppState.filteredResources.slice(start, end);
+  const grid = document.getElementById('resultsGrid');
+  
+  newResources.forEach(resource => {
+    const card = document.createElement('div');
+    card.className = 'resource-card';
+    card.innerHTML = createResourceCard(resource);
+    card.onclick = () => handleResourceClick(resource.id);
+    grid.appendChild(card);
+  });
+  
+  // 隐藏加载更多按钮
+  if (!AppState.pagination.hasMore) {
+    document.getElementById('loadMoreTrigger').style.display = 'none';
+  }
+}
+
+// ========== 用户交互 ==========
+function focusSearch() {
+  document.getElementById('searchInput').focus();
+}
+
+function performSearch() {
+  const keyword = document.getElementById('searchInput').value.trim();
+  AppState.filters.searchKeyword = keyword;
+  applyFilters();
+}
+
+function handleResourceClick(resourceId) {
+  if (!AppState.isLoggedIn) {
+    openLoginModal();
+    return;
+  }
+  // 已登录：跳转详情页（待实现）
+  alert(`已登录，查看资源 ${resourceId} 详情`);
+}
+
+// ========== 登录/注册 ==========
+function updateAuthUI() {
+  const navActions = document.getElementById('navActions');
+  if (AppState.isLoggedIn) {
+    navActions.innerHTML = `
+      <button class="nav-btn nav-btn-dashboard" onclick="goToDashboard()">
+        🏠 控制台
+      </button>
+    `;
+  } else {
+    navActions.innerHTML = `
+      <button class="nav-btn nav-btn-login" onclick="openLoginModal()">登录</button>
+      <button class="nav-btn nav-btn-register" onclick="openRegisterModal()">注册</button>
+    `;
+  }
+}
+
+function openLoginModal() {
+  document.getElementById('loginModal').classList.add('active');
+  document.getElementById('loginUsername').focus();
+}
+
+function closeLoginModal() {
+  document.getElementById('loginModal').classList.remove('active');
+}
+
+function openRegisterModal() {
+  document.getElementById('registerModal').classList.add('active');
+  document.getElementById('registerUsername').focus();
+}
+
+function closeRegisterModal() {
+  document.getElementById('registerModal').classList.remove('active');
+}
+
+function switchToRegister() {
+  closeLoginModal();
+  openRegisterModal();
+}
+
+function switchToLogin() {
+  closeRegisterModal();
+  openLoginModal();
+}
+
+function handleLogin() {
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
+  
+  if (!username || !password) {
+    alert('请输入账号和密码');
+    return;
+  }
+  
+  // 模拟登录
+  AppState.isLoggedIn = true;
+  AppState.username = username;
+  
+  localStorage.setItem('gd-logged-in', 'true');
+  localStorage.setItem('gd-username', username);
+  
+  closeLoginModal();
+  updateAuthUI();
+  showToast('success', '登录成功！');
+}
+
+function handleRegister() {
+  const username = document.getElementById('registerUsername').value.trim();
+  const password = document.getElementById('registerPassword').value.trim();
+  const confirm = document.getElementById('registerConfirm').value.trim();
+  
+  if (!username || !password) {
+    alert('请输入账号和密码');
+    return;
+  }
+  
+  if (password !== confirm) {
+    alert('两次输入的密码不一致');
+    return;
+  }
+  
+  // 模拟注册
+  AppState.isLoggedIn = true;
+  AppState.username = username;
+  
+  localStorage.setItem('gd-logged-in', 'true');
+  localStorage.setItem('gd-username', username);
+  
+  closeRegisterModal();
+  updateAuthUI();
+  showToast('success', '注册成功！已自动登录');
+}
+
+function goToDashboard() {
+  window.location.href = 'dashboard.html';
+}
+
+// ========== 工具函数 ==========
+function showToast(type, message) {
+  // 使用 common.js 中的 showToast 函数
+  if (typeof window.showToast === 'function') {
+    window.showToast(type, message);
+  } else {
+    // 简单实现
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: ${type === 'success' ? '#10b981' : '#3b82f6'};
+      color: white;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      z-index: 10000;
+      font-size: 14px;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+}
+
+// 搜索框回车触发搜索
+document.getElementById('searchInput')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') performSearch();
+});
+</script>
 </body>
 </html>
