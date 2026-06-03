@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>团队协作 - George Design</title>
+<link rel="stylesheet" href="common.css">
+</head>
+<body>
+<aside class="sidebar" id="sidebar"></aside>
+<main class="main">
+  <header class="header">
+    <h1 class="header-title" id="headerTitle">团队协作</h1>
+    <div class="header-actions">
+      <button class="dark-toggle" onclick="toggleDarkMode()">🌙 暗色模式</button>
+      <button class="btn btn-ghost" onclick="showShortcuts()">⌨ 快捷键</button>
+    </div>
+  </header>
+  <div class="page-content">
+    <div class="page active">
+      <div class="home-tabs">
+        <div class="home-tab active" data-tab="projects" onclick="switchTeamTab('projects')">项目协作</div>
+        <div class="home-tab" data-tab="tasks" onclick="switchTeamTab('tasks')">任务看板</div>
+        <div class="home-tab" data-tab="invites" onclick="switchTeamTab('invites')">我的邀请 <span id="inviteDot" class="tag tag-red" style="display:none;">0</span></div>
+        <div class="home-tab" data-tab="members" onclick="switchTeamTab('members')">成员负载</div>
+      </div>
+
+      <!-- 项目协作（文件夹样式） -->
+      <div class="home-panel active" id="team-projects">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+          <div style="font-size:13px;color:var(--text-secondary);">每个项目像一个协作文件夹：内含任务、成员与进度。点开可分配任务、邀请同事、更新进度。</div>
+          <button class="btn btn-primary btn-sm" onclick="openNewProject()">＋ 新建项目</button>
+        </div>
+        <div class="folder-wrap" id="projFolders"></div>
+      </div>
+
+      <!-- 任务看板 -->
+      <div class="home-panel" id="team-tasks">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span style="font-size:13px;color:var(--text-secondary);">项目：</span>
+            <select class="input" id="kanbanProj" onchange="renderKanban()" style="width:160px;"><option value="">全部项目</option></select>
+            <span style="font-size:13px;color:var(--text-secondary);">负责人：</span>
+            <select class="input" id="kanbanFilter" onchange="renderKanban()" style="width:120px;"><option value="">全部成员</option></select>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openNewTask()">＋ 添加任务</button>
+        </div>
+        <div class="kanban" id="kanban"></div>
+      </div>
+
+      <!-- 我的邀请 -->
+      <div class="home-panel" id="team-invites">
+        <div class="card">
+          <div class="card-title">协作邀请</div>
+          <div id="inviteList"></div>
+        </div>
+      </div>
+
+      <!-- 成员负载 -->
+      <div class="home-panel" id="team-members">
+        <div class="card">
+          <div class="card-title">成员任务负载</div>
+          <div id="memberLoad"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- 任务弹窗 -->
+<div class="modal-overlay" id="taskModal">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-header"><h2 id="taskModalTitle">添加任务</h2><button class="modal-close" onclick="closeModal('taskModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>任务名称</label><input class="input" id="taskTitle" style="width:100%;" placeholder="如：主卧空间深化"></div>
+      <div class="form-group"><label>所属项目</label><select class="input" id="taskProj" style="width:100%;"></select></div>
+      <div class="form-group"><label>负责人</label><select class="input" id="taskWho" style="width:100%;"></select></div>
+      <div class="form-group"><label>优先级</label><select class="input" id="taskPrio" style="width:100%;"><option value="高">高</option><option value="中" selected>中</option><option value="低">低</option></select></div>
+      <div class="form-group"><label>状态</label><select class="input" id="taskStatus" style="width:100%;"><option>待开始</option><option>进行中</option><option>待审核</option><option>已完成</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('taskModal')">取消</button><button class="btn btn-primary" onclick="saveTask()">保存</button></div>
+  </div>
+</div>
+
+<!-- 新建项目 -->
+<div class="modal-overlay" id="projModal">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-header"><h2>新建项目</h2><button class="modal-close" onclick="closeModal('projModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>项目名称</label><input class="input" id="projName" style="width:100%;" placeholder="如：江景豪宅全案"></div>
+      <div class="form-group"><label>客户</label><input class="input" id="projClient" style="width:100%;" placeholder="如：绿城集团"></div>
+      <div class="form-group"><label>截止日期</label><input class="input" id="projDue" type="date" style="width:100%;"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('projModal')">取消</button><button class="btn btn-primary" onclick="saveProject()">创建</button></div>
+  </div>
+</div>
+
+<!-- 项目详情（任务/成员/进度/邀请 一体） -->
+<div class="modal-overlay" id="projDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h2 id="projDetailTitle">项目详情</h2><button class="modal-close" onclick="closeModal('projDetailModal')">✕</button></div>
+    <div class="modal-body" id="projDetailBody"></div>
+  </div>
+</div>
+
+<!-- 邀请同事 -->
+<div class="modal-overlay" id="inviteModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header"><h2>邀请同事加入</h2><button class="modal-close" onclick="closeModal('inviteModal')">✕</button></div>
+    <div class="modal-body">
+      <div id="inviteProjName" style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;"></div>
+      <div id="inviteChoices" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="history-panel" id="historyPanel"><div style="padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;"><strong>操作历史</strong><button class="btn btn-ghost btn-sm" onclick="toggleHistory()">✕</button></div><div id="historyList"></div></div>
+<div class="modal-overlay" id="shortcutsModal"><div class="modal" style="max-width:600px;"><div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div><div class="modal-body"><table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody><tr><td><kbd>?</kbd></td><td>显示快捷键</td></tr><tr><td><kbd>Esc</kbd></td><td>关闭弹窗</td></tr></tbody></table></div></div></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="common.js"></script>
+<script>
+var ME = '陈磊';
+var MEMBERS = ['陈磊','林悦','王明远','张薇','李强','孙敏','周杰'];
+var COLS = ['待开始','进行中','待审核','已完成'];
+var PRIO_TAG = { '高':'tag-red', '中':'tag-orange', '低':'tag-green' };
+var STATUS_TAG = { '进行中':'tag-blue','已交付':'tag-green','筹备中':'tag-orange','已归档':'tag-purple' };
+
+function switchTeamTab(tab){
+  document.querySelectorAll('.home-tab').forEach(function(t){ t.classList.toggle('active', t.dataset.tab===tab); });
+  document.querySelectorAll('.home-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('team-'+tab).classList.add('active');
+  if(tab==='members') renderMemberLoad();
+  if(tab==='invites') renderInvites();
+  if(tab==='tasks') renderKanban();
+  if(tab==='projects') renderProjects();
+}
+window.switchTeamTab = switchTeamTab;
+
+// ---------- 数据 + 持久化 ----------
+function loadProjects(){
+  try{ var v=JSON.parse(localStorage.getItem('gd-projects')); if(v&&v.length) return v; }catch(e){}
+  return [
+    {id:1,name:'滨海别墅全案',client:'招商地产',members:['陈磊','林悦','王明远'],progress:75,due:'2026-06-15',status:'进行中'},
+    {id:2,name:'万象城商业空间',client:'华润置地',members:['张薇','李强'],progress:40,due:'2026-07-01',status:'进行中'},
+    {id:3,name:'樾府样板间',client:'龙湖',members:['陈磊','孙敏'],progress:100,due:'2026-05-10',status:'已交付'},
+    {id:4,name:'云麓书院民宿',client:'个人客户',members:['林悦','周杰'],progress:20,due:'2026-08-20',status:'筹备中'}
+  ];
+}
+function loadTasks(){
+  try{ var v=JSON.parse(localStorage.getItem('gd-tasks')); if(v&&v.length && v[0].projId!==undefined) return v; }catch(e){}
+  return [
+    {id:1,title:'云麓书院 - 概念方案',who:'林悦',projId:4,prio:'中',status:'待开始'},
+    {id:2,title:'万象城 - 灯光设计',who:'李强',projId:2,prio:'低',status:'待开始'},
+    {id:3,title:'滨海别墅 - 主卧深化',who:'陈磊',projId:1,prio:'高',status:'进行中'},
+    {id:4,title:'滨海别墅 - 客厅建模',who:'王明远',projId:1,prio:'中',status:'进行中'},
+    {id:5,title:'万象城 - 平面布局',who:'张薇',projId:2,prio:'中',status:'进行中'},
+    {id:6,title:'樾府 - 软装清单',who:'孙敏',projId:3,prio:'中',status:'待审核'},
+    {id:7,title:'樾府 - 全套交付',who:'陈磊',projId:3,prio:'高',status:'已完成'},
+    {id:8,title:'滨海别墅 - 户型分析',who:'林悦',projId:1,prio:'低',status:'已完成'}
+  ];
+}
+function loadInvites(){
+  try{ var v=JSON.parse(localStorage.getItem('gd-invites')); if(v) return v; }catch(e){}
+  return [ {id:1,projId:2,to:'陈磊',from:'张薇',status:'待接受'} ];
+}
+var PROJECTS = loadProjects();
+var TASKS = loadTasks();
+var INVITES = loadInvites();
+function save(){ localStorage.setItem('gd-projects',JSON.stringify(PROJECTS)); localStorage.setItem('gd-tasks',JSON.stringify(TASKS)); localStorage.setItem('gd-invites',JSON.stringify(INVITES)); }
+function projById(id){ return PROJECTS.find(function(p){return p.id===id;}); }
+function projTasks(id){ return TASKS.filter(function(t){return t.projId===id;}); }
+
+// ---------- 项目（文件夹样式） ----------
+function renderProjects(){
+  refreshSelects();
+  document.getElementById('projFolders').innerHTML = PROJECTS.map(function(p){
+    var ts = projTasks(p.id);
+    var done = ts.filter(function(t){return t.status==='已完成';}).length;
+    var avatars = p.members.map(function(m){ return '<span class="rank-av folder-mem" title="'+m+'">'+m.charAt(0)+'</span>'; }).join('');
+    var stag = STATUS_TAG[p.status]||'tag-blue';
+    return '<div class="folder-card" onclick="openProjDetail('+p.id+')">'+
+      '<div class="folder-top">'+
+        '<div class="folder-ic">📁</div>'+
+        '<span class="tag '+stag+'">'+p.status+'</span>'+
+      '</div>'+
+      '<div class="folder-name">'+p.name+'</div>'+
+      '<div class="folder-sub">客户：'+p.client+'　·　截止 '+p.due+'</div>'+
+      '<div class="folder-stat"><span>📋 '+ts.length+' 任务（'+done+' 完成）</span><span>👥 '+p.members.length+' 人</span></div>'+
+      '<div class="proj-progress"><div class="proj-progress-fill" style="width:'+p.progress+'%;"></div></div>'+
+      '<div class="folder-bottom"><div class="folder-mems">'+avatars+'</div><span class="folder-pct">'+p.progress+'%</span></div>'+
+    '</div>';
+  }).join('') + '<div class="folder-card folder-add" onclick="openNewProject()"><div class="folder-add-plus">＋</div><div>新建协作项目</div></div>';
+}
+
+function openProjDetail(id){
+  var p = projById(id); if(!p) return;
+  var ts = projTasks(id);
+  var rows = ts.length ? ts.map(function(t){
+    return '<tr><td>'+t.title+'</td><td>'+t.who+'</td><td><span class="tag '+PRIO_TAG[t.prio]+'">'+t.prio+'</span></td><td>'+t.status+'</td></tr>';
+  }).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">暂无任务，点下方「分配任务」</td></tr>';
+  var memChips = p.members.map(function(m){
+    var pend = INVITES.some(function(iv){return iv.projId===id&&iv.to===m&&iv.status==='待接受';});
+    return '<span class="mem-chip">'+m+(m===ME?'（我）':'')+'</span>';
+  }).join('');
+  var pendingChips = INVITES.filter(function(iv){return iv.projId===id&&iv.status==='待接受';})
+    .map(function(iv){ return '<span class="mem-chip pending">'+iv.to+' · 待接受</span>'; }).join('');
+
+  document.getElementById('projDetailTitle').textContent = p.name;
+  document.getElementById('projDetailBody').innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;font-size:13px;">'+
+      '<div><strong>客户：</strong>'+p.client+'</div>'+
+      '<div><strong>状态：</strong><select class="input" id="pdStatus" onchange="updateProjStatus('+id+',this.value)">'+
+        ['进行中','筹备中','已交付','已归档'].map(function(s){return '<option'+(s===p.status?' selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
+      '<div><strong>截止：</strong>'+p.due+'</div>'+
+      '<div><strong>成员：</strong>'+p.members.length+' 人</div>'+
+    '</div>'+
+    '<div style="margin-bottom:16px;">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'+
+        '<strong style="font-size:13px;">项目进度</strong><span id="pdPctLabel" style="font-weight:700;color:var(--primary);">'+p.progress+'%</span></div>'+
+      '<input type="range" min="0" max="100" step="5" value="'+p.progress+'" style="width:100%;" oninput="updateProjProgress('+id+',this.value)">'+
+    '</div>'+
+    '<div style="margin-bottom:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;">'+
+      '<strong style="font-size:13px;margin-right:4px;">成员：</strong>'+memChips+pendingChips+
+      '<button class="btn btn-secondary btn-sm" onclick="openInvite('+id+')">＋ 邀请同事</button>'+
+    '</div>'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px;">'+
+      '<h4 style="margin:0;">任务（'+ts.length+'）</h4>'+
+      '<button class="btn btn-primary btn-sm" onclick="closeModal(\'projDetailModal\');openNewTask('+id+')">＋ 分配任务</button>'+
+    '</div>'+
+    '<div class="table-wrap"><table><thead><tr><th>任务</th><th>负责人</th><th>优先级</th><th>状态</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  openModal('projDetailModal');
+}
+window.openProjDetail = openProjDetail;
+
+function updateProjProgress(id,val){
+  var p=projById(id); if(!p) return; p.progress=parseInt(val);
+  if(p.progress===100 && p.status==='进行中') p.status='已交付';
+  save();
+  var lbl=document.getElementById('pdPctLabel'); if(lbl) lbl.textContent=p.progress+'%';
+  renderProjects();
+}
+window.updateProjProgress=updateProjProgress;
+function updateProjStatus(id,val){ var p=projById(id); if(!p) return; p.status=val; save(); renderProjects(); showToast('info','项目状态已更新为「'+val+'」'); }
+window.updateProjStatus=updateProjStatus;
+
+function openNewProject(){ document.getElementById('projName').value=''; document.getElementById('projClient').value=''; document.getElementById('projDue').value=''; openModal('projModal'); }
+function saveProject(){
+  var name=document.getElementById('projName').value.trim();
+  if(!name){ showToast('warning','请输入项目名称'); return; }
+  var id=PROJECTS.reduce(function(m,x){return Math.max(m,x.id);},0)+1;
+  PROJECTS.unshift({id:id,name:name,client:document.getElementById('projClient').value.trim()||'内部',members:[ME],progress:0,due:document.getElementById('projDue').value||'待定',status:'筹备中'});
+  save(); closeModal('projModal'); renderProjects();
+  showToast('success','项目「'+name+'」已创建');
+}
+window.openNewProject=openNewProject; window.saveProject=saveProject;
+
+// ---------- 邀请同事（接受后显示加入状态） ----------
+function openInvite(projId){
+  var p=projById(projId); if(!p) return;
+  inviteTargetProj=projId;
+  document.getElementById('inviteProjName').textContent='项目：'+p.name;
+  var candidates = MEMBERS.filter(function(m){ return p.members.indexOf(m)<0; });
+  document.getElementById('inviteChoices').innerHTML = candidates.length ? candidates.map(function(m){
+    var pending = INVITES.some(function(iv){return iv.projId===projId&&iv.to===m&&iv.status==='待接受';});
+    return '<button class="folder-choice" '+(pending?'disabled style="opacity:.6;"':'')+' onclick="sendInvite(\''+m+'\')">'+
+      '<span>👤 '+m+'</span><span class="tag '+(pending?'tag-orange':'tag-blue')+'">'+(pending?'已邀请·待接受':'邀请')+'</span></button>';
+  }).join('') : '<div style="color:var(--text-muted);font-size:13px;">全员已在项目中。</div>';
+  openModal('inviteModal');
+}
+var inviteTargetProj=null;
+function sendInvite(member){
+  var id=INVITES.reduce(function(m,x){return Math.max(m,x.id);},0)+1;
+  INVITES.push({id:id,projId:inviteTargetProj,to:member,from:ME,status:'待接受'});
+  save(); openInvite(inviteTargetProj);
+  showToast('success','已向 '+member+' 发送协作邀请');
+  // 演示：如果邀请的是“我”之外的人，模拟对方稍后接受
+  refreshInviteDot();
+}
+window.openInvite=openInvite; window.sendInvite=sendInvite;
+
+function renderInvites(){
+  var mine = INVITES.filter(function(iv){ return iv.to===ME; });
+  var html = mine.length ? mine.map(function(iv){
+    var p=projById(iv.projId); if(!p) return '';
+    if(iv.status==='待接受'){
+      return '<div class="invite-row"><div><strong>'+iv.from+'</strong> 邀请你加入项目 <strong>「'+p.name+'」</strong><div class="activity-time">客户：'+p.client+'</div></div>'+
+        '<div style="display:flex;gap:8px;"><button class="btn btn-primary btn-sm" onclick="acceptInvite('+iv.id+')">接受加入</button>'+
+        '<button class="btn btn-ghost btn-sm" onclick="declineInvite('+iv.id+')">拒绝</button></div></div>';
+    }
+    var tag = iv.status==='已加入' ? 'tag-green' : 'tag-red';
+    return '<div class="invite-row"><div>项目 <strong>「'+p.name+'」</strong><div class="activity-time">来自 '+iv.from+'</div></div><span class="tag '+tag+'">'+iv.status+'</span></div>';
+  }).join('') : '<div style="padding:24px;text-align:center;color:var(--text-muted);">暂无邀请</div>';
+  document.getElementById('inviteList').innerHTML = html;
+  // 同时展示我发出的、对方的加入状态
+  var sent = INVITES.filter(function(iv){ return iv.from===ME && iv.to!==ME; });
+  if(sent.length){
+    document.getElementById('inviteList').innerHTML += '<div class="card-title" style="margin-top:20px;">我发出的邀请</div>' +
+      sent.map(function(iv){ var p=projById(iv.projId); var tag=iv.status==='已加入'?'tag-green':(iv.status==='已拒绝'?'tag-red':'tag-orange');
+        return '<div class="invite-row"><div>邀请 <strong>'+iv.to+'</strong> 加入 <strong>「'+(p?p.name:'')+'」</strong></div><span class="tag '+tag+'">'+iv.status+'</span></div>'; }).join('');
+  }
+  refreshInviteDot();
+}
+function acceptInvite(id){
+  var iv=INVITES.find(function(x){return x.id===id;}); if(!iv) return;
+  iv.status='已加入'; var p=projById(iv.projId);
+  if(p && p.members.indexOf(iv.to)<0) p.members.push(iv.to);
+  save(); renderInvites(); renderProjects();
+  showToast('success','已加入项目「'+(p?p.name:'')+'」');
+}
+function declineInvite(id){
+  var iv=INVITES.find(function(x){return x.id===id;}); if(!iv) return;
+  iv.status='已拒绝'; save(); renderInvites();
+  showToast('info','已拒绝该邀请');
+}
+window.acceptInvite=acceptInvite; window.declineInvite=declineInvite;
+function refreshInviteDot(){
+  var n = INVITES.filter(function(iv){return iv.to===ME&&iv.status==='待接受';}).length;
+  var dot=document.getElementById('inviteDot');
+  if(n>0){ dot.style.display=''; dot.textContent=n; } else dot.style.display='none';
+}
+
+// ---------- 看板 ----------
+function renderKanban(){
+  refreshSelects();
+  var who = document.getElementById('kanbanFilter').value;
+  var pid = document.getElementById('kanbanProj').value;
+  document.getElementById('kanban').innerHTML = COLS.map(function(col){
+    var items = TASKS.filter(function(t){ return t.status===col && (!who||t.who===who) && (!pid||t.projId===parseInt(pid)); });
+    var cards = items.map(function(t){
+      var p=projById(t.projId);
+      var idx = COLS.indexOf(col);
+      var left = idx>0 ? '<button class="kb-move" title="左移" onclick="moveTask('+t.id+',-1)">◀</button>' : '';
+      var right = idx<COLS.length-1 ? '<button class="kb-move" title="右移" onclick="moveTask('+t.id+',1)">▶</button>' : '';
+      return '<div class="kanban-card">'+
+        '<div class="kanban-card-title">'+t.title+'</div>'+
+        '<div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">'+(p?p.name:'未关联项目')+'</div>'+
+        '<div class="kanban-card-meta"><span class="tag '+PRIO_TAG[t.prio]+'">'+t.prio+'</span>'+
+          '<span class="rank-av" style="width:24px;height:24px;font-size:11px;" title="'+t.who+'">'+t.who.charAt(0)+'</span></div>'+
+        '<div class="kb-actions">'+left+right+
+          '<button class="kb-move" title="编辑" onclick="editTask('+t.id+')">✎</button>'+
+          '<button class="kb-move" title="删除" onclick="delTask('+t.id+')">🗑</button></div>'+
+      '</div>';
+    }).join('');
+    return '<div class="kanban-col"><div class="kanban-col-title">'+col+' <span class="tag tag-purple">'+items.length+'</span></div>'+
+      cards+'<button class="btn btn-ghost btn-sm" style="width:100%;" onclick="openNewTask(null,\''+col+'\')">＋ 添加任务</button></div>';
+  }).join('');
+}
+function syncProgressFromTasks(projId){
+  var ts=projTasks(projId); if(!ts.length) return;
+  var done=ts.filter(function(t){return t.status==='已完成';}).length;
+  var p=projById(projId); if(p){ p.progress=Math.round(done/ts.length*100); if(p.progress===100&&p.status==='进行中') p.status='已交付'; }
+}
+function moveTask(id,dir){
+  var t=TASKS.find(function(x){return x.id===id;}); if(!t) return;
+  var i=COLS.indexOf(t.status)+dir; if(i<0||i>=COLS.length) return;
+  t.status=COLS[i]; syncProgressFromTasks(t.projId); save(); renderKanban();
+  if(t.status==='已完成') showToast('success','「'+t.title+'」已完成 🎉，项目进度已同步');
+}
+window.moveTask=moveTask;
+
+var editingTaskId=null;
+function openNewTask(presetProj,presetStatus){
+  editingTaskId=null;
+  document.getElementById('taskModalTitle').textContent='添加任务';
+  document.getElementById('taskTitle').value='';
+  document.getElementById('taskPrio').value='中';
+  refreshSelects();
+  if(presetProj) document.getElementById('taskProj').value=String(presetProj);
+  document.getElementById('taskStatus').value=(typeof presetStatus==='string'?presetStatus:'待开始');
+  openModal('taskModal');
+}
+function editTask(id){
+  var t=TASKS.find(function(x){return x.id===id;}); if(!t) return;
+  editingTaskId=id;
+  document.getElementById('taskModalTitle').textContent='编辑任务';
+  refreshSelects();
+  document.getElementById('taskTitle').value=t.title;
+  document.getElementById('taskProj').value=String(t.projId);
+  document.getElementById('taskWho').value=t.who;
+  document.getElementById('taskPrio').value=t.prio;
+  document.getElementById('taskStatus').value=t.status;
+  openModal('taskModal');
+}
+function delTask(id){
+  var t=TASKS.find(function(x){return x.id===id;}); if(!t) return;
+  if(!confirm('删除任务「'+t.title+'」？')) return;
+  var pid=t.projId;
+  TASKS=TASKS.filter(function(x){return x.id!==id;}); syncProgressFromTasks(pid); save(); renderKanban();
+  showToast('error','任务已删除');
+}
+function saveTask(){
+  var title=document.getElementById('taskTitle').value.trim();
+  if(!title){ showToast('warning','请输入任务名称'); return; }
+  var data={ title:title, projId:parseInt(document.getElementById('taskProj').value), who:document.getElementById('taskWho').value, prio:document.getElementById('taskPrio').value, status:document.getElementById('taskStatus').value };
+  if(editingTaskId){ Object.assign(TASKS.find(function(x){return x.id===editingTaskId;}),data); showToast('success','任务已更新'); }
+  else { var id=TASKS.reduce(function(m,x){return Math.max(m,x.id);},0)+1; TASKS.push(Object.assign({id:id},data)); showToast('success','任务已分配给 '+data.who); }
+  syncProgressFromTasks(data.projId); save(); closeModal('taskModal'); renderKanban(); renderProjects();
+}
+window.openNewTask=openNewTask; window.editTask=editTask; window.delTask=delTask; window.saveTask=saveTask;
+
+function refreshSelects(){
+  var projOpts = PROJECTS.map(function(p){return '<option value="'+p.id+'">'+p.name+'</option>';}).join('');
+  var tp=document.getElementById('taskProj'); if(tp) tp.innerHTML=projOpts;
+  var tw=document.getElementById('taskWho'); if(tw) tw.innerHTML=MEMBERS.map(function(m){return '<option>'+m+'</option>';}).join('');
+  var kp=document.getElementById('kanbanProj'); if(kp){ var cur=kp.value; kp.innerHTML='<option value="">全部项目</option>'+projOpts; kp.value=cur; }
+  var kf=document.getElementById('kanbanFilter'); if(kf){ var c2=kf.value; kf.innerHTML='<option value="">全部成员</option>'+MEMBERS.map(function(m){return '<option>'+m+'</option>';}).join(''); kf.value=c2; }
+}
+
+// ---------- 成员负载 ----------
+function renderMemberLoad(){
+  var rows = MEMBERS.map(function(m){
+    var mine = TASKS.filter(function(t){return t.who===m;});
+    var active = mine.filter(function(t){return t.status==='进行中'||t.status==='待审核';}).length;
+    var done = mine.filter(function(t){return t.status==='已完成';}).length;
+    var projs = PROJECTS.filter(function(p){return p.members.indexOf(m)>=0;}).length;
+    return { name:m, total:mine.length, active:active, done:done, projs:projs };
+  }).sort(function(a,b){return b.active-a.active;});
+  var max = Math.max(1, Math.max.apply(null, rows.map(function(r){return r.total;})));
+  document.getElementById('memberLoad').innerHTML = rows.map(function(r){
+    return '<div class="rank-row">'+
+      '<div class="rank-av">'+r.name.charAt(0)+'</div>'+
+      '<div style="width:90px;font-size:13px;font-weight:600;">'+r.name+(r.name===ME?'（我）':'')+'</div>'+
+      '<div class="rank-bar-wrap"><div class="rank-bar" style="width:'+(r.total/max*100)+'%;"></div></div>'+
+      '<div style="width:210px;text-align:right;font-size:12px;color:var(--text-secondary);">参与 '+r.projs+' 个项目 · 进行中 '+r.active+' · 已完成 '+r.done+'</div>'+
+    '</div>';
+  }).join('');
+}
+
+refreshSelects();
+renderProjects();
+renderKanban();
+refreshInviteDot();
+</script>
+</body>
+</html>

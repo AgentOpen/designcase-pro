@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>案例库 - George Design</title>
+<title>灵感库 - George Design</title>
 <link rel="stylesheet" href="common.css">
 <style>
 /* Extra case styles */
@@ -12,33 +12,11 @@
 </head>
 <body>
 
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo"><div class="sidebar-logo-icon">G</div><div class="sidebar-logo-text">George Design</div></div>
-  <nav class="sidebar-nav">
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">主菜单</div>
-      <a href="dashboard.html" class="nav-item" data-page="dashboard"><span class="nav-icon">⊞</span> 工作台</a>
-      <a href="products.html" class="nav-item" data-page="products"><span class="nav-icon">⊡</span> 产品库</a>
-      <a href="cases.html" class="nav-item active" data-page="cases"><span class="nav-icon">⊟</span> 案例库</a>
-      <a href="mycases.html" class="nav-item" data-page="mycases"><span class="nav-icon">⊠</span> 我的案例</a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">文件与数据</div>
-      <a href="nas.html" class="nav-item" data-page="nas"><span class="nav-icon">⊡</span> NAS文件管理</a>
-      <a href="analytics.html" class="nav-item" data-page="analytics"><span class="nav-icon">📊</span> 数据看板</a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">管理</div>
-      <a href="admin.html" class="nav-item" data-page="admin"><span class="nav-icon">⚙</span> 系统管理</a>
-      <a href="profile.html" class="nav-item" data-page="profile"><span class="nav-icon">👤</span> 个人中心</a>
-    </div>
-  </nav>
-  <div class="sidebar-user"><div class="sidebar-avatar chen">陈</div>陈磊 · 部门主管</div>
-</aside>
+<aside class="sidebar" id="sidebar"></aside>
 
 <main class="main">
   <header class="header">
-    <h1 class="header-title" id="headerTitle">案例库</h1>
+    <h1 class="header-title" id="headerTitle">灵感库</h1>
     <div class="header-actions">
       <button class="dark-toggle" onclick="toggleDarkMode()">🌙</button>
       <button class="btn btn-ghost" onclick="toggleHistory()">📜</button>
@@ -164,11 +142,12 @@
 
 <div class="history-panel" id="historyPanel"><div style="padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;"><strong>操作历史</strong><button class="btn btn-ghost btn-sm" onclick="toggleHistory()">✕</button></div><div id="historyList"></div></div>
 <div class="compare-panel hidden" id="comparePanel"><div class="compare-items" id="compareItems"></div></div>
-<div class="modal-overlay" id="shortcutsModal"><div class="modal" style="max-width:600px;"><div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div><div class="modal-body"><table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody><tr><td><kbd>?</kbd></td><td>显示快捷键</td></tr><tr><td><kbd>Ctrl/Cmd + C</kbd></td><td>案例库</td></tr><tr><td><kbd>Esc</kbd></td><td>关闭弹窗</td></tr></tbody></table></div></div></div>
+<div class="modal-overlay" id="shortcutsModal"><div class="modal" style="max-width:600px;"><div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div><div class="modal-body"><table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody><tr><td><kbd>?</kbd></td><td>显示快捷键</td></tr><tr><td><kbd>Ctrl/Cmd + C</kbd></td><td>灵感库</td></tr><tr><td><kbd>Esc</kbd></td><td>关闭弹窗</td></tr></tbody></table></div></div></div>
 <div class="modal-overlay" id="compareModal"><div class="modal modal-lg"><div class="modal-header"><h2>案例对比</h2><button class="modal-close" onclick="closeModal('compareModal')">✕</button></div><div class="modal-body" id="compareModalBody"></div></div></div>
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="common.js"></script>
+<script src="gdcase.js"></script>
 <script>
 // ========== CASE DATA (20+) ==========
 const allCases = [
@@ -196,38 +175,8 @@ const allCases = [
   {id:22,name:'新中式主卧',designer:'陈磊',designerId:'001',style:'新中式',space:'卧室',area:105,budget:26,country:'马来西亚',reuseCount:34,time:'2026-03-28',theme:'chinese',number:'001-Malaysia-案例022'},
 ];
 
-function getTagClass(s) {
-  const m = {'现代简约':'tag-blue','北欧':'tag-green','新中式':'tag-purple','轻奢':'tag-orange','工业风':'tag-red','日式':'tag-pink','美式':'tag-cyan'};
-  return m[s]||'tag-blue';
-}
-
-function renderCaseCard(c) {
-  return `
-  <div class="case-card">
-    <div class="card-thumb" onclick="openCaseDetail(${c.id})">
-      <div class="card-thumb-placeholder theme-${c.theme}"></div>
-    </div>
-    <div class="card-body">
-      <div class="card-body-title" onclick="openCaseDetail(${c.id})" style="cursor:pointer;">${c.name}</div>
-      <div class="card-body-meta" style="display:flex;align-items:center;gap:8px;">
-        <span class="user-avatar chen">${c.designer[0]}</span> ${c.designer} · ${c.area}㎡ · ¥${c.budget}万
-      </div>
-      <div class="card-body-tags">
-        <span class="tag ${getTagClass(c.style)}">${c.style}</span>
-        <span class="tag tag-green">${c.space}</span>
-        <span class="tag tag-orange">${c.country}</span>
-      </div>
-      <div class="card-body-footer">
-        <span style="font-size:11px;color:var(--text-muted);">🔄 ${c.reuseCount}次复用 · ${c.time}</span>
-        <div style="display:flex;gap:6px;">
-          <button class="btn btn-ghost btn-sm" onclick="toggleCompare(allCases.find(x=>x.id===$1));" data-id="${c.id}">对比</button>
-          <button class="btn btn-ghost btn-sm" onclick="openCaseDetail(${c.id})">详情</button>
-          <button class="btn btn-primary btn-sm" onclick="startReuseForCase(${c.id})">一键复用</button>
-        </div>
-      </div>
-    </div>
-  </div>`;
-}
+// 注册数据源给统一案例模块
+GDCase.setSource(function () { return allCases; }, { afterReuse: function () { filterCases(); } });
 
 function filterCases() {
   const s = document.getElementById('caseSearch').value.toLowerCase();
@@ -249,7 +198,7 @@ function filterCases() {
   if (sort==='hottest') filtered.sort((a,b)=>b.reuseCount-a.reuseCount);
   if (sort==='mostReuse') filtered.sort((a,b)=>b.reuseCount-a.reuseCount);
 
-  document.getElementById('caseGrid').innerHTML = filtered.map(renderCaseCard).join('') ||
+  document.getElementById('caseGrid').innerHTML = filtered.map(c => GDCase.renderCard(c, {context:'cases'})).join('') ||
     '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px;">无匹配案例</p>';
   document.getElementById('caseResultCount').textContent = `共 ${filtered.length} 个案例`;
 }
@@ -264,68 +213,6 @@ function resetCaseFilter() {
   document.getElementById('budgetRange').value=100; document.getElementById('budgetVal').textContent='100';
   filterCases();
 }
-
-function openCaseDetail(id) {
-  const c = allCases.find(x=>x.id===id); if(!c) return;
-  document.getElementById('caseDetailTitle').textContent = c.name;
-  document.getElementById('caseDetailThumb').innerHTML = `<div class="card-thumb-placeholder theme-${c.theme}" style="width:100%;height:100%;"></div>`;
-  document.getElementById('cdName').textContent = c.name;
-  document.getElementById('cdDesigner').textContent = `${c.designer} (ID:${c.designerId})`;
-  document.getElementById('cdStyle').innerHTML = `<span class="tag ${getTagClass(c.style)}">${c.style}</span>`;
-  document.getElementById('cdSpace').innerHTML = `<span class="tag tag-green">${c.space}</span>`;
-  document.getElementById('cdArea').textContent = c.area + '㎡';
-  document.getElementById('cdBudget').textContent = '¥' + c.budget + '万';
-  document.getElementById('cdCountry').textContent = c.country;
-  document.getElementById('cdTime').textContent = c.time;
-  document.getElementById('cdReuse').textContent = c.reuseCount + '次';
-  document.getElementById('cdNumber').textContent = c.number;
-
-  // Product table
-  const products = [{name:'北欧简约沙发',sku:'SKU-SF-001',cat:'沙发',qty:1},{name:'现代极简吊灯',sku:'SKU-LT-001',cat:'灯具',qty:2},{name:'北欧实木茶几',sku:'SKU-TB-003',cat:'茶几',qty:1}];
-  document.querySelector('#cdProductTable tbody').innerHTML = products.map(p =>
-    `<tr><td>${p.name}</td><td>${p.sku}</td><td>${p.cat}</td><td>${p.qty}</td><td><button class="btn btn-ghost btn-sm" onclick="simulateDownload('${p.name}')">下载</button></td></tr>`
-  ).join('');
-
-  // 3D Models
-  const models = [{name:'客厅场景.max',fmt:'.max',size:'45MB'},{name:'客厅场景.skp',fmt:'.skp',size:'32MB'},{name:'客厅场景.fbx',fmt:'.fbx',size:'28MB'}];
-  document.querySelector('#cdModelTable tbody').innerHTML = models.map(m =>
-    `<tr><td>${m.name}</td><td><span class="tag tag-purple">${m.fmt}</span></td><td>${m.size}</td><td><button class="btn btn-ghost btn-sm" onclick="simulateDownload('${m.name}')">下载</button></td></tr>`
-  ).join('');
-
-  // CAD
-  const cads = [{name:'平面布局图.dwg',fmt:'.dwg'},{name:'立面图.dwg',fmt:'.dwg'},{name:'节点大样图.dwg',fmt:'.dwg'}];
-  document.querySelector('#cdCADTable tbody').innerHTML = cads.map(c =>
-    `<tr><td>${c.name}</td><td><span class="tag tag-red">${c.fmt}</span></td><td><button class="btn btn-ghost btn-sm" onclick="simulateDownload('${c.name}')">下载</button></td></tr>`
-  ).join('');
-
-  document.getElementById('reuseSteps').style.display = 'none';
-  openModal('caseDetailModal');
-}
-
-function startReuseForCase(id) {
-  openCaseDetail(id);
-  setTimeout(startReuse, 300);
-}
-
-function startReuse() {
-  const steps = document.getElementById('reuseSteps');
-  steps.style.display = 'flex';
-  ['rs1','rs2','rs3'].forEach((id,i) => {
-    const el = document.getElementById(id);
-    el.className = 'reuse-step';
-    setTimeout(() => { el.classList.add('active'); setTimeout(() => el.classList.add('done'), 600); }, i * 800);
-  });
-  setTimeout(() => showToast('success', '案例复用成功！已创建副本到我的案例'), 2500);
-}
-
-// Fix toggleCompare onclick
-document.querySelectorAll('[data-id]').forEach(el => {
-  el.addEventListener('click', function(e) {
-    const id = parseInt(this.dataset.id);
-    const c = allCases.find(x => x.id === id);
-    if (c) toggleCompare(c);
-  });
-});
 
 filterCases();
 </script>

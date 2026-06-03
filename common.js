@@ -15,44 +15,89 @@ const App = {
 // ========== INIT ==========
 document.addEventListener('DOMContentLoaded', () => {
   if (App.darkMode) document.body.classList.add('dark');
+  renderSidebar();
   highlightCurrentNav();
   initModals();
   initGlobalKeyboard();
   updateComparePanel();
 });
 
-// ========== SIDEBAR NAVIGATION (direct links, no SPA) ==========
+// ========== SIDEBAR (centralized, rendered into <aside id="sidebar">) ==========
+// Single source of truth for the left nav. 首页 merges 工作台+数据看板;
+// 系统管理 folded into 个人中心.
+var GD_NAV = [
+  { section: '主菜单', items: [
+    { page: 'home',     icon: '⊞', label: '首页',       href: 'dashboard.html' },
+    { page: 'products', icon: '⊡', label: '素材库',     href: 'products.html', badge: '128' },
+    { page: 'cases',    icon: '⊟', label: '灵感库',     href: 'cases.html' },
+    { page: 'mycases',  icon: '⊠', label: '我的案例',   href: 'mycases.html' },
+  ]},
+  { section: '文件与数据', items: [
+    { page: 'nas',      icon: '⊡', label: 'NAS文件管理', href: 'nas.html' },
+  ]},
+  { section: '团队', items: [
+    { page: 'team',     icon: '◇', label: '团队协作',   href: 'team.html' },
+    { page: 'ranking',  icon: '★', label: '设计师榜单', href: 'ranking.html' },
+  ]},
+  { section: '我的', items: [
+    { page: 'profile',  icon: '👤', label: '个人中心',  href: 'profile.html' },
+  ]},
+];
+
+function renderSidebar() {
+  const aside = document.getElementById('sidebar');
+  if (!aside) return;
+  // notification unread count
+  var unread = 0;
+  try { unread = (JSON.parse(localStorage.getItem('gd-notifications') || '[]')).filter(function (n) { return !n.read; }).length; } catch (e) {}
+  var navHtml = GD_NAV.map(function (sec) {
+    return '<div class="sidebar-section"><div class="sidebar-section-title">' + sec.section + '</div>' +
+      sec.items.map(function (it) {
+        var badge = it.badge ? '<span class="nav-badge">' + it.badge + '</span>' : '';
+        if (it.page === 'home' && unread > 0) badge = '<span class="nav-badge nav-badge-dot">' + unread + '</span>';
+        return '<a href="' + it.href + '" class="nav-item" data-page="' + it.page + '">' +
+          '<span class="nav-icon">' + it.icon + '</span> ' + it.label + badge + '</a>';
+      }).join('') + '</div>';
+  }).join('');
+  aside.innerHTML =
+    '<div class="sidebar-logo"><div class="sidebar-logo-icon">G</div><div class="sidebar-logo-text">George Design</div></div>' +
+    '<nav class="sidebar-nav">' + navHtml + '</nav>' +
+    '<div class="sidebar-user" onclick="window.location.href=\'profile.html\'" style="cursor:pointer" title="个人中心">' +
+      '<div class="sidebar-avatar chen">陈</div>' +
+      '<div class="sidebar-user-info"><div class="sidebar-user-name">陈磊</div>' +
+      '<div class="sidebar-user-role">资深设计师 · 部门主管</div></div></div>';
+}
+
+// ========== NAV HIGHLIGHT + TITLE ==========
 function highlightCurrentNav() {
   const path = window.location.pathname;
-  const filename = path.substring(path.lastIndexOf('/') + 1) || 'index.html';
+  const filename = path.substring(path.lastIndexOf('/') + 1) || 'dashboard.html';
 
-  // Map filenames to data-page values
   const pageMap = {
-    'index.html': 'dashboard',
-    'dashboard.html': 'dashboard',
+    'dashboard.html': 'home', 'analytics.html': 'home',
     'products.html': 'products',
     'cases.html': 'cases',
     'mycases.html': 'mycases',
     'nas.html': 'nas',
-    'analytics.html': 'analytics',
-    'admin.html': 'admin',
+    'team.html': 'team',
+    'ranking.html': 'ranking',
+    'admin.html': 'profile',
     'profile.html': 'profile',
   };
 
-  const page = pageMap[filename] || 'dashboard';
+  const page = pageMap[filename] || 'home';
   App.currentPage = page;
 
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const items = document.querySelectorAll(`[data-page="${page}"]`);
-  items.forEach(n => n.classList.add('active'));
+  document.querySelectorAll(`[data-page="${page}"]`).forEach(n => n.classList.add('active'));
 
   const titles = {
-    dashboard: '工作台', products: '产品库', cases: '案例库',
+    home: '首页', products: '素材库', cases: '灵感库',
     mycases: '我的案例', nas: 'NAS文件管理',
-    analytics: '数据看板', admin: '系统管理', settings: '同步设置'
+    team: '团队协作', ranking: '设计师榜单', profile: '个人中心'
   };
   const titleEl = document.getElementById('headerTitle');
-  if (titleEl) titleEl.textContent = titles[page] || '';
+  if (titleEl && !titleEl.dataset.keep) titleEl.textContent = titles[page] || '';
 
   addHistory(page, titles[page] || page);
 
@@ -213,9 +258,9 @@ function renderHistory() {
   const el = document.getElementById('historyList');
   if (!el) return;
   const pageUrlMap = {
-    dashboard: 'dashboard.html', products: 'products.html', cases: 'cases.html',
+    home: 'dashboard.html', dashboard: 'dashboard.html', products: 'products.html', cases: 'cases.html',
     mycases: 'mycases.html', nas: 'nas.html',
-    analytics: 'analytics.html', admin: 'admin.html', settings: 'settings.html'
+    team: 'team.html', ranking: 'ranking.html', profile: 'profile.html'
   };
   el.innerHTML = App.history.slice(0, 20).map(h =>
     `<div class="history-item" onclick="window.location.href='${pageUrlMap[h.page] || 'dashboard.html'}';toggleHistory()">
@@ -242,8 +287,7 @@ function initGlobalKeyboard() {
         case 'c': e.preventDefault(); window.location.href = 'cases.html'; break;
         case 'm': e.preventDefault(); window.location.href = 'mycases.html'; break;
         case 'n': e.preventDefault(); window.location.href = 'nas.html'; break;
-        case 'a': e.preventDefault(); window.location.href = 'analytics.html'; break;
-        case 's': e.preventDefault(); window.location.href = 'settings.html'; break;
+        case 'r': e.preventDefault(); window.location.href = 'ranking.html'; break;
         case 'b': e.preventDefault(); toggleDarkMode(); break;
         case 'h': e.preventDefault(); toggleHistory(); break;
       }
@@ -360,3 +404,185 @@ window.openImageSearch = openImageSearch;
 window.simulateImageSearch = simulateImageSearch;
 window.startSync = startSync;
 window.selectNASDir = selectNASDir;
+/* ============================================================
+   Real-image thumbnails (faithful overlay on gradient placeholder)
+   - Keeps the original .card-thumb-placeholder gradient as fallback.
+   - Loads a deterministic, keyword-matched real photo on top.
+   - Works on GitHub Pages (pure <img>, no fetch / no build).
+   ============================================================ */
+// product theme -> search keyword
+var GD_PRODUCT_KW = {
+  sofa:'modern sofa furniture', bed:'bedroom bed interior', lamp:'pendant lamp lighting',
+  table:'coffee table furniture', chair:'designer chair furniture', shelf:'shelf storage furniture',
+  dining:'dining table room', carpet:'rug carpet floor', curtain:'window curtain interior',
+  vase:'decor vase ornament', screen:'room divider screen'
+};
+// case style/space -> search keyword
+var GD_SPACE_KW = {
+  '客厅':'living room interior','卧室':'bedroom interior','厨房':'kitchen interior',
+  '餐厅':'dining room interior','书房':'home office study','儿童房':'kids room interior','玄关':'entryway hallway'
+};
+var GD_STYLE_KW = {
+  '北欧':'scandinavian','现代简约':'modern minimalist','新中式':'chinese style','轻奢':'luxury',
+  '工业风':'industrial loft','日式':'japanese','美式':'american classic'
+};
+// deterministic real image URL (loremflickr keeps a stable photo per lock id)
+function gdPhoto(keywords, lockId, w, h) {
+  w = w || 600; h = h || 450;
+  var kw = encodeURIComponent(String(keywords).trim().replace(/\s+/g, ','));
+  return 'https://loremflickr.com/' + w + '/' + h + '/' + kw + '?lock=' + (lockId || 1);
+}
+// Build the inner HTML of a .card-thumb: gradient layer + real image overlay.
+// theme = product theme key; for cases pass {space, style} via opts.
+function gdThumbInner(theme, lockId, opts) {
+  opts = opts || {};
+  var kw;
+  if (opts.space || opts.style) {
+    kw = (GD_SPACE_KW[opts.space] || 'interior design') + ' ' + (GD_STYLE_KW[opts.style] || '');
+  } else {
+    kw = GD_PRODUCT_KW[theme] || 'interior design furniture';
+  }
+  var src = gdPhoto(kw, lockId);
+  return '<div class="card-thumb-placeholder theme-' + (theme || 'modern') + '">' +
+    '<img class="gd-real-img" src="' + src + '" alt="" loading="lazy" ' +
+    'onload="this.classList.add(\'loaded\')" ' +
+    'onerror="this.style.display=\'none\'"></div>';
+}
+window.gdPhoto = gdPhoto;
+window.gdThumbInner = gdThumbInner;
+
+/* ---- navigateTo: fix for the original undefined-function bug ---- */
+function navigateTo(page) {
+  var map = {
+    dashboard:'dashboard.html', products:'products.html', cases:'cases.html',
+    mycases:'mycases.html', nas:'nas.html', team:'team.html', ranking:'ranking.html',
+    home:'dashboard.html', profile:'profile.html', library:'index.html'
+  };
+  if (map[page]) window.location.href = map[page];
+}
+window.navigateTo = navigateTo;
+
+/* ---- hydrate any STATIC .card-thumb-placeholder with a real photo ---- */
+function gdHydrateStaticThumbs() {
+  var nodes = document.querySelectorAll('.card-thumb-placeholder:not(.gd-hydrated)');
+  nodes.forEach(function (el, i) {
+    if (el.querySelector('.gd-real-img')) { el.classList.add('gd-hydrated'); return; }
+    var theme = (Array.prototype.find.call(el.classList, function (c) { return c.indexOf('theme-') === 0; }) || 'theme-modern').slice(6);
+    var kw = (window.GD_PRODUCT_KW && window.GD_PRODUCT_KW[theme]) || 'interior design furniture';
+    var img = document.createElement('img');
+    img.className = 'gd-real-img';
+    img.loading = 'lazy';
+    img.src = gdPhoto(kw, 700 + i);
+    img.onload = function () { img.classList.add('loaded'); };
+    img.onerror = function () { img.style.display = 'none'; };
+    el.appendChild(img);
+    el.classList.add('gd-hydrated');
+  });
+}
+window.gdHydrateStaticThumbs = gdHydrateStaticThumbs;
+// GD_PRODUCT_KW lives in this file; expose it for the hydrator
+window.GD_PRODUCT_KW = GD_PRODUCT_KW;
+document.addEventListener('DOMContentLoaded', function () { setTimeout(gdHydrateStaticThumbs, 50); });
+
+/* ============================================================
+   Persistence layer (localStorage) — makes reuse / create / delete real
+   ============================================================ */
+var GDStore = {
+  k: { mine:'gd-mycases', reuse:'gd-reuse', nascopies:'gd-nascopies' },
+  get: function (key, def) {
+    try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : def; }
+    catch (e) { return def; }
+  },
+  set: function (key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+};
+window.GDStore = GDStore;
+
+// Build an independent, owned copy of a source case + a NAS copy path + a reuse record.
+function gdMakeReuseCopy(src, user) {
+  user = user || { name:'陈磊', id:'001' };
+  var mine = GDStore.get(GDStore.k.mine, []);
+  var newId = 900 + mine.length + 1;
+  var seq = String(newId).padStart(3, '0');
+  var copy = {
+    id: newId, name: src.name + '（复用）', designer: user.name, designerId: user.id,
+    style: src.style, space: src.space, area: src.area, budget: src.budget,
+    country: src.country, reuseCount: 0, time: gdToday(), theme: src.theme || 'modern',
+    number: user.id + '-Reuse-案例' + seq, origin: src.id
+  };
+  var nasPath = '设计' + '/' + user.name + '(' + user.id + ')/reuse/' + copy.number;
+  var record = { from: src.name, fromNumber: src.number, by: user.name, time: gdNow(), copyNumber: copy.number };
+  return { copy: copy, nasPath: nasPath, record: record };
+}
+function gdToday() {
+  var d = new Date(), p = function (n) { return String(n).padStart(2, '0'); };
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+function gdNow() {
+  var d = new Date(), p = function (n) { return String(n).padStart(2, '0'); };
+  return gdToday() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+// Persist a reuse: store owned copy + nas copy node + reuse record.
+function gdPersistReuse(src, user) {
+  var r = gdMakeReuseCopy(src, user);
+  var mine = GDStore.get(GDStore.k.mine, []); mine.unshift(r.copy); GDStore.set(GDStore.k.mine, mine);
+  var copies = GDStore.get(GDStore.k.nascopies, []); copies.unshift({ path:r.nasPath, name:r.copy.name, number:r.copy.number, time:r.record.time }); GDStore.set(GDStore.k.nascopies, copies);
+  var recs = GDStore.get(GDStore.k.reuse, []); recs.unshift(r.record); GDStore.set(GDStore.k.reuse, recs);
+  return r;
+}
+window.gdMakeReuseCopy = gdMakeReuseCopy;
+window.gdPersistReuse = gdPersistReuse;
+window.gdToday = gdToday; window.gdNow = gdNow;
+
+/* ============================================================
+   Personal Product Library (folders + add + compare)
+   localStorage: gd-prod-folders = [{id,name,items:[productId,...]}]
+   ============================================================ */
+var GDLib = {
+  key: 'gd-prod-folders',
+  load: function () {
+    try { return JSON.parse(localStorage.getItem(this.key) || '[]'); }
+    catch (e) { return []; }
+  },
+  save: function (folders) { localStorage.setItem(this.key, JSON.stringify(folders)); },
+  ensureDefault: function () {
+    var f = this.load();
+    if (!f.length) { f = [{ id: 1, name: '默认收藏夹', items: [] }]; this.save(f); }
+    return f;
+  },
+  addFolder: function (name) {
+    var f = this.load();
+    var id = f.reduce(function (m, x) { return Math.max(m, x.id); }, 0) + 1;
+    f.push({ id: id, name: name, items: [] }); this.save(f); return id;
+  },
+  removeFolder: function (id) { this.save(this.load().filter(function (x) { return x.id !== id; })); },
+  addItem: function (folderId, productId) {
+    var f = this.load();
+    var folder = f.find(function (x) { return x.id === folderId; });
+    if (folder && folder.items.indexOf(productId) < 0) { folder.items.push(productId); this.save(f); return true; }
+    return false;
+  },
+  removeItem: function (folderId, productId) {
+    var f = this.load();
+    var folder = f.find(function (x) { return x.id === folderId; });
+    if (folder) { folder.items = folder.items.filter(function (i) { return i !== productId; }); this.save(f); }
+  },
+  totalItems: function () {
+    return this.load().reduce(function (s, x) { return s + x.items.length; }, 0);
+  }
+};
+window.GDLib = GDLib;
+
+// Compute the attribute-difference matrix between products (for compare view)
+function gdProductCompareRows(products) {
+  var fields = [
+    ['名称', 'name'], ['SKU', 'sku'], ['风格', 'style'], ['空间', 'space'],
+    ['品类', 'category'], ['价格', function (p) { return '¥' + (p.price || 0).toLocaleString(); }],
+    ['下载量', function (p) { return (p.downloads || 0) + ' 次'; }]
+  ];
+  return fields.map(function (f) {
+    var vals = products.map(function (p) { return typeof f[1] === 'function' ? f[1](p) : p[f[1]]; });
+    var diff = vals.some(function (v) { return v !== vals[0]; });
+    return { label: f[0], values: vals, diff: diff };
+  });
+}
+window.gdProductCompareRows = gdProductCompareRows;

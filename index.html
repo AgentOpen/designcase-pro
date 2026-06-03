@@ -69,16 +69,21 @@ body {
 /* ========== 全站布局 ========== */
 .znz-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background-color: var(--znz-sidebar-bg);
 }
 
-/* ========== 左侧栏菜单 (206px) ========== */
+/* ========== 左侧栏菜单 (206px) - 固定，不随右侧滚动 ========== */
 .znz-sidebar {
   width: 206px;
   background-color: var(--znz-sidebar-bg);
   flex-shrink: 0;
   padding: var(--znz-spacing-xl) var(--znz-spacing-sm);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
 }
 
 .znz-logo {
@@ -178,6 +183,8 @@ body {
   padding: var(--znz-spacing-sm) var(--znz-spacing-sm) var(--znz-spacing-sm) 0;
   background-color: var(--znz-sidebar-bg);
   min-width: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 /* ========== 顶部操作栏 ========== */
@@ -258,6 +265,65 @@ body {
 .znz-header-btn-vip:hover {
   background-color: #FFC107;
 }
+
+.znz-header-btn-dark {
+  background-color: #111;
+  color: #fff;
+  border-radius: 999px;
+  padding: 8px 20px;
+}
+.znz-header-btn-dark:hover { background-color: #000; }
+
+/* ========== 登录弹窗 ========== */
+.znz-login-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(20,20,22,.55);
+  display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(2px);
+}
+.znz-login-overlay.active { display: flex; }
+.znz-login-modal {
+  display: flex; width: 880px; max-width: 94vw; height: 520px; max-height: 90vh;
+  background: #fff; border-radius: 20px; overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,.35); position: relative;
+}
+.znz-login-visual { width: 46%; flex-shrink: 0; position: relative; background: #2a2a2a; }
+.znz-login-visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.znz-login-form { flex: 1; padding: 56px 48px; position: relative; }
+.znz-login-close {
+  position: absolute; top: 18px; right: 18px; width: 34px; height: 34px;
+  border-radius: 50%; border: none; background: #f1f1f1; color: #666;
+  font-size: 18px; cursor: pointer; line-height: 34px; text-align: center;
+}
+.znz-login-close:hover { background: #e5e5e5; }
+.znz-login-title { font-size: 30px; font-weight: 800; color: #111; margin: 0 0 8px; }
+.znz-login-sub { font-size: 14px; color: #888; margin-bottom: 30px; }
+.znz-login-label { font-size: 12px; letter-spacing: .08em; color: #999; font-weight: 600; margin: 16px 0 8px; }
+.znz-login-input-wrap { position: relative; }
+.znz-login-input {
+  width: 100%; height: 48px; border: none; background: #f4f4f5; border-radius: 10px;
+  padding: 0 44px 0 16px; font-size: 14px; color: #111; box-sizing: border-box;
+}
+.znz-login-input:focus { outline: 2px solid #111; background: #fff; }
+.znz-login-eye {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; color: #999; font-size: 16px;
+}
+.znz-login-submit {
+  width: 100%; height: 52px; margin-top: 26px; border: none; border-radius: 12px;
+  background: #111; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer;
+}
+.znz-login-submit:hover { background: #000; }
+.znz-login-divider { display: flex; align-items: center; gap: 12px; color: #aaa; font-size: 12px; margin: 22px 0 16px; }
+.znz-login-divider::before, .znz-login-divider::after { content: ''; flex: 1; height: 1px; background: #eee; }
+.znz-login-wechat {
+  width: 100%; height: 52px; border: none; border-radius: 12px; background: #f4f4f5;
+  color: #333; font-size: 15px; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; gap: 8px;
+}
+.znz-login-wechat:hover { background: #ebebeb; }
+.znz-login-hint { font-size: 12px; color: #b0b0b0; margin-top: 14px; text-align: center; }
+@media (max-width: 640px) { .znz-login-visual { display: none; } .znz-login-form { padding: 44px 28px; } }
 
 .znz-header-user {
   display: flex;
@@ -351,28 +417,48 @@ body {
   opacity: 1;
 }
 
-.znz-banner-content {
-  text-align: center;
-  z-index: 1;
-  max-width: 800px;
-  padding: var(--znz-spacing-4xl);
+.znz-banner-img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; opacity: 0; transition: opacity .6s ease; z-index: 0;
+}
+.znz-banner-img.loaded { opacity: 1; }
+.znz-banner-slide::after {
+  content: ''; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(180deg, rgba(0,0,0,.30), rgba(0,0,0,.42));
 }
 
-.znz-banner-title {
-  font-size: 48px;
-  font-weight: 800;
-  color: #fff;
-  margin-bottom: var(--znz-spacing-lg);
-  line-height: 1.2;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+.znz-banner-overlay {
+  position: absolute; inset: 0; z-index: 3;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 22px; padding: 0 24px;
 }
-
-.znz-banner-subtitle {
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: var(--znz-spacing-4xl);
-  line-height: 1.5;
+.znz-banner-tabs { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.znz-banner-tab {
+  padding: 8px 18px; border-radius: 999px; cursor: pointer;
+  font-size: 16px; font-weight: 600; color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,.4); transition: all .2s ease;
 }
+.znz-banner-tab:hover { background: rgba(255,255,255,.18); }
+.znz-banner-tab.active { background: #fff; color: #111; text-shadow: none; }
+.znz-hero-search {
+  width: min(1180px, 92%); height: 64px; background: #fff;
+  border-radius: 999px; display: flex; align-items: center;
+  padding: 0 8px 0 28px; box-shadow: 0 12px 40px rgba(0,0,0,.25);
+}
+.znz-hero-search-input {
+  flex: 1; border: none; outline: none; font-size: 16px; color: #333;
+  background: transparent; height: 100%;
+}
+.znz-hero-search-cam {
+  border: none; background: transparent; font-size: 20px; cursor: pointer;
+  padding: 0 16px; color: #666;
+}
+.znz-hero-search-btn {
+  border: none; background: #e60023; color: #fff; font-size: 16px; font-weight: 600;
+  height: 48px; padding: 0 30px; border-radius: 999px; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+}
+.znz-hero-search-btn:hover { background: #cc001f; }
 
 .znz-banner-dots {
   position: absolute;
@@ -850,43 +936,6 @@ body {
         <div class="znz-menu-item-text">云渲染</div>
       </div>
     </div>
-    
-    <div class="znz-menu-group">
-      <div class="znz-menu-group-title">分类</div>
-      <div class="znz-menu-item">
-        <div class="znz-menu-item-text">发现</div>
-      </div>
-      <div class="znz-menu-item">
-        <div class="znz-menu-item-text">3D模型</div>
-      </div>
-      <div class="znz-menu-item">
-        <div class="znz-menu-item-text">SU模型</div>
-      </div>
-      <div class="znz-menu-item">
-        <div class="znz-menu-item-text">贴图</div>
-      </div>
-      <div class="znz-menu-item">
-        <div class="znz-menu-item-text">CAD</div>
-      </div>
-      <div class="znz-menu-item">
-        <div class="znz-menu-item-text">文本</div>
-      </div>
-      <div class="znz-menu-item">
-        <div class="znz-menu-item-text">PS素材</div>
-      </div>
-      <div class="znz-menu-item">
-        <div class="znz-menu-item-text">校园素材</div>
-      </div>
-      <div class="znz-menu-item">
-        <div class="znz-menu-item-text">软件</div>
-      </div>
-      <div class="znz-menu-item">
-        <div class="znz-menu-item-text">课程</div>
-      </div>
-      <div class="znz-menu-item">
-        <div class="znz-menu-item-text">雕塑</div>
-      </div>
-    </div>
   </aside>
   
   <!-- 右侧内容区 -->
@@ -902,44 +951,48 @@ body {
       </div>
       
       <div class="znz-header-right">
-        <button class="znz-header-btn znz-header-btn-primary">新建项目</button>
-        <button class="znz-header-btn znz-header-btn-outline">我的收藏</button>
-        <button class="znz-header-btn znz-header-btn-outline">我的下载</button>
-        <button class="znz-header-btn znz-header-btn-outline">充值</button>
-        <button class="znz-header-btn znz-header-btn-vip">VIP</button>
-        <button class="znz-header-btn znz-header-btn-primary">上传</button>
-        <div class="znz-header-user">
-          <div class="znz-header-avatar">登</div>
+        <button class="znz-header-btn znz-header-btn-outline">上传</button>
+        <button class="znz-header-btn znz-header-btn-dark" id="loginEntryBtn" onclick="openLoginModal()">登录/注册</button>
+        <button class="znz-header-btn znz-header-btn-dark" id="consoleBtn" style="display:none;" onclick="window.location.href='dashboard.html'">控制台</button>
+        <button class="znz-header-btn znz-header-btn-outline" id="logoutBtn" style="display:none;" onclick="logout()">退出</button>
+        <div class="znz-header-user" id="userBadge" style="display:none;" title="点击进入控制台" onclick="window.location.href='dashboard.html'">
+          <div class="znz-header-avatar" id="userAvatar">演</div>
         </div>
       </div>
     </header>
     
-    <!-- 搜索区域 -->
-    <div class="znz-search-container">
-      <input type="text" class="znz-search-box" placeholder="搜索你需要的设计资源..." id="searchInput">
-      <button class="znz-search-btn">搜户型</button>
-    </div>
-    
-    <!-- Banner 轮播区域 -->
+    <!-- Banner Hero：分类标签 + 搜索框 叠在 banner 图上（知末式） -->
     <section class="znz-banner">
-      <div class="znz-banner-slide active" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-        <div class="znz-banner-content">
-          <h2 class="znz-banner-title">George Design</h2>
-          <p class="znz-banner-subtitle">设计师的灵感资源库 · 发现、收藏、创造</p>
+      <div class="znz-banner-slide active">
+        <img class="znz-banner-img" src="https://loremflickr.com/1600/520/modern,architecture,villa?lock=11" alt="" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+      </div>
+      <div class="znz-banner-slide">
+        <img class="znz-banner-img" src="https://loremflickr.com/1600/520/mountain,architecture,house?lock=12" alt="" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+      </div>
+      <div class="znz-banner-slide">
+        <img class="znz-banner-img" src="https://loremflickr.com/1600/520/villa,forest,night?lock=13" alt="" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+      </div>
+
+      <div class="znz-banner-overlay">
+        <div class="znz-banner-tabs">
+          <div class="znz-banner-tab active" data-tab="all">全部</div>
+          <div class="znz-banner-tab" data-tab="3dmodel">3D模型</div>
+          <div class="znz-banner-tab" data-tab="sumodel">SU模型</div>
+          <div class="znz-banner-tab" data-tab="texture">图库</div>
+          <div class="znz-banner-tab" data-tab="case">案例</div>
+          <div class="znz-banner-tab" data-tab="material">贴图</div>
+          <div class="znz-banner-tab" data-tab="cad">CAD</div>
+          <div class="znz-banner-tab" data-tab="text">文本</div>
+          <div class="znz-banner-tab" data-tab="render">效果图</div>
+          <div class="znz-banner-tab" data-tab="more">更多</div>
+        </div>
+        <div class="znz-hero-search">
+          <input type="text" class="znz-hero-search-input" placeholder="搜索你需要的设计资源..." id="searchInput">
+          <button class="znz-hero-search-cam" title="图搜">📷</button>
+          <button class="znz-hero-search-btn" id="heroSearchBtn">🔍 搜索</button>
         </div>
       </div>
-      <div class="znz-banner-slide" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
-        <div class="znz-banner-content">
-          <h2 class="znz-banner-title">3D 模型</h2>
-          <p class="znz-banner-subtitle">超百万高质量 3D 模型 · 每日更新</p>
-        </div>
-      </div>
-      <div class="znz-banner-slide" style="background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);">
-        <div class="znz-banner-content">
-          <h2 class="znz-banner-title">AI 智能体</h2>
-          <p class="znz-banner-subtitle">AI 驱动的室内设计工作台 · 即刻体验</p>
-        </div>
-      </div>
+
       <div class="znz-banner-dots">
         <span class="znz-banner-dot active" data-index="0"></span>
         <span class="znz-banner-dot" data-index="1"></span>
@@ -947,7 +1000,7 @@ body {
       </div>
     </section>
     
-    <!-- 分类标签区 -->
+    <!-- 分类标签区（资源类型）-->
     <div class="znz-category-tabs">
       <div class="znz-category-tab active" data-tab="all">全部</div>
       <div class="znz-category-tab" data-tab="3dmodel">3D模型</div>
@@ -1072,13 +1125,48 @@ body {
   </main>
 </div>
 
+<!-- 登录弹窗 -->
+<div class="znz-login-overlay" id="loginModal">
+  <div class="znz-login-modal">
+    <div class="znz-login-visual">
+      <img src="https://loremflickr.com/700/520/living,room,interior,modern?lock=42" alt=""
+           onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(135deg,#3a3a3a,#1d1d1d)'">
+    </div>
+    <div class="znz-login-form">
+      <button class="znz-login-close" onclick="closeLoginModal()">✕</button>
+      <h2 class="znz-login-title">欢迎回来！</h2>
+      <p class="znz-login-sub">登录以获取海量数据与信息。</p>
+      <div class="znz-login-label">EMAIL</div>
+      <div class="znz-login-input-wrap">
+        <input type="email" id="loginEmail" class="znz-login-input" placeholder="请输入邮箱地址">
+      </div>
+      <div class="znz-login-label">PASSWORD</div>
+      <div class="znz-login-input-wrap">
+        <input type="password" id="loginPassword" class="znz-login-input" placeholder="请输入密码">
+        <button class="znz-login-eye" onclick="togglePwdVisible()" title="显示/隐藏密码">👁</button>
+      </div>
+      <button class="znz-login-submit" onclick="doLogin()">登录</button>
+      <div class="znz-login-divider">或通过以下方式登录</div>
+      <button class="znz-login-wechat" onclick="doLogin()">💬 使用企微账号登录</button>
+      <div class="znz-login-hint">演示环境已内置账号，直接点「登录」即可体验</div>
+    </div>
+  </div>
+</div>
+
 <script src="common.js"></script>
 <script>
 // ========== 全局状态 ==========
 let AppState = {
   isLoggedIn: localStorage.getItem('gd-logged-in') === 'true',
   username: localStorage.getItem('gd-username') || '',
-  
+
+  demoAccount: {
+    email: localStorage.getItem('gd-demo-email') ||
+      ('designer' + Math.floor(1000 + Math.random() * 9000) + '@george.design'),
+    password: 'demo1234',
+    name: '陈磊'
+  },
+
   resources: [],
   filteredResources: [],
   
@@ -1105,6 +1193,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ========== 数据加载 ==========
+function gdResPhoto(r) {
+  var kwByType = { '3dmodel':'interior 3d render', sumodel:'architecture model', texture:'material texture surface', case:'interior design room', material:'fabric material', cad:'architecture blueprint' };
+  var kw = (kwByType[r.type] || 'interior design') + ' ' + (r.category2 || '');
+  return (window.gdPhoto ? gdPhoto(kw, 5000 + r.id, 600, 440) : '');
+}
 async function loadResources() {
   try {
     const response = await fetch('data/resources.json');
@@ -1150,17 +1243,71 @@ function getFallbackResources() {
 
 // ========== UI初始化 ==========
 function initUI() {
+  localStorage.setItem('gd-demo-email', AppState.demoAccount.email);
   updateAuthUI();
 }
 
 function updateAuthUI() {
-  const userAvatar = document.querySelector('.znz-header-avatar');
+  const loginBtn = document.getElementById('loginEntryBtn');
+  const consoleBtn = document.getElementById('consoleBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const userBadge = document.getElementById('userBadge');
+  const userAvatar = document.getElementById('userAvatar');
   if (AppState.isLoggedIn) {
-    userAvatar.textContent = AppState.username.charAt(0).toUpperCase();
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (consoleBtn) consoleBtn.style.display = '';
+    if (logoutBtn) logoutBtn.style.display = '';
+    if (userBadge) userBadge.style.display = '';
+    if (userAvatar) userAvatar.textContent = (AppState.username || '演').charAt(0).toUpperCase();
   } else {
-    userAvatar.textContent = '登';
+    if (loginBtn) loginBtn.style.display = '';
+    if (consoleBtn) consoleBtn.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'none';
+    if (userBadge) userBadge.style.display = 'none';
   }
 }
+
+// ========== 登录弹窗 ==========
+function openLoginModal() {
+  const m = document.getElementById('loginModal');
+  if (!m) return;
+  document.getElementById('loginEmail').value = AppState.demoAccount.email;
+  document.getElementById('loginPassword').value = AppState.demoAccount.password;
+  m.classList.add('active');
+}
+function closeLoginModal() {
+  const m = document.getElementById('loginModal');
+  if (m) m.classList.remove('active');
+}
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd = document.getElementById('loginPassword').value.trim();
+  if (!email || !pwd) { showToast('warning', '请输入邮箱与密码'); return; }
+  AppState.isLoggedIn = true;
+  AppState.username = (email === AppState.demoAccount.email) ? AppState.demoAccount.name : email.split('@')[0];
+  localStorage.setItem('gd-logged-in', 'true');
+  localStorage.setItem('gd-username', AppState.username);
+  updateAuthUI();
+  closeLoginModal();
+  showToast('success', '登录成功！点击右上角「控制台」进入后台');
+}
+function logout() {
+  AppState.isLoggedIn = false;
+  AppState.username = '';
+  localStorage.removeItem('gd-logged-in');
+  localStorage.removeItem('gd-username');
+  updateAuthUI();
+  showToast('info', '已退出登录');
+}
+function togglePwdVisible() {
+  const i = document.getElementById('loginPassword');
+  if (i) i.type = i.type === 'password' ? 'text' : 'password';
+}
+window.openLoginModal = openLoginModal;
+window.closeLoginModal = closeLoginModal;
+window.doLogin = doLogin;
+window.logout = logout;
+window.togglePwdVisible = togglePwdVisible;
 
 function initBannerCarousel() {
   const slides = document.querySelectorAll('.znz-banner-slide');
@@ -1200,8 +1347,31 @@ function initEventListeners() {
       applyFilters();
     }
   });
+  const heroBtn = document.getElementById('heroSearchBtn');
+  if (heroBtn) heroBtn.addEventListener('click', () => {
+    AppState.filters.searchKeyword = searchInput.value.trim();
+    applyFilters();
+  });
+
+  // Banner 上的分类标签（与下方二级标签联动）
+  document.querySelectorAll('.znz-banner-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.znz-banner-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const key = tab.dataset.tab;
+      const lower = document.querySelector('.znz-category-tab[data-tab="' + key + '"]');
+      if (lower) {
+        document.querySelectorAll('.znz-category-tab').forEach(t => t.classList.remove('active'));
+        lower.classList.add('active');
+        AppState.filters.activeTab = key;
+      } else {
+        AppState.filters.activeTab = 'all';
+      }
+      applyFilters();
+    });
+  });
   
-  // 分类标签
+  // 分类标签（二级）
   document.querySelectorAll('.znz-category-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.znz-category-tab').forEach(t => t.classList.remove('active'));
@@ -1234,47 +1404,14 @@ function initEventListeners() {
   // 加载更多
   document.getElementById('loadMoreBtn').addEventListener('click', loadMore);
   
-  // 用户操作
-  document.querySelector('.znz-header-user').addEventListener('click', () => {
-    if (!AppState.isLoggedIn) {
-      // 模拟登录弹窗
-      const username = prompt('请输入账号（任意值）:');
-      if (username) {
-        AppState.isLoggedIn = true;
-        AppState.username = username;
-        localStorage.setItem('gd-logged-in', 'true');
-        localStorage.setItem('gd-username', username);
-        updateAuthUI();
-        showToast('success', '登录成功！');
-      }
-    } else {
-      // 已登录，显示用户菜单
-      const action = confirm('是否退出登录？');
-      if (action) {
-        AppState.isLoggedIn = false;
-        AppState.username = '';
-        localStorage.removeItem('gd-logged-in');
-        localStorage.removeItem('gd-username');
-        updateAuthUI();
-        showToast('info', '已退出登录');
-      }
-    }
-  });
-  
-  // 其他按钮
+  // 其他按钮（跳过有独立 onclick 的登录/控制台）
   document.querySelectorAll('.znz-header-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const text = e.target.textContent;
-      if (text === '新建项目' || text === '上传') {
-        if (!AppState.isLoggedIn) {
-          showToast('warning', '请先登录');
-        } else {
-          showToast('success', `开始${text}...`);
-        }
-      } else if (text === 'VIP') {
-        showToast('info', 'VIP功能正在开发中');
-      } else {
-        showToast('info', `${text}功能正在开发中`);
+      const text = e.target.textContent.trim();
+      if (text === '登录/注册' || text === '控制台' || text === '退出') return;
+      if (text === '上传') {
+        if (!AppState.isLoggedIn) { showToast('warning', '请先登录'); }
+        else { showToast('success', `开始${text}...`); }
       }
     });
   });
@@ -1371,14 +1508,15 @@ function createResourceCard(resource) {
     <div class="znz-resource-card" onclick="handleResourceClick(${resource.id})">
       <div class="znz-card-wrapper">
         <div class="znz-card-image" style="background: ${thumbColor};">
-          <div class="znz-card-overlay">
+          <img class="gd-real-img" src="${gdResPhoto(resource)}" alt="" loading="lazy" onload="this.classList.add('loaded')" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s;z-index:1;">
+          <div class="znz-card-overlay" style="z-index:3;">
             <div class="znz-card-title">${resource.name}</div>
             <div class="znz-card-meta">
               <span>${typeText}</span>
               <span>⬇ ${resource.downloads.toLocaleString()}</span>
             </div>
           </div>
-          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:32px; color:rgba(255,255,255,0.9); font-weight:700;">${thumbText}</div>
+          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:32px; color:rgba(255,255,255,0.9); font-weight:700; z-index:2;">${thumbText}</div>
         </div>
         <div class="znz-card-info">
           <div class="znz-card-name">${resource.name}</div>

@@ -8,35 +8,13 @@
 </head>
 <body>
 
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo"><div class="sidebar-logo-icon">G</div><div class="sidebar-logo-text">George Design</div></div>
-  <nav class="sidebar-nav">
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">主菜单</div>
-      <a href="dashboard.html" class="nav-item" data-page="dashboard"><span class="nav-icon">⊞</span> 工作台</a>
-      <a href="products.html" class="nav-item" data-page="products"><span class="nav-icon">⊡</span> 产品库</a>
-      <a href="cases.html" class="nav-item" data-page="cases"><span class="nav-icon">⊟</span> 案例库</a>
-      <a href="mycases.html" class="nav-item active" data-page="mycases"><span class="nav-icon">⊠</span> 我的案例</a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">文件与数据</div>
-      <a href="nas.html" class="nav-item" data-page="nas"><span class="nav-icon">⊡</span> NAS文件管理</a>
-      <a href="analytics.html" class="nav-item" data-page="analytics"><span class="nav-icon">📊</span> 数据看板</a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">管理</div>
-      <a href="admin.html" class="nav-item" data-page="admin"><span class="nav-icon">⚙</span> 系统管理</a>
-      <a href="profile.html" class="nav-item" data-page="profile"><span class="nav-icon">👤</span> 个人中心</a>
-    </div>
-  </nav>
-  <div class="sidebar-user"><div class="sidebar-avatar chen">陈</div>陈磊 · 部门主管</div>
-</aside>
+<aside class="sidebar" id="sidebar"></aside>
 
 <main class="main">
   <header class="header">
     <h1 class="header-title">我的案例</h1>
     <div class="header-actions">
-      <button class="btn btn-primary" onclick="openModal('createCaseModal')">＋ 创建新案例</button>
+      <button class="btn btn-primary" onclick="openCreateCase()">＋ 创建新案例</button>
       <button class="dark-toggle" onclick="toggleDarkMode()">🌙</button>
       <button class="btn btn-ghost" onclick="toggleHistory()">📜</button>
       <button class="btn btn-ghost" onclick="showShortcuts()">⌨</button>
@@ -94,6 +72,7 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="common.js"></script>
+<script src="gdcase.js"></script>
 <script>
 // My cases (Chen Lei's cases)
 let myCases = [
@@ -107,35 +86,29 @@ let myCases = [
 ];
 let nextCaseId = 200;
 
-function getTagClass(s) {
-  const m = {'现代简约':'tag-blue','北欧':'tag-green','新中式':'tag-purple','轻奢':'tag-orange','工业风':'tag-red','日式':'tag-pink','美式':'tag-cyan'};
-  return m[s]||'tag-blue';
+// Merge persisted reuse-copies + user-created cases (localStorage) on top of seeds
+(function () {
+  var stored = (window.GDStore ? GDStore.get('gd-mycases', []) : []);
+  if (stored && stored.length) {
+    // newest first; avoid id clashes with seeds
+    stored.forEach(function (c) { if (!myCases.some(function (x) { return x.id === c.id; })) myCases.unshift(c); });
+  }
+})();
+function gdSaveMine() {
+  // persist only the non-seed cases (id >= 200 for created, >= 900 for reuse copies)
+  if (!window.GDStore) return;
+  var persist = myCases.filter(function (c) { return c.id >= 200; });
+  GDStore.set('gd-mycases', persist);
 }
 
-function renderMyCaseCard(c) {
-  return `
-  <div class="case-card">
-    <div class="card-thumb"><div class="card-thumb-placeholder theme-${c.theme}"></div></div>
-    <div class="card-body">
-      <div class="card-body-title">${c.name}</div>
-      <div class="card-body-meta" style="display:flex;align-items:center;gap:8px;">
-        <span class="user-avatar chen">${c.designer[0]}</span> ${c.designer} · ${c.area}㎡ · ¥${c.budget}万
-      </div>
-      <div class="card-body-tags">
-        <span class="tag ${getTagClass(c.style)}">${c.style}</span>
-        <span class="tag tag-green">${c.space}</span>
-        <span class="tag tag-orange">${c.country}</span>
-      </div>
-      <div class="card-body-footer">
-        <span style="font-size:11px;color:var(--text-muted);">🔄 ${c.reuseCount}次 · ${c.time}</span>
-        <div style="display:flex;gap:6px;">
-          <button class="btn btn-ghost btn-sm" onclick="editMyCase(${c.id})">编辑</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteMyCase(${c.id})">删除</button>
-        </div>
-      </div>
-    </div>
-  </div>`;
-}
+// 注册数据源（含编辑/删除回调）
+GDCase.setSource(function () { return myCases; }, {
+  afterReuse: function () { /* reuse copy goes to gd-mycases; refresh after reload */ filterMyCases(); },
+  onEdit: function (id) { editMyCase(id); },
+  onDelete: function (id) { deleteMyCase(id); }
+});
+
+let editingId = null;
 
 function filterMyCases() {
   const s = document.getElementById('myCaseSearch').value.toLowerCase();
@@ -145,7 +118,7 @@ function filterMyCases() {
     (c.name.toLowerCase()+c.designer.toLowerCase()).includes(s) &&
     (!style||c.style===style) && (!space||c.space===space)
   );
-  document.getElementById('myCaseGrid').innerHTML = filtered.map(renderMyCaseCard).join('') ||
+  document.getElementById('myCaseGrid').innerHTML = filtered.map(c => GDCase.renderCard(c, {context:'mycases'})).join('') ||
     '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px;">暂无匹配案例</p>';
   document.getElementById('myCaseResultCount').textContent = `共 ${filtered.length} 个案例`;
 }
@@ -157,31 +130,51 @@ function resetMyCaseFilter() {
   filterMyCases();
 }
 
+function openCreateCase() {
+  editingId = null;
+  document.querySelector('#createCaseModal h2').textContent = '创建新案例';
+  document.querySelectorAll('#createCaseModal input, #createCaseModal textarea').forEach(el => { el.value=''; });
+  openModal('createCaseModal');
+}
+window.openCreateCase = openCreateCase;
+
 function createNewCase() {
   const name = document.getElementById('newCaseName').value.trim();
   if (!name) { showToast('warning', '请输入案例名称'); return; }
-  const c = {
-    id: nextCaseId++, name: name,
-    designer: '陈磊', designerId: '001',
+  const data = {
     style: document.getElementById('newCaseStyle').value,
     space: document.getElementById('newCaseSpace').value,
     area: parseInt(document.getElementById('newCaseArea').value) || 80,
     budget: parseInt(document.getElementById('newCaseBudget').value) || 10,
     country: document.getElementById('newCaseCountry').value,
-    reuseCount: 0, time: '2026-05-23',
-    theme: 'modern', number: '001-New-案例' + nextCaseId
+  };
+  if (editingId) {
+    // 就地更新
+    const c = myCases.find(x => x.id === editingId);
+    if (c) { c.name = name; Object.assign(c, data); }
+    gdSaveMine(); closeModal('createCaseModal'); filterMyCases();
+    showToast('success', '案例「' + name + '」已更新');
+    editingId = null;
+    return;
+  }
+  const c = {
+    id: nextCaseId++, name: name, designer: '陈磊', designerId: '001',
+    style: data.style, space: data.space, area: data.area, budget: data.budget, country: data.country,
+    reuseCount: 0, time: gdToday(), theme: 'modern', number: '001-New-案例' + nextCaseId
   };
   myCases.unshift(c);
+  gdSaveMine();
   closeModal('createCaseModal');
   filterMyCases();
   showToast('success', '案例「' + name + '」创建成功');
-  // Reset form
   document.querySelectorAll('#createCaseModal input').forEach(el => { if(el.type!=='submit') el.value=''; });
 }
 
 function editMyCase(id) {
   const c = myCases.find(x => x.id === id);
   if (!c) return;
+  editingId = id;
+  document.querySelector('#createCaseModal h2').textContent = '编辑案例';
   document.getElementById('newCaseName').value = c.name;
   document.getElementById('newCaseStyle').value = c.style;
   document.getElementById('newCaseSpace').value = c.space;
@@ -189,17 +182,20 @@ function editMyCase(id) {
   document.getElementById('newCaseBudget').value = c.budget;
   document.getElementById('newCaseCountry').value = c.country;
   openModal('createCaseModal');
-  showToast('info', '正在编辑「' + c.name + '」，修改后请重新创建');
 }
 
 function deleteMyCase(id) {
   const idx = myCases.findIndex(x => x.id === id);
   if (idx < 0) return;
   const name = myCases[idx].name;
+  if (!confirm('确定删除案例「' + name + '」？')) return;
   myCases.splice(idx, 1);
+  gdSaveMine();
   filterMyCases();
   showToast('error', '案例「' + name + '」已删除');
 }
+window.editMyCase = editMyCase;
+window.deleteMyCase = deleteMyCase;
 
 filterMyCases();
 </script>

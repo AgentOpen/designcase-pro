@@ -42,11 +42,11 @@
 
 
 
-/* 数字分身卡片 */
+/* 专属AI助手卡片 */
 
 .avatar-card { display:flex; align-items:center; gap:20px; padding:20px; background:var(--card-bg); border-radius:var(--radius-lg); margin-bottom:24px; }
 
-.avatar-preview { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,#8b5cf6,#6366f1); display:flex; align-items:center; justify-content:center; color:#fff; font-size:32px; font-weight:700; }
+.avatar-preview { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#8b5cf6); display:flex; align-items:center; justify-content:center; color:#fff; font-size:32px; font-weight:700; }
 
 .avatar-info { flex:1; }
 
@@ -142,7 +142,7 @@
 
 
 
-/* 分身能力预览 */
+/* AI助手能力预览 */
 
 .ability-card { background:var(--card-bg); border-radius:var(--radius); padding:16px; margin-bottom:16px; }
 
@@ -240,51 +240,7 @@
 
 
 
-<aside class="sidebar" id="sidebar">
-
-  <div class="sidebar-logo"><div class="sidebar-logo-icon">G</div><div class="sidebar-logo-text">George Design</div></div>
-
-  <nav class="sidebar-nav">
-
-    <div class="sidebar-section">
-
-      <div class="sidebar-section-title">主菜单</div>
-
-      <a href="dashboard.html" class="nav-item" data-page="dashboard"><span class="nav-icon">⊞</span> 工作台</a>
-
-      <a href="products.html" class="nav-item" data-page="products"><span class="nav-icon">⊡</span> 产品库</a>
-
-      <a href="cases.html" class="nav-item" data-page="cases"><span class="nav-icon">⊟</span> 案例库</a>
-
-      <a href="mycases.html" class="nav-item" data-page="mycases"><span class="nav-icon">⊠</span> 我的案例</a>
-
-    </div>
-
-    <div class="sidebar-section">
-
-      <div class="sidebar-section-title">文件与数据</div>
-
-      <a href="nas.html" class="nav-item" data-page="nas"><span class="nav-icon">⊡</span> NAS文件管理</a>
-
-      <a href="analytics.html" class="nav-item" data-page="analytics"><span class="nav-icon">📊</span> 数据看板</a>
-
-    </div>
-
-    <div class="sidebar-section">
-
-      <div class="sidebar-section-title">管理</div>
-
-      <a href="admin.html" class="nav-item" data-page="admin"><span class="nav-icon">⚙</span> 系统管理</a>
-
-      <a href="profile.html" class="nav-item active" data-page="profile"><span class="nav-icon">👤</span> 个人中心</a>
-
-    </div>
-
-  </nav>
-
-  <div class="sidebar-user"><div class="sidebar-avatar chen">陈</div>陈磊 · 部门主管</div>
-
-</aside>
+<aside class="sidebar" id="sidebar"></aside>
 
 
 
@@ -312,9 +268,13 @@
 
     <div class="profile-tabs">
 
-      <div class="profile-tab active" data-tab="avatar" onclick="switchProfileTab('avatar')">
+      <div class="profile-tab active" data-tab="achv" onclick="switchProfileTab('achv')">
+        <span class="tab-icon">🏆</span> 我的成就
+      </div>
 
-        <span class="tab-icon">🤖</span> 数字分身
+      <div class="profile-tab" data-tab="avatar" onclick="switchProfileTab('avatar')">
+
+        <span class="tab-icon">🤖</span> 专属AI助手
 
       </div>
 
@@ -324,15 +284,67 @@
 
       </div>
 
+      <div class="profile-tab" data-tab="admin" onclick="switchProfileTab('admin')">
+        <span class="tab-icon">⚙️</span> 系统管理
+      </div>
+
+    </div>
+
+    <!-- 我的成就面板 -->
+    <div class="profile-panel active" id="panel-achv">
+      <div class="achv-header">
+        <div class="achv-avatar">陈</div>
+        <div style="flex:1;">
+          <div style="font-size:20px;font-weight:700;">陈磊　<span class="tag tag-purple">资深设计师</span> <span class="tag tag-blue">部门主管</span></div>
+          <div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">设计一部 · 工号 001 · 入职 3 年</div>
+          <div class="achv-level">
+            <span>Lv.8 资深创作者</span>
+            <div class="achv-level-bar"><div class="achv-level-fill" style="width:72%"></div></div>
+            <span style="font-size:11px;color:var(--text-muted);">2480 / 3500 积分升级 Lv.9</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-cards" style="margin-bottom:20px;">
+        <div class="stat-card" style="color:#4f46e5;"><div class="stat-card-label">累计案例</div><div class="stat-card-value">24</div><div class="stat-card-sub">部门第 1</div></div>
+        <div class="stat-card" style="color:#10b981;"><div class="stat-card-label">被复用次数</div><div class="stat-card-value">523</div><div class="stat-card-sub">全站第 1 🏆</div></div>
+        <div class="stat-card" style="color:#f59e0b;"><div class="stat-card-label">积分</div><div class="stat-card-value">2,480</div><div class="stat-card-sub">本月 +320</div></div>
+        <div class="stat-card" style="color:#ec4899;"><div class="stat-card-label">获得徽章</div><div class="stat-card-value">9</div><div class="stat-card-sub">共 15 枚</div></div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">我的徽章</div>
+        <div class="badge-grid">
+          <div class="badge-item"><div class="badge-ic">🏆</div><div class="badge-name">复用王</div><div class="badge-desc">被复用 500+ 次</div></div>
+          <div class="badge-item"><div class="badge-ic">🎨</div><div class="badge-name">多面手</div><div class="badge-desc">7 种风格作品</div></div>
+          <div class="badge-item"><div class="badge-ic">🔥</div><div class="badge-name">高产设计师</div><div class="badge-desc">单月 10+ 案例</div></div>
+          <div class="badge-item"><div class="badge-ic">⭐</div><div class="badge-name">人气之星</div><div class="badge-desc">收藏 1000+</div></div>
+          <div class="badge-item"><div class="badge-ic">🚀</div><div class="badge-name">先锋</div><div class="badge-desc">首批入驻</div></div>
+          <div class="badge-item locked"><div class="badge-ic">🔒</div><div class="badge-name">大师</div><div class="badge-desc">Lv.10 解锁</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">积分明细</span><a href="ranking.html" class="btn btn-ghost btn-sm">查看榜单</a></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>时间</th><th>事项</th><th>积分</th></tr></thead>
+          <tbody>
+            <tr><td>2026-05-23</td><td>案例「现代简约三居室」被复用</td><td><span class="tag tag-green">+10</span></td></tr>
+            <tr><td>2026-05-22</td><td>上传新案例「北欧餐厅设计」</td><td><span class="tag tag-green">+50</span></td></tr>
+            <tr><td>2026-05-21</td><td>案例被收藏 ×12</td><td><span class="tag tag-green">+24</span></td></tr>
+            <tr><td>2026-05-20</td><td>完善专属AI助手资料</td><td><span class="tag tag-green">+30</span></td></tr>
+          </tbody>
+        </table></div>
+      </div>
     </div>
 
 
 
-    <!-- 数字分身面板 -->
+    <!-- 专属AI助手面板 -->
 
-    <div class="profile-panel active" id="panel-avatar">
+    <div class="profile-panel" id="panel-avatar">
 
-          <!-- 分身训练状态卡片 -->
+          <!-- AI助手训练状态卡片 -->
 
           <div class="avatar-card">
 
@@ -340,7 +352,7 @@
 
             <div class="avatar-info">
 
-              <div class="avatar-name">陈磊的数字分身</div>
+              <div class="avatar-name">陈磊的专属AI助手</div>
 
               <div class="avatar-title">部门主管 · 设计一部</div>
 
@@ -530,7 +542,7 @@
 
                   <div class="color-picker">
 
-                    <div class="color-option selected" style="background:#6366f1" data-color="#6366f1"></div>
+                    <div class="color-option selected" style="background:#111" data-color="#111"></div>
 
                     <div class="color-option" style="background:#10b981" data-color="#10b981"></div>
 
@@ -538,7 +550,7 @@
 
                     <div class="color-option" style="background:#ef4444" data-color="#ef4444"></div>
 
-                    <div class="color-option" style="background:#8b5cf6" data-color="#8b5cf6"></div>
+                    <div class="color-option" style="background:#333" data-color="#333"></div>
 
                     <div class="color-option" style="background:#06b6d4" data-color="#06b6d4"></div>
 
@@ -780,7 +792,7 @@
                 <div class="step-number">4</div>
                 <div>
                   <div class="step-title">训练控制</div>
-                  <div class="step-desc">配置训练参数与启动数字分身训练</div>
+                  <div class="step-desc">配置训练参数与启动专属AI助手训练</div>
                 </div>
               </div>
               <div class="step-content">
@@ -856,7 +868,7 @@
               </div>
             </div>
 
-            <!-- 分身能力预览 -->
+            <!-- AI助手能力预览 -->
             <div class="ability-card" style="margin-top:20px;">
               <div class="ability-score">85</div>
               <div class="ability-label">预计能力评分</div>
@@ -872,10 +884,10 @@
             <!-- 对话测试 -->
             <div class="chat-box" style="margin-top:20px;">
               <div class="chat-messages" id="chatMessages">
-                <div class="chat-message ai">你好！我是你的数字分身，可以帮你分析设计风格、提供建议。</div>
+                <div class="chat-message ai">你好！我是你的专属AI助手，可以帮你分析设计风格、提供建议。</div>
               </div>
               <div class="chat-input">
-                <input type="text" id="chatInput" placeholder="向数字分身提问..." style="flex:1;">
+                <input type="text" id="chatInput" placeholder="向专属AI助手提问..." style="flex:1;">
                 <button class="btn btn-primary" onclick="sendChatMessage()">发送</button>
               </div>
             </div>
@@ -999,6 +1011,84 @@
         <button class="btn btn-outline" style="margin-left:auto;">📊 查看统计</button>
       </div>
     </div>
+
+  <!-- 系统管理面板（管理员）-->
+  <div class="profile-panel" id="panel-admin">
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchAdminTab('users')">用户管理</button>
+      <button class="admin-tab" onclick="switchAdminTab('permissions')">权限配置</button>
+      <button class="admin-tab" onclick="switchAdminTab('settings')">系统设置</button>
+      <button class="admin-tab" onclick="switchAdminTab('audit')">审计日志</button>
+    </div>
+
+    <div class="admin-panel" id="adminUsers">
+      <div class="card">
+        <div class="card-header"><span class="card-title">用户管理</span><button class="btn btn-primary btn-sm" onclick="showToast('info','新增用户表单（演示）')">＋ 新增用户</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>用户名</th><th>角色</th><th>部门</th><th>状态</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td>陈磊</td><td>部门主管</td><td>设计一部</td><td><span class="tag tag-green">启用</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('info','编辑用户: 陈磊')">编辑</button> <button class="btn btn-danger btn-sm" onclick="toggleUserStatus(this)">禁用</button></td></tr>
+            <tr><td>林悦</td><td>资深设计师</td><td>设计一部</td><td><span class="tag tag-green">启用</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('info','编辑用户: 林悦')">编辑</button> <button class="btn btn-danger btn-sm" onclick="toggleUserStatus(this)">禁用</button></td></tr>
+            <tr><td>王明远</td><td>资深设计师</td><td>设计二部</td><td><span class="tag tag-green">启用</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('info','编辑用户: 王明远')">编辑</button> <button class="btn btn-danger btn-sm" onclick="toggleUserStatus(this)">禁用</button></td></tr>
+            <tr><td>张薇</td><td>中级设计师</td><td>设计三部</td><td><span class="tag tag-green">启用</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('info','编辑用户: 张薇')">编辑</button> <button class="btn btn-danger btn-sm" onclick="toggleUserStatus(this)">禁用</button></td></tr>
+            <tr><td>李强</td><td>中级设计师</td><td>设计四部</td><td><span class="tag tag-red">禁用</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('info','编辑用户: 李强')">编辑</button> <button class="btn btn-primary btn-sm" onclick="toggleUserStatus(this)">启用</button></td></tr>
+            <tr><td>赵工</td><td>初级设计师</td><td>设计五部</td><td><span class="tag tag-green">启用</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('info','编辑用户: 赵工')">编辑</button> <button class="btn btn-danger btn-sm" onclick="toggleUserStatus(this)">禁用</button></td></tr>
+            <tr><td>孙敏</td><td>初级设计师</td><td>设计五部</td><td><span class="tag tag-green">启用</span></td><td><button class="btn btn-ghost btn-sm" onclick="showToast('info','编辑用户: 孙敏')">编辑</button> <button class="btn btn-danger btn-sm" onclick="toggleUserStatus(this)">禁用</button></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="admin-panel hidden" id="adminPermissions">
+      <div class="card">
+        <div class="card-title">权限矩阵</div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>权限项</th><th>管理员</th><th>部门主管</th><th>资深设计师</th><th>中级设计师</th><th>初级设计师</th></tr></thead>
+          <tbody>
+            <tr><td>查看素材库</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+            <tr><td>下载产品模型</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+            <tr><td>查看灵感库</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+            <tr><td>复用案例</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+            <tr><td>创建案例</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td><td>✘</td></tr>
+            <tr><td>删除案例</td><td>✔</td><td>✔</td><td>限本人</td><td>限本人</td><td>✘</td></tr>
+            <tr><td>NAS文件管理</td><td>✔</td><td>✔</td><td>限本部门</td><td>限本部门</td><td>限本人</td></tr>
+            <tr><td>NAS文件删除</td><td>✔</td><td>✔</td><td>✘</td><td>✘</td><td>✘</td></tr>
+            <tr><td>数据看板查看</td><td>✔</td><td>✔</td><td>限本部门</td><td>✘</td><td>✘</td></tr>
+            <tr><td>系统管理</td><td>✔</td><td>✘</td><td>✘</td><td>✘</td><td>✘</td></tr>
+            <tr><td>用户管理</td><td>✔</td><td>✘</td><td>✘</td><td>✘</td><td>✘</td></tr>
+            <tr><td>同步设置</td><td>✔</td><td>✔</td><td>✘</td><td>✘</td><td>✘</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="admin-panel hidden" id="adminSettings">
+      <div class="card">
+        <div class="card-title">系统设置</div>
+        <div class="form-group"><label>站点名称</label><input type="text" value="George Design"></div>
+        <div class="form-group"><label>NAS总配额 (GB)</label><input type="number" value="500"></div>
+        <div class="form-group"><label>日志保留天数</label><input type="number" value="180"></div>
+        <div class="form-group"><label>默认同步方向</label><select><option>双向同步</option><option>仅上传</option><option>仅下载</option></select></div>
+        <div class="form-group"><label>自动备份频率</label><select><option>每天</option><option>每小时</option><option>实时</option></select></div>
+        <button class="btn btn-primary" onclick="showToast('success','系统设置已保存')">保存设置</button>
+      </div>
+    </div>
+
+    <div class="admin-panel hidden" id="adminAudit">
+      <div class="card">
+        <div class="card-title">审计日志</div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>时间</th><th>用户</th><th>操作</th><th>对象</th></tr></thead>
+          <tbody>
+            <tr><td>2026-05-23 14:20</td><td>林悦</td><td><span class="tag tag-green">复用案例</span></td><td>现代简约三居室</td></tr>
+            <tr><td>2026-05-23 11:05</td><td>王明远</td><td><span class="tag tag-blue">下载模型</span></td><td>客厅场景.max</td></tr>
+            <tr><td>2026-05-22 16:48</td><td>陈磊</td><td><span class="tag tag-purple">创建案例</span></td><td>北欧餐厅设计</td></tr>
+            <tr><td>2026-05-22 09:30</td><td>管理员</td><td><span class="tag tag-orange">修改权限</span></td><td>李强 → 禁用</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
   </div>
 
 </main>
@@ -1097,20 +1187,32 @@ const trainingLogs = [];
 function switchProfileTab(tab) {
   document.querySelectorAll('.profile-tab').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.profile-panel').forEach(el => el.classList.remove('active'));
-  
-  // 使用 data-tab 属性定位，避免 onclick 子串匹配的不确定性
   const targetTab = document.querySelector(`.profile-tab[data-tab="${tab}"]`);
   if (targetTab) targetTab.classList.add('active');
-  
   const targetPanel = document.getElementById(`panel-${tab}`);
   if (targetPanel) targetPanel.classList.add('active');
-  
-  if (tab === 'sync') {
-    showToast('info', '已切换到同步设置');
-  } else {
-    showToast('info', '已切换到数字分身');
-  }
+  const labels = { achv:'我的成就', avatar:'专属AI助手', sync:'同步设置', admin:'系统管理' };
+  showToast('info', '已切换到' + (labels[tab] || tab));
 }
+
+// 系统管理 Tab 切换
+function switchAdminTab(tab) {
+  var panelMap = { users:'adminUsers', permissions:'adminPermissions', settings:'adminSettings', audit:'adminAudit' };
+  var idx = { users:0, permissions:1, settings:2, audit:3 }[tab];
+  document.querySelectorAll('#panel-admin .admin-tab').forEach(function (t, i) { t.classList.toggle('active', i === idx); });
+  document.querySelectorAll('#panel-admin .admin-panel').forEach(function (p) { p.classList.add('hidden'); });
+  var panel = document.getElementById(panelMap[tab]);
+  if (panel) panel.classList.remove('hidden');
+}
+function toggleUserStatus(btn) {
+  const row = btn.closest('tr');
+  const statusEl = row.querySelector('.tag');
+  const isEnabled = statusEl.textContent.trim() === '启用';
+  if (isEnabled) { statusEl.textContent='禁用'; statusEl.className='tag tag-red'; btn.textContent='启用'; btn.className='btn btn-primary btn-sm'; showToast('warning', row.querySelector('td').textContent + ' 已禁用'); }
+  else { statusEl.textContent='启用'; statusEl.className='tag tag-green'; btn.textContent='禁用'; btn.className='btn btn-danger btn-sm'; showToast('success', row.querySelector('td').textContent + ' 已启用'); }
+}
+window.switchAdminTab = switchAdminTab;
+window.toggleUserStatus = toggleUserStatus;
 
 
 
@@ -1236,7 +1338,7 @@ function handlePortfolioUpload(files) {
 
 
 
-// 开始分身训练
+// 开始AI助手训练
 
 function startAvatarTraining() {
 
@@ -1282,7 +1384,7 @@ function startAvatarTraining() {
 
   
 
-  addLog('开始数字分身训练...');
+  addLog('开始专属AI助手训练...');
 
   addLog('检查资料完整性...', 'success');
 
@@ -1314,9 +1416,9 @@ function startAvatarTraining() {
 
       document.getElementById('startTrainBtn').textContent = '训练完成';
 
-      addLog('数字分身训练完成！', 'success');
+      addLog('专属AI助手训练完成！', 'success');
 
-      showToast('success', '数字分身训练完成，已更新能力预览');
+      showToast('success', '专属AI助手训练完成，已更新能力预览');
 
       return;
 
@@ -1418,7 +1520,7 @@ function sendChatMessage() {
 
       "材质方面推荐使用木材与金属的搭配，既有温度又有现代感。",
 
-      "色彩方案可以参考你偏爱的#6366f1主色调，搭配中性色平衡。"
+      "色彩方案可以参考你偏爱的#111主色调，搭配中性色平衡。"
 
     ];
 

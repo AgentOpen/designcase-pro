@@ -3,49 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>产品库 - George Design</title>
+<title>素材库 - George Design</title>
 <link rel="stylesheet" href="common.css">
 </head>
 <body>
 
 <!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="sidebar-logo-icon">G</div>
-    <div class="sidebar-logo-text">George Design</div>
-  </div>
-  <nav class="sidebar-nav">
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">主菜单</div>
-      <a href="dashboard.html" class="nav-item" data-page="dashboard"><span class="nav-icon">⊞</span> 工作台</a>
-      <a href="products.html" class="nav-item active" data-page="products"><span class="nav-icon">⊡</span> 产品库<span class="nav-badge">128</span></a>
-      <a href="cases.html" class="nav-item" data-page="cases"><span class="nav-icon">⊟</span> 案例库</a>
-      <a href="mycases.html" class="nav-item" data-page="mycases"><span class="nav-icon">⊠</span> 我的案例</a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">文件与数据</div>
-      <a href="nas.html" class="nav-item" data-page="nas"><span class="nav-icon">⊡</span> NAS文件管理</a>
-      <a href="analytics.html" class="nav-item" data-page="analytics"><span class="nav-icon">📊</span> 数据看板</a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">管理</div>
-      <a href="admin.html" class="nav-item" data-page="admin"><span class="nav-icon">⚙</span> 系统管理</a>
-      <a href="profile.html" class="nav-item" data-page="profile"><span class="nav-icon">👤</span> 个人中心</a>
-    </div>
-  </nav>
-  <div class="sidebar-user">
-    <div class="sidebar-avatar chen">陈</div>
-    <div class="sidebar-user-info">
-      <div class="sidebar-user-name">陈磊</div>
-      <div class="sidebar-user-role">资深设计师 · 部门主管</div>
-    </div>
-  </div>
-</aside>
+<aside class="sidebar" id="sidebar"></aside>
 
 <!-- MAIN -->
 <main class="main">
   <header class="header">
-    <h1 class="header-title" id="headerTitle">产品库</h1>
+    <h1 class="header-title" id="headerTitle">素材库</h1>
     <div class="header-actions">
       <button class="dark-toggle" onclick="toggleDarkMode()">🌙 暗色模式</button>
       <button class="btn btn-ghost" onclick="showShortcuts()">⌨ 快捷键</button>
@@ -78,10 +47,30 @@
         <button class="btn btn-secondary" onclick="openImageSearch()" title="上传图片搜索相似产品">📷 图搜产品</button>
         <button class="btn btn-primary" onclick="openAISearch()" title="AI智能推荐">🤖 AI智能推荐</button>
       </div>
-      <!-- 结果数 -->
-      <div style="margin-bottom:12px;font-size:12px;color:var(--text-secondary);" id="resultCount"></div>
-      <!-- 产品网格 -->
-      <div class="product-grid" id="productGrid"></div>
+      <!-- 视图切换 -->
+      <div class="prod-view-tabs">
+        <div class="prod-view-tab active" data-view="all" onclick="switchProdView('all')">全部素材库</div>
+        <div class="prod-view-tab" data-view="mine" onclick="switchProdView('mine')">我的素材库 <span id="libCount" class="tag tag-purple" style="margin-left:4px;">0</span></div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
+          <span id="compareHint" style="font-size:12px;color:var(--text-muted);">勾选 2 个产品进行对比</span>
+          <button class="btn btn-secondary btn-sm" id="compareBtn" disabled onclick="openProductCompare()">对比 (<span id="cmpCount">0</span>)</button>
+        </div>
+      </div>
+
+      <!-- 全部产品视图 -->
+      <div id="prodViewAll">
+        <div style="margin-bottom:12px;font-size:12px;color:var(--text-secondary);" id="resultCount"></div>
+        <div class="product-grid" id="productGrid"></div>
+      </div>
+
+      <!-- 我的素材库视图 -->
+      <div id="prodViewMine" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <div style="font-size:13px;color:var(--text-secondary);">把产品「添加」到自定义文件夹（如「非洲风格」），整夹可一键下载。</div>
+          <button class="btn btn-primary btn-sm" onclick="openNewFolder()">＋ 新建文件夹</button>
+        </div>
+        <div id="folderList"></div>
+      </div>
     </div>
   </div>
 </main>
@@ -190,7 +179,7 @@
     <div class="modal-body">
       <table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody>
         <tr><td><kbd>?</kbd></td><td>显示快捷键列表</td></tr>
-        <tr><td><kbd>Ctrl/Cmd + P</kbd></td><td>产品库</td></tr>
+        <tr><td><kbd>Ctrl/Cmd + P</kbd></td><td>素材库</td></tr>
         <tr><td><kbd>Ctrl/Cmd + B</kbd></td><td>切换暗色模式</td></tr>
         <tr><td><kbd>Esc</kbd></td><td>关闭所有弹窗</td></tr>
       </tbody></table>
@@ -203,6 +192,41 @@
   <div class="modal modal-lg">
     <div class="modal-header"><h2>案例对比</h2><button class="modal-close" onclick="closeModal('compareModal')">✕</button></div>
     <div class="modal-body" id="compareModalBody"></div>
+  </div>
+</div>
+
+<!-- Product Compare Modal -->
+<div class="modal-overlay" id="prodCompareModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h2>产品对比</h2><button class="modal-close" onclick="closeModal('prodCompareModal')">✕</button></div>
+    <div class="modal-body" id="prodCompareBody"></div>
+  </div>
+</div>
+
+<!-- Add to Folder Modal -->
+<div class="modal-overlay" id="addFolderModal">
+  <div class="modal" style="max-width:440px;">
+    <div class="modal-header"><h2>添加到我的素材库</h2><button class="modal-close" onclick="closeModal('addFolderModal')">✕</button></div>
+    <div class="modal-body">
+      <div id="addFolderProductName" style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;"></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">选择文件夹：</div>
+      <div id="folderChoices" style="display:flex;flex-direction:column;gap:8px;max-height:240px;overflow:auto;"></div>
+      <div style="display:flex;gap:8px;margin-top:14px;">
+        <input class="input" id="newFolderInline" placeholder="或新建文件夹，如「非洲风格」" style="flex:1;">
+        <button class="btn btn-secondary btn-sm" onclick="createFolderInline()">新建</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New Folder Modal -->
+<div class="modal-overlay" id="newFolderModal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header"><h2>新建文件夹</h2><button class="modal-close" onclick="closeModal('newFolderModal')">✕</button></div>
+    <div class="modal-body">
+      <input class="input" id="newFolderName" placeholder="文件夹名称，如「非洲风格」" style="width:100%;">
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('newFolderModal')">取消</button><button class="btn btn-primary" onclick="confirmNewFolder()">创建</button></div>
   </div>
 </div>
 
@@ -268,15 +292,19 @@ function getTagClass(style) {
 
 function renderProductCard(p) {
   const favClass = isFavorite(p.id, 'product') ? 'active' : '';
+  const checked = compareSel.indexOf(p.id) >= 0 ? 'checked' : '';
   return `
   <div class="product-card">
     <div class="card-thumb" onclick="openProductDetail(${p.id})">
-      <div class="card-thumb-placeholder theme-${p.theme}"></div>
+      ${gdThumbInner(p.theme, 100 + p.id)}
+      <label class="prod-cmp-check" onclick="event.stopPropagation();">
+        <input type="checkbox" ${checked} onchange="toggleProdCompare(${p.id}, this)"> 对比
+      </label>
     </div>
     <div class="card-body">
       <div class="card-body-title" style="display:flex;justify-content:space-between;">
         <span onclick="openProductDetail(${p.id})" style="cursor:pointer;">${p.name}</span>
-        <span class="fav-star ${favClass}" onclick="event.stopPropagation();toggleFavorite(${p.id},'product');this.classList.toggle('active');">${favClass ? '\u2605' : '\u2606'}</span>
+        <span class="fav-star ${favClass}" onclick="event.stopPropagation();toggleFavorite(${p.id},'product');this.classList.toggle('active');this.textContent=this.classList.contains('active')?'\u2605':'\u2606';">${favClass ? '\u2605' : '\u2606'}</span>
       </div>
       <div class="card-body-meta">${p.sku} | ¥${p.price.toLocaleString()}</div>
       <div class="card-body-tags">
@@ -287,7 +315,7 @@ function renderProductCard(p) {
       <div class="card-body-footer">
         <span style="font-size:11px;color:var(--text-muted);">⬇ ${p.downloads}次下载</span>
         <div style="display:flex;gap:6px;">
-          <button class="btn btn-ghost btn-sm" onclick="openProductDetail(${p.id})">详情</button>
+          <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openAddToFolder(${p.id})">＋ 添加</button>
           <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();simulateDownload('${p.name}')">下载</button>
         </div>
       </div>
@@ -321,7 +349,7 @@ function openProductDetail(id) {
   const p = allProducts.find(x=>x.id===id); if(!p) return;
   currentProductId = id;
   document.getElementById('productModalTitle').textContent = p.name;
-  document.getElementById('productModalThumbWrap').innerHTML = `<div class="card-thumb-placeholder theme-${p.theme}" style="width:100%;height:100%;min-height:200px;"></div>`;
+  document.getElementById('productModalThumbWrap').innerHTML = `<div class="card-thumb" style="width:100%;height:100%;min-height:200px;">${gdThumbInner(p.theme, 100 + p.id)}</div>`;
   document.getElementById('productModalName').textContent = p.name;
   document.getElementById('productModalSKU').textContent = 'SKU: ' + p.sku;
   document.getElementById('productModalPrice').textContent = '¥' + p.price.toLocaleString();
@@ -346,7 +374,134 @@ function toggleProductFav() {
   if (typeof filterProducts === 'function') filterProducts();
 }
 
+// ========== Compare selection ==========
+var compareSel = [];
+function toggleProdCompare(id, el) {
+  const i = compareSel.indexOf(id);
+  if (i >= 0) compareSel.splice(i, 1);
+  else {
+    if (compareSel.length >= 2) { el.checked = false; showToast('warning', '最多选择 2 个产品对比'); return; }
+    compareSel.push(id);
+  }
+  document.getElementById('cmpCount').textContent = compareSel.length;
+  document.getElementById('compareBtn').disabled = compareSel.length !== 2;
+}
+function openProductCompare() {
+  if (compareSel.length !== 2) return;
+  const prods = compareSel.map(id => allProducts.find(p => p.id === id));
+  const rows = gdProductCompareRows(prods);
+  let html = '<div style="display:grid;grid-template-columns:120px 1fr 1fr;gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">';
+  // thumbnails row
+  html += '<div class="cmp-cell cmp-head"></div>';
+  prods.forEach(p => { html += `<div class="cmp-cell cmp-head" style="text-align:center;"><div class="card-thumb" style="height:120px;border-radius:8px;overflow:hidden;">${gdThumbInner(p.theme, 100 + p.id)}</div></div>`; });
+  rows.forEach(r => {
+    html += `<div class="cmp-cell cmp-label">${r.label}</div>`;
+    r.values.forEach(v => { html += `<div class="cmp-cell ${r.diff ? 'cmp-diff' : ''}">${v}</div>`; });
+  });
+  html += '</div><p style="font-size:12px;color:var(--text-muted);margin-top:10px;">高亮行表示两个产品存在差异。</p>';
+  document.getElementById('prodCompareBody').innerHTML = html;
+  openModal('prodCompareModal');
+}
+window.toggleProdCompare = toggleProdCompare;
+window.openProductCompare = openProductCompare;
+
+// ========== View toggle ==========
+function switchProdView(view) {
+  document.querySelectorAll('.prod-view-tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
+  document.getElementById('prodViewAll').style.display = view === 'all' ? '' : 'none';
+  document.getElementById('prodViewMine').style.display = view === 'mine' ? '' : 'none';
+  if (view === 'mine') renderFolders();
+}
+window.switchProdView = switchProdView;
+
+// ========== Personal library / folders ==========
+function refreshLibCount() { document.getElementById('libCount').textContent = GDLib.totalItems(); }
+
+function openAddToFolder(productId) {
+  addTargetProduct = productId;
+  const p = allProducts.find(x => x.id === productId);
+  document.getElementById('addFolderProductName').textContent = '产品：' + (p ? p.name : '');
+  const folders = GDLib.ensureDefault();
+  document.getElementById('folderChoices').innerHTML = folders.map(f => `
+    <button class="folder-choice" onclick="addProductToFolder(${f.id})">
+      <span>📁 ${f.name}</span><span class="tag tag-purple">${f.items.length}</span>
+    </button>`).join('');
+  openModal('addFolderModal');
+}
+function addProductToFolder(folderId) {
+  const ok = GDLib.addItem(folderId, addTargetProduct);
+  const f = GDLib.load().find(x => x.id === folderId);
+  showToast(ok ? 'success' : 'info', ok ? `已添加到「${f.name}」` : '该产品已在此文件夹中');
+  refreshLibCount();
+  closeModal('addFolderModal');
+}
+function createFolderInline() {
+  const name = document.getElementById('newFolderInline').value.trim();
+  if (!name) { showToast('warning', '请输入文件夹名称'); return; }
+  const id = GDLib.addFolder(name);
+  document.getElementById('newFolderInline').value = '';
+  openAddToFolder(addTargetProduct); // re-render choices
+  showToast('success', `已创建「${name}」`);
+}
+window.openAddToFolder = openAddToFolder;
+window.addProductToFolder = addProductToFolder;
+window.createFolderInline = createFolderInline;
+var addTargetProduct = null;
+
+function openNewFolder() { document.getElementById('newFolderName').value=''; openModal('newFolderModal'); }
+function confirmNewFolder() {
+  const name = document.getElementById('newFolderName').value.trim();
+  if (!name) { showToast('warning', '请输入名称'); return; }
+  GDLib.addFolder(name); closeModal('newFolderModal'); renderFolders(); refreshLibCount();
+  showToast('success', `已创建「${name}」`);
+}
+window.openNewFolder = openNewFolder;
+window.confirmNewFolder = confirmNewFolder;
+
+function renderFolders() {
+  const folders = GDLib.ensureDefault();
+  const wrap = document.getElementById('folderList');
+  if (!folders.length) { wrap.innerHTML = '<p style="color:var(--text-muted);">还没有文件夹</p>'; return; }
+  wrap.innerHTML = folders.map(f => {
+    const items = f.items.map(id => allProducts.find(p => p.id === id)).filter(Boolean);
+    const grid = items.length ? `<div class="product-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr));">${items.map(p => `
+      <div class="product-card">
+        <div class="card-thumb" style="height:120px;">${gdThumbInner(p.theme, 100 + p.id)}</div>
+        <div class="card-body">
+          <div class="card-body-title">${p.name}</div>
+          <div class="card-body-meta">${p.sku} | ¥${p.price.toLocaleString()}</div>
+          <div class="card-body-footer"><span></span>
+            <button class="btn btn-ghost btn-sm" onclick="removeFromFolder(${f.id},${p.id})">移除</button>
+          </div>
+        </div>
+      </div>`).join('')}</div>` : '<p style="color:var(--text-muted);font-size:13px;padding:8px 0;">该文件夹为空，去「全部素材库」添加吧。</p>';
+    return `
+    <div class="folder-block">
+      <div class="folder-block-head">
+        <div><span style="font-weight:600;">📁 ${f.name}</span> <span class="tag tag-purple">${items.length} 件</span></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary btn-sm" onclick="downloadFolder(${f.id})" ${items.length?'':'disabled'}>⬇ 一键下载全部</button>
+          ${f.id===1 ? '' : `<button class="btn btn-ghost btn-sm" onclick="deleteFolder(${f.id})">删除文件夹</button>`}
+        </div>
+      </div>
+      ${grid}
+    </div>`;
+  }).join('');
+}
+function removeFromFolder(folderId, productId) { GDLib.removeItem(folderId, productId); renderFolders(); refreshLibCount(); showToast('info','已移除'); }
+function deleteFolder(folderId) { if(confirm('确定删除该文件夹？')) { GDLib.removeFolder(folderId); renderFolders(); refreshLibCount(); showToast('error','文件夹已删除'); } }
+function downloadFolder(folderId) {
+  const f = GDLib.load().find(x => x.id === folderId);
+  if (!f || !f.items.length) return;
+  simulateDownload(`${f.name} (${f.items.length} 件产品打包)`);
+}
+window.removeFromFolder = removeFromFolder;
+window.deleteFolder = deleteFolder;
+window.downloadFolder = downloadFolder;
+
 // Init
+GDLib.ensureDefault();
+refreshLibCount();
 filterProducts();
 </script>
 </body>

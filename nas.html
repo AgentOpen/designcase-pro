@@ -65,29 +65,7 @@
 </head>
 <body>
 
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo"><div class="sidebar-logo-icon">G</div><div class="sidebar-logo-text">George Design</div></div>
-  <nav class="sidebar-nav">
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">主菜单</div>
-      <a href="dashboard.html" class="nav-item" data-page="dashboard"><span class="nav-icon">⊞</span> 工作台</a>
-      <a href="products.html" class="nav-item" data-page="products"><span class="nav-icon">⊡</span> 产品库</a>
-      <a href="cases.html" class="nav-item" data-page="cases"><span class="nav-icon">⊟</span> 案例库</a>
-      <a href="mycases.html" class="nav-item" data-page="mycases"><span class="nav-icon">⊠</span> 我的案例</a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">文件与数据</div>
-      <a href="nas.html" class="nav-item active" data-page="nas"><span class="nav-icon">⊡</span> NAS文件管理</a>
-      <a href="analytics.html" class="nav-item" data-page="analytics"><span class="nav-icon">📊</span> 数据看板</a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">管理</div>
-      <a href="admin.html" class="nav-item" data-page="admin"><span class="nav-icon">⚙</span> 系统管理</a>
-      <a href="profile.html" class="nav-item" data-page="profile"><span class="nav-icon">👤</span> 个人中心</a>
-    </div>
-  </nav>
-  <div class="sidebar-user"><div class="sidebar-avatar chen">陈</div>陈磊 · 部门主管</div>
-</aside>
+<aside class="sidebar" id="sidebar"></aside>
 
 <main class="main">
   <header class="header">
@@ -221,6 +199,7 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="common.js"></script>
+<script src="gdcase.js"></script>
 <script>
 // ========== NAS DATA ==========
 const nasData = {
@@ -289,11 +268,22 @@ for (const dept in nasData) {
         const styles = styleMap[designer] || ['现代简约'];
         const style = styles[idx % styles.length];
         const hasVR = !!vrPanoramaMap[caseName];
-        nasCases.push({ name:caseName, dept, designer, designerId:dObj.id, country, style, theme:themeMap[style]||'modern', size:Math.floor(Math.random()*80+20), hasVR });
-      });
+        nasCases.push({ name:caseName, dept, designer, designerId:dObj.id, country, style, theme:themeMap[style]||'modern', size:Math.floor(Math.random()*80+20), hasVR });      });
     }
   }
 }
+
+// 为 NAS 案例补充 id / number / reuseCount，并接入统一案例模块
+nasCases.forEach(function (c, i) {
+  c.id = 3000 + i;
+  if (!c.number) {
+    var enMap = { '美国':'America','新加坡':'Singapore','马来西亚':'Malaysia','欧美':'Europe','非洲':'Africa','日本':'Japan' };
+    c.number = (c.designerId || '000') + '-' + (enMap[c.country] || c.country) + '-案例' + String(i + 1).padStart(3, '0');
+  }
+  if (c.reuseCount == null) c.reuseCount = Math.floor(Math.random() * 40 + 5);
+  if (c.time == null) c.time = '2026-05-' + String((i % 28) + 1).padStart(2, '0');
+});
+if (window.GDCase) GDCase.setSource(function () { return nasCases; }, { afterReuse: function () { if (typeof filterCases === 'function') filterCases(); } });
 
 // ========== INIT ==========
 function buildDesignerDropdown() {
@@ -544,26 +534,13 @@ function getTagClass(s) {
 }
 
 function renderNASCaseCard(c) {
-  const vrBadge = c.hasVR ? '<span class="tag tag-orange" style="font-size:10px;padding:2px 6px;">VR全景</span>' : '';
-  return `<div class="nas-case-card">
-    <div class="card-thumb"><div class="card-thumb-placeholder theme-${c.theme}"></div></div>
-    <div class="card-body">
-      <div class="card-body-title">${c.name} ${vrBadge}</div>
-      <div class="card-body-info">
-        <span class="user-avatar chen" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">${c.designer[0]}</span> ${c.designer}
-        <span class="tag tag-blue">${c.dept}</span>
-        <span class="tag tag-green">${c.country}</span>
-      </div>
-      <div class="card-body-tags">
-        <span class="tag ${getTagClass(c.style)}">${c.style}</span>
-        <span style="font-size:11px;color:var(--text-muted);">${c.size} MB</span>
-      </div>
-      <div class="card-body-footer">
-        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); nasDownloadFromButton(this)" data-name="${c.name}" data-dept="${c.dept}" data-designer="${c.designer}" data-country="${c.country}">📥 一键下载到我的NAS</button>
-        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); showCaseDetail('${c.name}', ${c.hasVR})">查看详情</button>
-      </div>
-    </div>
-  </div>`;
+  return GDCase.renderCard(c, {
+    context: 'nas',
+    extraActions: function (cc) {
+      return '<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); confirmNASDownload(\'' +
+        cc.name + '\',\'' + cc.dept + '\',\'' + cc.designer + '\',\'' + cc.country + '\')">📥 下载到我的NAS</button>';
+    }
+  });
 }
 
 // ========== NAS DOWNLOAD FLOW ==========

@@ -9,61 +9,14 @@
 <body>
 
 <!-- ====== SIDEBAR ====== -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="sidebar-logo-icon">G</div>
-    <div class="sidebar-logo-text">George Design</div>
-  </div>
-  <nav class="sidebar-nav">
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">主菜单</div>
-      <a href="dashboard.html" class="nav-item active" data-page="dashboard">
-        <span class="nav-icon">⊞</span> 工作台
-      </a>
-      <a href="products.html" class="nav-item" data-page="products">
-        <span class="nav-icon">⊡</span> 产品库
-        <span class="nav-badge">128</span>
-      </a>
-      <a href="cases.html" class="nav-item" data-page="cases">
-        <span class="nav-icon">⊟</span> 案例库
-      </a>
-      <a href="mycases.html" class="nav-item" data-page="mycases">
-        <span class="nav-icon">⊠</span> 我的案例
-      </a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">文件与数据</div>
-      <a href="nas.html" class="nav-item" data-page="nas">
-        <span class="nav-icon">⊡</span> NAS文件管理
-      </a>
-      <a href="analytics.html" class="nav-item" data-page="analytics">
-        <span class="nav-icon">📊</span> 数据看板
-      </a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-title">管理</div>
-      <a href="admin.html" class="nav-item" data-page="admin">
-        <span class="nav-icon">⚙</span> 系统管理
-      </a>
-      <a href="profile.html" class="nav-item" data-page="profile">
-        <span class="nav-icon">👤</span> 个人中心
-      </a>
-    </div>
-  </nav>
-  <div class="sidebar-user">
-    <div class="sidebar-avatar chen">陈</div>
-    <div class="sidebar-user-info">
-      <div class="sidebar-user-name">陈磊</div>
-      <div class="sidebar-user-role">资深设计师 · 部门主管</div>
-    </div>
-  </div>
-</aside>
+<aside class="sidebar" id="sidebar"></aside>
 
 <!-- ====== MAIN ====== -->
 <main class="main">
   <header class="header">
-    <h1 class="header-title" id="headerTitle">工作台</h1>
+    <h1 class="header-title" id="headerTitle">首页</h1>
     <div class="header-actions">
+      <button class="btn btn-ghost" onclick="openNotifications()" id="notifBtn">🔔 通知</button>
       <button class="dark-toggle" onclick="toggleDarkMode()">🌙 暗色模式</button>
       <button class="btn btn-ghost" onclick="toggleHistory()">📜 历史</button>
       <button class="btn btn-ghost" onclick="showShortcuts()">⌨ 快捷键</button>
@@ -73,106 +26,172 @@
 
   <div class="page-content">
     <div class="page active" id="page-dashboard">
-      <!-- 统计卡片 -->
-      <div class="stat-cards">
-        <div class="stat-card" style="color:#4f46e5;">
-          <div class="stat-card-label">我的案例数</div>
-          <div class="stat-card-value">24</div>
-          <div class="stat-card-sub">本月新增 3 个</div>
+
+      <!-- 欢迎条 -->
+      <div class="home-hero">
+        <div>
+          <div class="home-hero-greeting">下午好，陈磊 👋</div>
+          <div class="home-hero-sub">资深设计师 · 部门主管 · 设计一部　|　本月你已复用 47 次，部门排名 <strong>第 1</strong></div>
         </div>
-        <div class="stat-card" style="color:#3b82f6;">
-          <div class="stat-card-label">本月复用次数</div>
-          <div class="stat-card-value">47</div>
-          <div class="stat-card-sub">较上月 +12%</div>
-          <div class="stat-card-progress"><div class="stat-card-progress-bar blue" style="width:65%"></div></div>
-        </div>
-        <div class="stat-card" style="color:#4f46e5;">
-          <div class="stat-card-label">3D模型下载量</div>
-          <div class="stat-card-value">189</div>
-          <div class="stat-card-sub">本月累计</div>
-          <div class="stat-card-progress"><div class="stat-card-progress-bar purple" style="width:72%"></div></div>
-        </div>
-        <div class="stat-card" style="color:#f59e0b;">
-          <div class="stat-card-label">NAS使用量</div>
-          <div class="stat-card-value">156 GB</div>
-          <div class="stat-card-sub">配额 500 GB · 31.2%</div>
-          <div class="stat-card-progress"><div class="stat-card-progress-bar orange" style="width:31%"></div></div>
+        <div class="home-hero-actions">
+          <button class="btn btn-primary" onclick="navigateTo('mycases')">＋ 创建案例</button>
+          <button class="btn btn-secondary" onclick="navigateTo('products')">浏览素材库</button>
         </div>
       </div>
 
-      <!-- 快捷操作 -->
-      <div class="quick-actions">
-        <div class="quick-action" onclick="navigateTo('mycases');showToast('info','跳转到案例创建页面')">
-          <div class="quick-action-icon" style="background:linear-gradient(135deg,#eef2ff,#e0e7ff);color:var(--primary);">＋</div>
-          <div class="quick-action-text">创建案例</div>
+      <!-- Tab 切换 -->
+      <div class="home-tabs">
+        <div class="home-tab active" data-tab="overview" onclick="switchHomeTab('overview')">个人概览</div>
+        <div class="home-tab" data-tab="team" onclick="switchHomeTab('team')">团队数据</div>
+        <div class="home-tab" data-tab="activity" onclick="switchHomeTab('activity')">复用流水</div>
+      </div>
+
+      <!-- ============ 个人概览 ============ -->
+      <div class="home-panel active" id="home-overview">
+        <div class="stat-cards">
+          <div class="stat-card" style="color:#4f46e5;">
+            <div class="stat-card-label">我的案例数</div>
+            <div class="stat-card-value">24</div>
+            <div class="stat-card-sub">本月新增 3 个</div>
+          </div>
+          <div class="stat-card" style="color:#3b82f6;">
+            <div class="stat-card-label">本月复用次数</div>
+            <div class="stat-card-value">47</div>
+            <div class="stat-card-sub">较上月 +12%</div>
+            <div class="stat-card-progress"><div class="stat-card-progress-bar blue" style="width:65%"></div></div>
+          </div>
+          <div class="stat-card" style="color:#4f46e5;">
+            <div class="stat-card-label">3D模型下载量</div>
+            <div class="stat-card-value">189</div>
+            <div class="stat-card-sub">本月累计</div>
+            <div class="stat-card-progress"><div class="stat-card-progress-bar purple" style="width:72%"></div></div>
+          </div>
+          <div class="stat-card" style="color:#f59e0b;">
+            <div class="stat-card-label">NAS使用量</div>
+            <div class="stat-card-value">156 GB</div>
+            <div class="stat-card-sub">配额 500 GB · 31.2%</div>
+            <div class="stat-card-progress"><div class="stat-card-progress-bar orange" style="width:31%"></div></div>
+          </div>
         </div>
-        <div class="quick-action" onclick="navigateTo('cases')">
-          <div class="quick-action-icon" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);color:var(--success);">⊟</div>
-          <div class="quick-action-text">浏览案例库</div>
+
+        <div class="quick-actions">
+          <div class="quick-action" onclick="navigateTo('mycases')">
+            <div class="quick-action-icon" style="background:linear-gradient(135deg,#eef2ff,#e0e7ff);color:var(--primary);">＋</div>
+            <div class="quick-action-text">创建案例</div>
+          </div>
+          <div class="quick-action" onclick="navigateTo('cases')">
+            <div class="quick-action-icon" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);color:var(--success);">⊟</div>
+            <div class="quick-action-text">浏览灵感库</div>
+          </div>
+          <div class="quick-action" onclick="navigateTo('products')">
+            <div class="quick-action-icon" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);color:var(--info);">⬇</div>
+            <div class="quick-action-text">下载模型</div>
+          </div>
+          <div class="quick-action" onclick="navigateTo('nas')">
+            <div class="quick-action-icon" style="background:linear-gradient(135deg,#fff7ed,#fed7aa);color:var(--warning);">⬆</div>
+            <div class="quick-action-text">上传文件</div>
+          </div>
         </div>
-        <div class="quick-action" onclick="navigateTo('products')">
-          <div class="quick-action-icon" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);color:var(--info);">⬇</div>
-          <div class="quick-action-text">下载模型</div>
+
+        <div class="card" style="margin-bottom:24px;">
+          <div class="card-header">
+            <span class="card-title">最近案例</span>
+            <a href="mycases.html" class="btn btn-ghost btn-sm">查看全部</a>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>案例名称</th><th>风格</th><th>空间</th><th>创建时间</th><th>复用次数</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>现代简约三居室</td><td><span class="tag tag-blue">现代简约</span></td><td>客厅</td><td>2026-05-20</td><td>47</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
+                <tr><td>新中式别墅设计</td><td><span class="tag tag-purple">新中式</span></td><td>客厅</td><td>2026-05-18</td><td>29</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
+                <tr><td>现代极简厨房方案</td><td><span class="tag tag-blue">现代简约</span></td><td>厨房</td><td>2026-05-15</td><td>22</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
+                <tr><td>新中式茶室空间</td><td><span class="tag tag-purple">新中式</span></td><td>书房</td><td>2026-05-12</td><td>9</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="quick-action" onclick="navigateTo('nas')">
-          <div class="quick-action-icon" style="background:linear-gradient(135deg,#fff7ed,#fed7aa);color:var(--warning);">⬆</div>
-          <div class="quick-action-text">上传文件</div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">推荐产品</span><a href="products.html" class="btn btn-ghost btn-sm">前往素材库</a></div>
+          <div class="product-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr));">
+            <div class="product-card" onclick="navigateTo('products')">
+              <div class="card-thumb"><div class="card-thumb-placeholder theme-sofa" style="height:120px;"></div></div>
+              <div class="card-body"><div class="card-body-title">北欧简约沙发</div><div class="card-body-tags"><span class="tag tag-blue">北欧风</span><span class="tag tag-green">客厅</span></div></div>
+            </div>
+            <div class="product-card" onclick="navigateTo('products')">
+              <div class="card-thumb"><div class="card-thumb-placeholder theme-lamp" style="height:120px;"></div></div>
+              <div class="card-body"><div class="card-body-title">现代极简吊灯</div><div class="card-body-tags"><span class="tag tag-blue">现代简约</span><span class="tag tag-green">客厅</span></div></div>
+            </div>
+            <div class="product-card" onclick="navigateTo('products')">
+              <div class="card-thumb"><div class="card-thumb-placeholder theme-bed" style="height:120px;"></div></div>
+              <div class="card-body"><div class="card-body-title">新中式实木床</div><div class="card-body-tags"><span class="tag tag-purple">新中式</span><span class="tag tag-green">卧室</span></div></div>
+            </div>
+            <div class="product-card" onclick="navigateTo('products')">
+              <div class="card-thumb"><div class="card-thumb-placeholder theme-table" style="height:120px;"></div></div>
+              <div class="card-body"><div class="card-body-title">轻奢大理石茶几</div><div class="card-body-tags"><span class="tag tag-orange">轻奢</span><span class="tag tag-green">客厅</span></div></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 最近案例 -->
-      <div class="card" style="margin-bottom:24px;">
-        <div class="card-header">
-          <span class="card-title">最近案例</span>
-          <a href="mycases.html" class="btn btn-ghost btn-sm">查看全部</a>
+      <!-- ============ 团队数据 ============ -->
+      <div class="home-panel" id="home-team">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+          <select class="input" id="timeRange" style="width:140px;" onchange="refreshAnalytics()">
+            <option>今日</option><option>本周</option><option selected>本月</option><option>本季度</option><option>今年</option>
+          </select>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>案例名称</th><th>风格</th><th>空间</th><th>创建时间</th><th>复用次数</th><th>操作</th></tr></thead>
+        <div class="stat-cards">
+          <div class="stat-card"><div class="stat-card-label">总案例数</div><div class="stat-card-value">156</div><div class="stat-card-sub">较上月 +12%</div></div>
+          <div class="stat-card"><div class="stat-card-label">复用总次数</div><div class="stat-card-value">523</div><div class="stat-card-sub">较上月 +18%</div></div>
+          <div class="stat-card"><div class="stat-card-label">活跃设计师</div><div class="stat-card-value">28</div><div class="stat-card-sub">本月新增 3 人</div></div>
+          <div class="stat-card"><div class="stat-card-label">模型下载总量</div><div class="stat-card-value">3,842</div><div class="stat-card-sub">较上月 +23%</div></div>
+          <div class="stat-card"><div class="stat-card-label">NAS总使用量</div><div class="stat-card-value">156 GB</div><div class="stat-card-sub">剩余 344 GB / 500 GB</div></div>
+        </div>
+        <div class="chart-row" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
+          <div class="card" style="flex:1;min-width:400px;"><div class="card-title">案例创建趋势（近12个月）</div><div class="chart-bar" id="barChart" style="height:200px;"></div></div>
+          <div class="card" style="width:350px;min-width:280px;">
+            <div class="card-title">热门风格分布</div>
+            <div style="text-align:center;"><div style="width:180px;height:180px;margin:0 auto;background:conic-gradient(#4f46e5 0% 28%, #10b981 28% 52%, #f59e0b 52% 70%, #ec4899 70% 82%, #ef4444 82% 92%, #3b82f6 92% 100%);border-radius:50%;"></div></div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px;">
+              <span class="tag tag-purple">现代简约 28%</span><span class="tag tag-green">北欧 24%</span><span class="tag tag-orange">新中式 18%</span><span class="tag tag-pink">轻奢 12%</span><span class="tag tag-red">工业风 10%</span><span class="tag tag-blue">其他 8%</span>
+            </div>
+          </div>
+        </div>
+        <div class="chart-row" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
+          <div class="card" style="flex:1;min-width:400px;"><div class="card-header"><span class="card-title">设计师复用排行 Top 10</span><a href="ranking.html" class="btn btn-ghost btn-sm">完整榜单</a></div><div class="chart-hbar" id="hBarChart" style="height:260px;"></div></div>
+          <div class="card" style="width:350px;min-width:280px;">
+            <div class="card-title">热门空间分布</div>
+            <div style="text-align:center;"><div style="width:180px;height:180px;margin:0 auto;background:conic-gradient(#4f46e5 0% 35%, #10b981 35% 58%, #f59e0b 58% 74%, #ec4899 74% 86%, #ef4444 86% 94%, #3b82f6 94% 100%);border-radius:50%;"></div></div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px;">
+              <span class="tag tag-purple">客厅 35%</span><span class="tag tag-green">卧室 23%</span><span class="tag tag-orange">餐厅 16%</span><span class="tag tag-pink">书房 12%</span><span class="tag tag-red">儿童房 8%</span><span class="tag tag-blue">其他 6%</span>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:16px;"><div class="card-title">3D模型下载趋势（近12个月）</div><div class="chart-line" id="lineChart" style="height:200px;position:relative;overflow:hidden;"></div></div>
+        <div class="card">
+          <div class="card-title">部门案例统计</div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>部门名称</th><th>案例数</th><th>复用次数</th><th>活跃设计师</th><th>NAS使用</th></tr></thead>
             <tbody>
-              <tr><td>现代简约三居室</td><td><span class="tag tag-blue">现代简约</span></td><td>客厅</td><td>2026-05-20</td><td>47</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
-              <tr><td>新中式别墅设计</td><td><span class="tag tag-purple">新中式</span></td><td>客厅</td><td>2026-05-18</td><td>29</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
-              <tr><td>现代极简厨房方案</td><td><span class="tag tag-blue">现代简约</span></td><td>厨房</td><td>2026-05-15</td><td>22</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
-              <tr><td>新中式茶室空间</td><td><span class="tag tag-purple">新中式</span></td><td>书房</td><td>2026-05-12</td><td>9</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
+              <tr><td>设计一部</td><td>42</td><td>156</td><td>5</td><td>45 GB / 100 GB</td></tr>
+              <tr><td>设计二部</td><td>31</td><td>112</td><td>4</td><td>32 GB / 100 GB</td></tr>
+              <tr><td>设计三部</td><td>28</td><td>98</td><td>3</td><td>28 GB / 100 GB</td></tr>
+              <tr><td>设计四部</td><td>25</td><td>87</td><td>3</td><td>20 GB / 100 GB</td></tr>
+              <tr><td>设计五部</td><td>30</td><td>70</td><td>4</td><td>31 GB / 100 GB</td></tr>
             </tbody>
-          </table>
+          </table></div>
         </div>
       </div>
 
-      <!-- 推荐产品 -->
-      <div class="card">
-        <div class="card-header"><span class="card-title">推荐产品</span></div>
-        <div class="product-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr));">
-          <div class="product-card" onclick="navigateTo('products');setTimeout(()=>openProductDetail(1),200);">
-            <div class="card-thumb"><div class="card-thumb-placeholder theme-sofa" style="height:120px;"></div></div>
-            <div class="card-body">
-              <div class="card-body-title">北欧简约沙发</div>
-              <div class="card-body-tags"><span class="tag tag-blue">北欧风</span><span class="tag tag-green">客厅</span></div>
-            </div>
-          </div>
-          <div class="product-card" onclick="navigateTo('products');setTimeout(()=>openProductDetail(2),200);">
-            <div class="card-thumb"><div class="card-thumb-placeholder theme-lamp" style="height:120px;"></div></div>
-            <div class="card-body">
-              <div class="card-body-title">现代极简吊灯</div>
-              <div class="card-body-tags"><span class="tag tag-blue">现代简约</span><span class="tag tag-green">客厅</span></div>
-            </div>
-          </div>
-          <div class="product-card" onclick="navigateTo('products');setTimeout(()=>openProductDetail(3),200);">
-            <div class="card-thumb"><div class="card-thumb-placeholder theme-bed" style="height:120px;"></div></div>
-            <div class="card-body">
-              <div class="card-body-title">新中式实木床</div>
-              <div class="card-body-tags"><span class="tag tag-purple">新中式</span><span class="tag tag-green">卧室</span></div>
-            </div>
-          </div>
-          <div class="product-card" onclick="navigateTo('products');setTimeout(()=>openProductDetail(4),200);">
-            <div class="card-thumb"><div class="card-thumb-placeholder theme-table" style="height:120px;"></div></div>
-            <div class="card-body">
-              <div class="card-body-title">轻奢大理石茶几</div>
-              <div class="card-body-tags"><span class="tag tag-orange">轻奢</span><span class="tag tag-green">客厅</span></div>
-            </div>
-          </div>
+      <!-- ============ 复用流水 ============ -->
+      <div class="home-panel" id="home-activity">
+        <div class="card">
+          <div class="card-header"><span class="card-title">最新复用流水</span><span style="font-size:12px;color:var(--text-muted);">实时记录团队的案例复用动态</span></div>
+          <div id="activityFeed" class="activity-feed"></div>
         </div>
       </div>
+
     </div>
   </div>
 </main>
@@ -198,8 +217,8 @@
           <tbody>
             <tr><td><kbd>?</kbd></td><td>显示快捷键列表</td></tr>
             <tr><td><kbd>Ctrl/Cmd + D</kbd></td><td>工作台</td></tr>
-            <tr><td><kbd>Ctrl/Cmd + P</kbd></td><td>产品库</td></tr>
-            <tr><td><kbd>Ctrl/Cmd + C</kbd></td><td>案例库</td></tr>
+            <tr><td><kbd>Ctrl/Cmd + P</kbd></td><td>素材库</td></tr>
+            <tr><td><kbd>Ctrl/Cmd + C</kbd></td><td>灵感库</td></tr>
             <tr><td><kbd>Ctrl/Cmd + M</kbd></td><td>我的案例</td></tr>
             <tr><td><kbd>Ctrl/Cmd + N</kbd></td><td>NAS文件管理</td></tr>
             <tr><td><kbd>Ctrl/Cmd + A</kbd></td><td>数据看板</td></tr>
@@ -227,16 +246,143 @@
   </div>
 </div>
 
+<!-- Notifications Modal -->
+<div class="modal-overlay" id="notifModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header"><h2>通知中心</h2><button class="modal-close" onclick="closeModal('notifModal')">✕</button></div>
+    <div class="modal-body" id="notifList" style="padding:0;"></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="markAllRead()">全部标为已读</button><button class="btn btn-primary" onclick="closeModal('notifModal')">关闭</button></div>
+  </div>
+</div>
+
 <!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="common.js"></script>
 <script>
-// Dashboard specific functions
-function openProductDetail(id) {
-  // This will be implemented in products.html
-  showToast('info', '跳转到产品详情');
+// ===== Home tab switching =====
+function switchHomeTab(tab) {
+  document.querySelectorAll('.home-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.home-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('home-' + tab).classList.add('active');
+  if (tab === 'team') { renderBarChart(); renderHBarChart(); renderLineChart(); }
+  if (tab === 'activity') renderActivityFeed();
 }
+window.switchHomeTab = switchHomeTab;
+
+function refreshAnalytics() {
+  const range = document.getElementById('timeRange').value;
+  showToast('info', `数据已刷新为「${range}」范围`);
+  renderBarChart(); renderHBarChart(); renderLineChart();
+}
+window.refreshAnalytics = refreshAnalytics;
+
+function renderBarChart() {
+  const months = ['5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','4月'];
+  const values = [12,15,10,18,22,16,20,25,14,19,24,28];
+  const max = Math.max(...values);
+  const chart = document.getElementById('barChart'); if (!chart) return;
+  chart.innerHTML = months.map((m,i) => `
+    <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
+      <div style="font-size:10px;color:var(--text-muted);margin-bottom:4px;">${values[i]}</div>
+      <div style="width:100%;max-width:36px;height:${(values[i]/max*160)}px;background:linear-gradient(180deg,#4f46e5,#818cf8);border-radius:4px 4px 0 0;"></div>
+      <div style="font-size:10px;color:var(--text-secondary);margin-top:4px;">${m}</div>
+    </div>`).join('');
+}
+function renderHBarChart() {
+  const designers = [
+    {name:'陈磊',value:156},{name:'林悦',value:132},{name:'王明远',value:118},
+    {name:'张薇',value:104},{name:'李强',value:89},{name:'赵工',value:67},
+    {name:'孙敏',value:54},{name:'周杰',value:43},{name:'吴亮',value:31},{name:'郑虹',value:22}
+  ];
+  const max = Math.max(...designers.map(d=>d.value));
+  const chart = document.getElementById('hBarChart'); if (!chart) return;
+  chart.innerHTML = designers.map((d,i) => `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <span style="width:50px;text-align:right;font-size:12px;">${d.name}</span>
+      <div style="flex:1;height:18px;background:var(--bg);border-radius:4px;overflow:hidden;">
+        <div style="width:${d.value/max*100}%;height:100%;background:linear-gradient(90deg,#4f46e5,#a78bfa);border-radius:4px;"></div>
+      </div>
+      <span style="font-size:11px;color:var(--text-muted);width:30px;">${d.value}</span>
+    </div>`).join('');
+}
+function renderLineChart() {
+  const values = [180,210,195,240,260,230,280,310,290,340,320,380];
+  const max = Math.max(...values), min = Math.min(...values), range = max-min||1;
+  const w = 100/(values.length-1);
+  const points = values.map((v,i) => `${i*w}%,${100-(v-min)/range*90}%`).join(' ');
+  const chart = document.getElementById('lineChart'); if (!chart) return;
+  chart.innerHTML = `
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;">
+      <defs><linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4f46e5" stop-opacity="0.2"/><stop offset="100%" stop-color="#4f46e5" stop-opacity="0"/></linearGradient></defs>
+      <polygon points="${points} 100%,100% 100%,100% 0%,0 0%" fill="url(#lineGrad)"/>
+      <polyline points="${points}" fill="none" stroke="#4f46e5" stroke-width="0.5" vector-effect="non-scaling-stroke"/>
+    </svg>
+    <div style="position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;padding:0 4px;">
+      ${['5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','4月'].map(m=>`<span style="font-size:9px;color:var(--text-muted);">${m}</span>`).join('')}
+    </div>`;
+}
+
+// ===== Activity feed (reuse flow) =====
+function renderActivityFeed() {
+  const feed = document.getElementById('activityFeed'); if (!feed) return;
+  // merge persisted reuse records with seed demo activity
+  let stored = [];
+  try { stored = JSON.parse(localStorage.getItem('gd-reuse') || '[]'); } catch(e) {}
+  const seed = [
+    {by:'林悦', from:'现代简约三居室', time:'2026-05-23 14:20'},
+    {by:'王明远', from:'新中式茶室空间', time:'2026-05-23 11:05'},
+    {by:'张薇', from:'北欧极简客厅', time:'2026-05-22 16:48'},
+    {by:'李强', from:'轻奢餐厅方案', time:'2026-05-22 09:30'},
+    {by:'陈磊', from:'工业Loft公寓', time:'2026-05-21 18:12'},
+  ];
+  const all = stored.map(r => ({by:r.by, from:r.from, time:r.time})).concat(seed);
+  feed.innerHTML = all.map(a => `
+    <div class="activity-item">
+      <div class="activity-avatar">${(a.by||'?').charAt(0)}</div>
+      <div class="activity-body">
+        <div><strong>${a.by}</strong> 复用了案例 <strong>「${a.from}」</strong></div>
+        <div class="activity-time">${a.time}</div>
+      </div>
+      <span class="tag tag-green">复用</span>
+    </div>`).join('');
+}
+
+// ===== Notifications =====
+function seedNotifications() {
+  if (localStorage.getItem('gd-notifications')) return;
+  const seed = [
+    {id:1, title:'你的案例「现代简约三居室」被林悦复用', time:'14:20', read:false},
+    {id:2, title:'王明远 在「滨海别墅」项目里 @ 了你', time:'11:05', read:false},
+    {id:3, title:'本月设计师榜单已更新，你位列第 1', time:'昨天', read:true},
+  ];
+  localStorage.setItem('gd-notifications', JSON.stringify(seed));
+}
+function openNotifications() {
+  let list = [];
+  try { list = JSON.parse(localStorage.getItem('gd-notifications')||'[]'); } catch(e){}
+  document.getElementById('notifList').innerHTML = list.length ? list.map(n => `
+    <div class="notif-item ${n.read?'':'unread'}">
+      <div class="notif-dot"></div>
+      <div><div>${n.title}</div><div class="activity-time">${n.time}</div></div>
+    </div>`).join('') : '<div style="padding:24px;text-align:center;color:var(--text-muted);">暂无通知</div>';
+  openModal('notifModal');
+}
+function markAllRead() {
+  let list = [];
+  try { list = JSON.parse(localStorage.getItem('gd-notifications')||'[]'); } catch(e){}
+  list.forEach(n => n.read = true);
+  localStorage.setItem('gd-notifications', JSON.stringify(list));
+  openNotifications();
+  renderSidebar(); highlightCurrentNav();
+  showToast('success','已全部标记为已读');
+}
+window.openNotifications = openNotifications;
+window.markAllRead = markAllRead;
+
+seedNotifications();
+renderActivityFeed();
+if (typeof renderSidebar === 'function') { renderSidebar(); highlightCurrentNav(); }
 </script>
 </body>
 </html>
