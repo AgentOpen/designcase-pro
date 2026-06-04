@@ -931,28 +931,28 @@ body {
     
     <div class="znz-menu-group">
       <div class="znz-menu-group-title">导航</div>
-      <div class="znz-menu-item active">
+      <div class="znz-menu-item active" data-nav="all">
         <div class="znz-menu-item-icon">🏠</div>
         <div class="znz-menu-item-text">首页</div>
       </div>
-      <div class="znz-menu-item">
+      <div class="znz-menu-item" data-nav="3dmodel">
         <div class="znz-menu-item-icon">📚</div>
         <div class="znz-menu-item-text">素材库</div>
       </div>
-      <div class="znz-menu-item">
+      <div class="znz-menu-item" data-nav="case">
         <div class="znz-menu-item-icon">💡</div>
         <div class="znz-menu-item-text">灵感库</div>
       </div>
-      <div class="znz-menu-item">
+      <div class="znz-menu-item" data-nav="external">
         <div class="znz-menu-item-icon">🎨</div>
         <div class="znz-menu-item-text">AI生图</div>
         <div class="znz-menu-item-tag">HOT</div>
       </div>
-      <div class="znz-menu-item">
+      <div class="znz-menu-item" data-nav="external">
         <div class="znz-menu-item-icon">🤖</div>
         <div class="znz-menu-item-text">AI智能体</div>
       </div>
-      <div class="znz-menu-item">
+      <div class="znz-menu-item" data-nav="external">
         <div class="znz-menu-item-icon">☁️</div>
         <div class="znz-menu-item-text">云渲染</div>
       </div>
@@ -1374,21 +1374,46 @@ function initEventListeners() {
     applyFilters();
   });
 
-  // Banner 上的分类标签（与下方二级标签联动）
+  // Banner 上的分类标签（与下方二级标签联动）—— 抽成函数，侧边栏共用
+  function selectBannerTab(key) {
+    document.querySelectorAll('.znz-banner-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === key));
+    const lower = document.querySelector('.znz-category-tab[data-tab="' + key + '"]');
+    document.querySelectorAll('.znz-category-tab').forEach(t => t.classList.remove('active'));
+    if (lower) {
+      lower.classList.add('active');
+      AppState.filters.activeTab = key;
+    } else {
+      const allTab = document.querySelector('.znz-category-tab[data-tab="all"]');
+      if (allTab) allTab.classList.add('active');
+      AppState.filters.activeTab = 'all';
+    }
+    applyFilters();
+  }
+  window.selectBannerTab = selectBannerTab;
+
   document.querySelectorAll('.znz-banner-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.znz-banner-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      const key = tab.dataset.tab;
-      const lower = document.querySelector('.znz-category-tab[data-tab="' + key + '"]');
-      if (lower) {
-        document.querySelectorAll('.znz-category-tab').forEach(t => t.classList.remove('active'));
-        lower.classList.add('active');
-        AppState.filters.activeTab = key;
-      } else {
-        AppState.filters.activeTab = 'all';
+    tab.addEventListener('click', () => selectBannerTab(tab.dataset.tab));
+  });
+
+  // 左侧导航：与 banner 标签点击效果一致
+  // 首页→全部，素材库→3D模型，灵感库→案例；AI生图/AI智能体/云渲染→外部平台
+  document.querySelectorAll('.znz-menu-item[data-nav]').forEach(item => {
+    item.addEventListener('click', () => {
+      const nav = item.dataset.nav;
+      if (nav === 'external') {
+        window.open('https://www.yunhui.art/s/designer', '_blank');
+        return;
       }
-      applyFilters();
+      document.querySelectorAll('.znz-menu-item').forEach(m => m.classList.remove('active'));
+      item.classList.add('active');
+      selectBannerTab(nav);
+      // 首页回到顶部；素材库/灵感库滚动到筛选结果区
+      if (nav === 'all') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        const tabs = document.querySelector('.znz-category-tabs');
+        if (tabs) tabs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     });
   });
   
