@@ -64,17 +64,20 @@ body {
   color: rgba(0, 0, 0, 0.85);
   background-color: var(--znz-bg);
   line-height: 1.5;
+  overflow-x: hidden;
+  display: block; /* 覆盖 common.css 的 body{display:flex}，否则布局不撑满出现右侧白屏 */
+  min-height: 100vh;
 }
+.znz-layout { width: 100%; }
 
 /* ========== 全站布局 ========== */
 .znz-layout {
   display: flex;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
   background-color: var(--znz-sidebar-bg);
 }
 
-/* ========== 左侧栏菜单 (206px) - 固定，不随右侧滚动 ========== */
+/* ========== 左侧栏菜单 (206px) - sticky 固定，随页面滚动保持可见 ========== */
 .znz-sidebar {
   width: 206px;
   background-color: var(--znz-sidebar-bg);
@@ -84,6 +87,7 @@ body {
   position: sticky;
   top: 0;
   overflow-y: auto;
+  align-self: flex-start;
 }
 
 .znz-logo {
@@ -183,8 +187,6 @@ body {
   padding: var(--znz-spacing-sm) var(--znz-spacing-sm) var(--znz-spacing-sm) 0;
   background-color: var(--znz-sidebar-bg);
   min-width: 0;
-  height: 100vh;
-  overflow-y: auto;
 }
 
 /* ========== 顶部操作栏 ========== */
@@ -398,6 +400,7 @@ body {
   margin: 0 auto var(--znz-spacing-3xl);
   position: relative;
   overflow: hidden;
+  background: linear-gradient(135deg, #2b2f36, #14161a); /* 图片加载失败时的深色兜底 */
 }
 
 .znz-banner-slide {
@@ -844,9 +847,13 @@ body {
     flex-direction: column;
   }
   
+  /* 关键修复：移动端取消 sticky/100vh，否则首屏被空侧栏占满（白屏） */
   .znz-sidebar {
     width: 100%;
     padding: var(--znz-spacing-md);
+    position: static;
+    height: auto;
+    overflow-y: visible;
   }
   
   .znz-menu-group {
@@ -855,6 +862,20 @@ body {
   
   .znz-menu-group:first-child {
     display: block;
+  }
+  
+  /* 首组菜单横向排布，节省纵向空间 */
+  .znz-menu-group:first-child {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .znz-menu-group:first-child .znz-menu-group-title { display: none; }
+  .znz-menu-group:first-child .znz-menu-item { flex-shrink: 0; }
+  
+  .znz-content {
+    padding: var(--znz-spacing-sm);
   }
   
   .znz-results-grid {
@@ -872,16 +893,16 @@ body {
   }
   
   .znz-banner {
-    height: 300px;
+    height: 360px;
   }
   
-  .znz-banner-title {
-    font-size: 32px;
-  }
-  
-  .znz-banner-subtitle {
-    font-size: 16px;
-  }
+  .znz-banner-overlay { gap: 14px; padding: 0 12px; }
+  .znz-banner-tabs { gap: 4px; }
+  .znz-banner-tab { font-size: 13px; padding: 6px 12px; }
+  .znz-hero-search { height: 50px; padding: 0 4px 0 16px; }
+  .znz-hero-search-input { font-size: 14px; }
+  .znz-hero-search-cam { padding: 0 8px; font-size: 17px; }
+  .znz-hero-search-btn { height: 40px; padding: 0 18px; font-size: 14px; }
 }
 
 @media (max-width: 480px) {
