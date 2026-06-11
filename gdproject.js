@@ -11,8 +11,9 @@
    ================================================================ */
 (function () {
   var SPACE_ICON = { '客厅':'🛋️','卧室':'🛏️','主卧':'🛏️','次卧':'🛏️','厨房':'🍳','餐厅':'🍽️','书房':'📚','茶室':'🍵','卫生间':'🚿','阳台':'🌿','儿童房':'🧸','玄关':'🚪','衣帽间':'👔','客卧':'🛏️' };
-  function tagClass(s){ var m={'现代简约':'tag-blue','北欧':'tag-green','新中式':'tag-purple','轻奢':'tag-orange','工业风':'tag-red','日式':'tag-pink','美式':'tag-cyan'}; return m[s]||'tag-blue'; }
+  function tagClass(s){ var m={'现代简约':'tag-blue','北欧':'tag-green','新中式':'tag-purple','轻奢':'tag-orange','工业风':'tag-red','日式':'tag-pink','美式':'tag-cyan','法式':'tag-purple','侘寂':'tag-green','地中海':'tag-blue','极简':'tag-blue','原木':'tag-green'}; return m[s]||'tag-blue'; }
   function icon(sp){ return SPACE_ICON[sp] || '🏠'; }
+  function uniq(arr){ var seen={},out=[]; arr.forEach(function(x){ if(x && !seen[x]){ seen[x]=1; out.push(x); } }); return out; }
 
   // 把项目里的 spaces 字符串数组展开成带唯一 id 的空间单元
   function expandSpaces(projects) {
@@ -36,7 +37,10 @@
           number: (p.number || ('PRJ' + p.id)) + '-' + sp,
           hasVR: p.hasVR,
           dept: p.dept || '',
-          points: price
+          points: price,
+          software: p.software || null,
+          delivery: p.delivery || (p.hasVR ? 'vr' : 'effect'),
+          spaceList: (p.spaces || []).slice()
         };
         // 注册积分价（若未注册）：默认已通过审核
         if (window.GDPoints && GDPoints.getCasePrice(u.id) == null) {
@@ -85,18 +89,35 @@
         '<div class="space-grid" id="gp-spacegrid"></div>' +
       '</div>';
 
-    // 工具栏（搜索 + 可选「新建」）—— NAS 用左侧自带筛选时可隐藏
+    // 工具栏：丰富筛选（搜索/风格/空间/国家/预算/软件/排序）+ 可选「新建」
     if (!cfg.hideToolbar) {
       var createBtn = cfg.editable && cfg.onCreate
         ? '<button class="btn btn-primary" onclick="GDProject._create(\'' + cfg.rootEl + '\')">＋ ' + (cfg.createLabel || '新建项目') + '</button>'
         : '';
+      // 从数据动态汇总可选项
+      var projs0 = cfg.getProjects ? cfg.getProjects() : cfg.projects;
+      var styles = uniq(projs0.map(function (p) { return p.style; }));
+      var countries = uniq(projs0.map(function (p) { return p.country; }));
+      var spaces = uniq([].concat.apply([], projs0.map(function (p) { return p.spaces || []; })));
+      var SW_NAMES = { max:'3DMax', kjl:'酷家乐', swj:'三维家', su:'SketchUp草图大师', cad:'AutoCAD' };
+      function opts(arr) { return arr.map(function (x) { return '<option>' + x + '</option>'; }).join(''); }
+      var k = cfg.rootEl;
       document.getElementById('gp-toolbar').innerHTML =
-        '<div class="search-input-wrap" style="flex:1;min-width:200px;"><input type="text" placeholder="搜索项目、设计师..." id="gp-search" oninput="GDProject._render(\'' + cfg.rootEl + '\')"></div>' +
-        '<select id="gp-style" onchange="GDProject._render(\'' + cfg.rootEl + '\')">' +
-          '<option value="">全部风格</option><option>现代简约</option><option>北欧</option><option>新中式</option><option>轻奢</option><option>工业风</option><option>日式</option><option>美式</option></select>' +
-        '<select id="gp-sort" onchange="GDProject._render(\'' + cfg.rootEl + '\')">' +
-          '<option value="newest">最新</option><option value="mostReuse">复用最多</option></select>' +
-        createBtn;
+        '<div class="gp-filter-row">' +
+          '<div class="search-input-wrap gp-search-wrap"><input type="text" placeholder="🔍 搜索案例名 / 设计师 / 编号..." id="gp-search" oninput="GDProject._render(\'' + k + '\')"></div>' +
+          createBtn +
+        '</div>' +
+        '<div class="gp-filter-row">' +
+          '<select id="gp-style" onchange="GDProject._render(\'' + k + '\')"><option value="">全部风格</option>' + opts(styles) + '</select>' +
+          '<select id="gp-space" onchange="GDProject._render(\'' + k + '\')"><option value="">全部空间</option>' + opts(spaces) + '</select>' +
+          '<select id="gp-country" onchange="GDProject._render(\'' + k + '\')"><option value="">全部国家</option>' + opts(countries) + '</select>' +
+          '<select id="gp-budget" onchange="GDProject._render(\'' + k + '\')"><option value="">全部预算</option><option value="0-50">50万以下</option><option value="50-100">50-100万</option><option value="100-999">100万以上</option></select>' +
+          '<select id="gp-sw" onchange="GDProject._render(\'' + k + '\')"><option value="">全部软件</option>' +
+            Object.keys(SW_NAMES).map(function (key) { return '<option value="' + key + '">' + SW_NAMES[key] + '</option>'; }).join('') + '</select>' +
+          '<select id="gp-delivery" onchange="GDProject._render(\'' + k + '\')"><option value="">全部交付</option><option value="vr">全屋VR全景</option><option value="effect">全屋效果图</option></select>' +
+          '<select id="gp-sort" onchange="GDProject._render(\'' + k + '\')"><option value="newest">最新</option><option value="mostReuse">复用最多</option><option value="budgetHigh">预算高→低</option></select>' +
+          '<button class="btn btn-secondary btn-sm" onclick="GDProject._reset(\'' + k + '\')">重置</button>' +
+        '</div>';
     }
 
     function showProjects() {
@@ -107,31 +128,62 @@
       document.getElementById('gp-crumb').innerHTML = '<span class="crumb-cur">' + (cfg.rootLabel || '全部项目') + '</span>';
       render();
     }
+    function val(id) { var e = document.getElementById(id); return e ? e.value : ''; }
     function render() {
       refreshSource();
-      var se = document.getElementById('gp-search'), ste = document.getElementById('gp-style'), soe = document.getElementById('gp-sort');
-      var s = (se && se.value || '').toLowerCase();
-      var style = ste ? ste.value : '';
-      var sort = soe ? soe.value : 'newest';
+      var s = (val('gp-search') || '').toLowerCase();
+      var style = val('gp-style'), space = val('gp-space'), country = val('gp-country');
+      var budget = val('gp-budget'), sw = val('gp-sw'), delivery = val('gp-delivery'), sort = val('gp-sort') || 'newest';
       var list = state.projects.filter(function (p) {
-        return ((p.name || '') + (p.designer || '')).toLowerCase().indexOf(s) >= 0 && (!style || p.style === style);
+        var hay = ((p.name || '') + (p.designer || '') + (p.number || '')).toLowerCase();
+        if (s && hay.indexOf(s) < 0) return false;
+        if (style && p.style !== style) return false;
+        if (space && (p.spaces || []).indexOf(space) < 0) return false;
+        if (country && p.country !== country) return false;
+        if (sw) { var psw = Array.isArray(p.software) ? p.software : [p.software]; if (psw.indexOf(sw) < 0) return false; }
+        if (delivery && (p.delivery || (p.hasVR ? 'vr' : 'effect')) !== delivery) return false;
+        if (budget) { var r = budget.split('-'), lo = +r[0], hi = +r[1]; if (!((p.budget || 0) >= lo && (p.budget || 0) < hi)) return false; }
+        return true;
       });
       if (sort === 'newest') list.sort(function (a, b) { return (b.time || '').localeCompare(a.time || ''); });
       if (sort === 'mostReuse') list.sort(function (a, b) { return (b.reuseCount || 0) - (a.reuseCount || 0); });
+      if (sort === 'budgetHigh') list.sort(function (a, b) { return (b.budget || 0) - (a.budget || 0); });
 
-      document.getElementById('gp-count').textContent = '共 ' + list.length + ' 个项目';
+      // 活跃筛选数 + 实时计数
+      var active = [s, style, space, country, budget, sw, delivery].filter(Boolean).length;
+      document.getElementById('gp-count').innerHTML = '共 <strong>' + list.length + '</strong> 个项目' +
+        (active ? '　·　已应用 ' + active + ' 个筛选 <a style="color:var(--primary);cursor:pointer;" onclick="GDProject._reset(\'' + cfg.rootEl + '\')">清除</a>' : '');
+      if (!list.length) {
+        document.getElementById('gp-grid').innerHTML =
+          '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-muted);">' +
+          '<div style="font-size:40px;margin-bottom:10px;">🔍</div>' +
+          '<div style="font-size:15px;margin-bottom:6px;">没有匹配的案例</div>' +
+          '<div style="font-size:13px;">试试调整或<a style="color:var(--primary);cursor:pointer;" onclick="GDProject._reset(\'' + cfg.rootEl + '\')">清除全部筛选</a></div></div>';
+        return;
+      }
       document.getElementById('gp-grid').innerHTML = list.map(function (p) {
-        var vr = p.hasVR ? '<span class="tag tag-orange">VR全景</span>' : '<span class="tag tag-cyan">效果图</span>';
+        var deliv = p.delivery || (p.hasVR ? 'vr' : 'effect');
+        var vr = deliv === 'vr' ? '<span class="tag tag-orange">🥽 全屋VR全景</span>' : '<span class="tag tag-cyan">🖼 全屋效果图</span>';
+        var sw = (window.GDCase && GDCase.software) ? GDCase.software(p) : null;
+        var swBadge = sw ? '<span class="sw-dot" title="设计软件：' + sw.name + '">' + sw.icon + '</span>' : '';
+        var swRow = sw ? '<div class="folder-sw-row" title="本案例由该软件设计制作">' +
+            '<span class="folder-sw-label">设计软件：</span>' +
+            '<span class="sw-pill">' + sw.icon + ' ' + sw.name + '</span>' +
+          '</div>' : '';
         var editBtns = cfg.editable ? '<div class="folder-edit">' +
             '<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();GDProject._edit(\'' + cfg.rootEl + '\',' + p.id + ')">编辑</button>' +
             '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();GDProject._del(\'' + cfg.rootEl + '\',' + p.id + ')">删除</button></div>'
-          : (cfg.copyProject ? '<div class="folder-edit"><button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();GDProject._copy(\'' + cfg.rootEl + '\',' + p.id + ')">📑 复制整个项目</button></div>' : '');
+          : (cfg.copyProject ? '<div class="folder-edit"><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();GDProject._open(\'' + cfg.rootEl + '\',' + p.id + ')">详情</button><button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();GDProject._copy(\'' + cfg.rootEl + '\',' + p.id + ')">📑 复制整个项目</button></div>' : '');
         return '<div class="folder-card has-cover" onclick="GDProject._open(\'' + cfg.rootEl + '\',' + p.id + ')">' +
           '<div class="folder-cover">' + gdThumbInner(p.theme, 500 + p.id, { space: (p.spaces || [''])[0], style: p.style }) +
-            '<div class="folder-cover-badge">📁 ' + (p.spaces || []).length + ' 个空间</div></div>' +
+            '<div class="folder-cover-badge">📁 ' + (p.spaces || []).length + ' 个空间</div>' +
+            '<div class="folder-deliver-badge">' + (deliv === 'vr' ? '🥽 VR' : '🖼 效果图') + '</div>' +
+            (swBadge ? '<div class="folder-sw-badge" title="设计软件">' + swBadge + '</div>' : '') + '</div>' +
           '<div class="folder-meta">' +
             '<div class="folder-title">' + p.name + '</div>' +
             '<div class="folder-sub">' + (p.designer || '') + ' · ' + (p.area || '-') + '㎡ · ¥' + (p.budget || '-') + '万</div>' +
+            '<div class="folder-num" title="' + (function(){ var parts=(p.number||'').split('-'); return parts.length===3 ? ('编号解读：设计师'+parts[0]+' · '+parts[1]+'(国家码) · 该国第'+parseInt(parts[2],10)+'个案例') : '案例编号'; })() + '">🔖 ' + (p.number || '-') + '　·　' + (p.country || '') + '</div>' +
+            swRow +
             '<div class="folder-tags"><span class="tag ' + tagClass(p.style) + '">' + p.style + '</span>' + vr +
               '<span class="tag tag-green">🔄 ' + (p.reuseCount || 0) + '</span></div>' +
             editBtns +
@@ -172,14 +224,15 @@
         '</div>';
       document.getElementById('gp-spacegrid').innerHTML = p.spaceUnits.map(function (u) {
         var extra = cfg.extraSpaceActions ? cfg.extraSpaceActions(u) : '';
-        var sw = (window.GDCase && GDCase.software) ? GDCase.software(u).slice(0,3).map(function(s){return s.icon;}).join(' ') : '';
+        var swObj = (window.GDCase && GDCase.software) ? GDCase.software(u) : null;
+        var sw = swObj ? swObj.icon : '';
         var price = (window.GDPoints && GDPoints.getCasePrice(u.id) != null) ? GDPoints.getCasePrice(u.id) : (u.points != null ? u.points : null);
         var pointsBadge = price != null ? '<span class="pts-badge">🪙 ' + price + '</span>' : '';
         return '<div class="space-tile">' +
           '<div class="space-thumb" onclick="GDCase.openDetail(' + u.id + ')">' + gdThumbInner(u.theme, 600 + u.id, { space: u.spaceName, style: u.style }) +
             '<div class="space-icon">' + icon(u.spaceName) + '</div>' + (pointsBadge ? '<div class="space-pts">' + pointsBadge + '</div>' : '') + '</div>' +
           '<div class="space-meta" onclick="GDCase.openDetail(' + u.id + ')">' +
-            '<div class="space-name">' + u.spaceName + (sw ? ' <span class="space-sw">' + sw + '</span>' : '') + '</div>' +
+            '<div class="space-name">' + u.spaceName + (sw ? ' <span class="space-sw" title="设计软件：' + swObj.name + '">' + sw + '</span>' : '') + '</div>' +
             '<div class="space-sub">产品清单 · 3D模型 · CAD图纸</div>' +
           '</div>' +
           '<div class="space-actions">' +
@@ -271,6 +324,13 @@
     _edit: function (k, id) { var c = INSTANCES[k].cfg; if (c.onEdit) c.onEdit(id); },
     _del: function (k, id) { var c = INSTANCES[k].cfg; if (c.onDelete) c.onDelete(id); },
     _copy: function (k, id) { copyProjectToMine(k, id); },
+    _reset: function (k) {
+      ['gp-search','gp-style','gp-space','gp-country','gp-budget','gp-sw','gp-delivery'].forEach(function (id) {
+        var e = document.getElementById(id); if (e) e.value = '';
+      });
+      var so = document.getElementById('gp-sort'); if (so) so.value = 'newest';
+      INSTANCES[k].render();
+    },
     get: function (k) { return INSTANCES[k]; }
   };
 })();

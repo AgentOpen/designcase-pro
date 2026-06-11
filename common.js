@@ -9,8 +9,9 @@ const App = {
   darkMode: localStorage.getItem('gd-dark') === 'true',
   favorites: JSON.parse(localStorage.getItem('gd-favorites') || '[]'),
   history: JSON.parse(localStorage.getItem('gd-history') || '[]'),
-  compareList: [],
+  compareList: JSON.parse(localStorage.getItem('gd-compare') || '[]'),
 };
+function gdSaveCompare() { try { localStorage.setItem('gd-compare', JSON.stringify(App.compareList)); } catch (e) {} }
 
 // ========== INIT ==========
 document.addEventListener('DOMContentLoaded', () => {
@@ -64,6 +65,22 @@ var GDRole = {
   }
 };
 window.GDRole = GDRole;
+// ========== 案例编号规则：设计师编号(3) - 国家码(3) - 该国家第N个(4) ==========
+// 例：1000-USA-0018 → 设计师 100、美国、第 18 个
+var GD_COUNTRY_CODE = {
+  '美国':'USA','欧美':'USA','中国':'CHN','新加坡':'SGP','马来西亚':'MYS','日本':'JPN',
+  '韩国':'KOR','英国':'GBR','法国':'FRA','德国':'DEU','澳大利亚':'AUS','加拿大':'CAN','非洲':'AFR','泰国':'THA'
+};
+function gdCountryCode(country) { return GD_COUNTRY_CODE[country] || 'GLB'; }
+// 生成编号：designerId 形如 '001' → 取数字补到3位；seq 为该国家序号
+function gdCaseNumber(designerId, country, seq) {
+  var d = String(designerId || '000').replace(/\D/g, '') || '000';
+  d = d.length >= 3 ? d.slice(-3) : ('000' + d).slice(-3);
+  var s = ('0000' + (seq || 1)).slice(-4);
+  return d + '-' + gdCountryCode(country) + '-' + s;
+}
+window.gdCountryCode = gdCountryCode;
+window.gdCaseNumber = gdCaseNumber;
 function gdSwitchRole(role) {
   GDRole.set(role, role === 'leader' ? GD_LEADER : (document.getElementById('gdRoleWho') ? document.getElementById('gdRoleWho').value : '林悦'));
   location.reload();
@@ -260,6 +277,7 @@ function toggleCompare(caseData) {
     showToast('success', '已添加到案例对比');
   }
   updateComparePanel();
+  gdSaveCompare();
 }
 
 function updateComparePanel() {
@@ -273,31 +291,50 @@ function updateComparePanel() {
   } else {
     panel.classList.remove('hidden');
     items.innerHTML = App.compareList.map((c, i) =>
-      `<div class="compare-item">${c.name} <span class="remove" onclick="App.compareList.splice(${i},1);updateComparePanel();showToast('info','已移除')">\u2715</span></div>`
+      `<div class="compare-item">${c.name} <span class="remove" onclick="App.compareList.splice(${i},1);gdSaveCompare();updateComparePanel();showToast('info','已移除')">\u2715</span></div>`
     ).join('');
     items.innerHTML += `<button class="btn btn-primary btn-sm" onclick="openCompareModal()">对比 (${App.compareList.length})</button>`;
   }
 }
-function clearCompare() { App.compareList = []; updateComparePanel(); }
+function clearCompare() { App.compareList = []; gdSaveCompare(); updateComparePanel(); }
 window.clearCompare = clearCompare;
 window.updateComparePanel = updateComparePanel;
+window.gdSaveCompare = gdSaveCompare;
 
 function openCompareModal() {
   if (App.compareList.length < 2) { showToast('warning', '请至少选择2个案例进行对比'); return; }
   const body = document.getElementById('compareModalBody');
   if (!body) return;
+  const L = App.compareList;
+  // 软件名映射
+  const SWN = { max:'3DMax', kjl:'酷家乐', swj:'三维家', su:'SketchUp', cad:'AutoCAD' };
+  const swText = c => { var k = Array.isArray(c.software) ? c.software[0] : c.software; return SWN[k] || k || '—'; };
+  const delivText = c => ((c.delivery||(c.hasVR?'vr':'effect'))==='vr' ? '全屋VR全景' : '全屋效果图');
+  // 差异判断：某行各值是否不全相同 → 高亮
+  const rowVals = (fn) => L.map(fn);
+  const diff = (vals) => new Set(vals.map(v=>String(v))).size > 1;
+  const row = (label, fn, render) => {
+    const vals = rowVals(fn);
+    const hl = diff(vals);
+    return `<tr${hl?' class="cmp-diff"':''}><td>${label}${hl?' <span class="cmp-diff-dot" title="存在差异">●</span>':''}</td>${L.map((c,i)=>`<td>${(render?render(c,vals[i]):vals[i])}</td>`).join('')}</tr>`;
+  };
   body.innerHTML = `
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">共 ${L.length} 个案例对比　·　<span class="cmp-diff-dot">●</span> 标记表示该项存在差异</div>
     <div class="table-wrap">
-      <table>
-        <thead><tr><th>对比项</th>${App.compareList.map(c => `<th>${c.name}</th>`).join('')}</tr></thead>
+      <table class="cmp-table">
+        <thead><tr><th>对比项</th>${L.map(c => `<th>${c.name}</th>`).join('')}</tr></thead>
         <tbody>
-          <tr><td>风格</td>${App.compareList.map(c => `<td><span class="tag tag-blue">${c.style}</span></td>`).join('')}</tr>
-          <tr><td>空间</td>${App.compareList.map(c => `<td><span class="tag tag-green">${c.space}</span></td>`).join('')}</tr>
-          <tr><td>面积</td>${App.compareList.map(c => `<td>${c.area}㎡</td>`).join('')}</tr>
-          <tr><td>预算</td>${App.compareList.map(c => `<td>${c.budget}万</td>`).join('')}</tr>
-          <tr><td>设计师</td>${App.compareList.map(c => `<td>${c.designer}</td>`).join('')}</tr>
-          <tr><td>复用次数</td>${App.compareList.map(c => `<td>${c.reuseCount}次</td>`).join('')}</tr>
-          <tr><td>国家</td>${App.compareList.map(c => `<td>${c.country || '-'}</td>`).join('')}</tr>
+          ${row('案例编号', c=>c.number||'-')}
+          ${row('风格', c=>c.style, (c,v)=>`<span class="tag tag-blue">${v}</span>`)}
+          ${row('空间', c=>c.space||(c.spaceName||'-'), (c,v)=>`<span class="tag tag-green">${v}</span>`)}
+          ${row('面积', c=>c.area, (c,v)=>`${v}㎡`)}
+          ${row('预算', c=>c.budget, (c,v)=>`<strong>${v}万</strong>`)}
+          ${row('交付方案', c=>delivText(c), (c,v)=>`<span class="tag ${v.indexOf('VR')>=0?'tag-orange':'tag-cyan'}">${v}</span>`)}
+          ${row('设计软件', c=>swText(c))}
+          ${row('复用积分价', c=>(window.GDPoints&&GDPoints.getCasePrice(c.id)!=null?GDPoints.getCasePrice(c.id):(c.points||'-')), (c,v)=>`🪙 ${v}`)}
+          ${row('设计师', c=>c.designer)}
+          ${row('国家', c=>c.country||'-')}
+          ${row('复用次数', c=>c.reuseCount, (c,v)=>`${v}次`)}
         </tbody>
       </table>
     </div>`;

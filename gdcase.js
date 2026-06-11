@@ -11,8 +11,15 @@
     '004-Malaysia-案例010': 1, '005-America-案例013': 1, '001-Singapore-案例002': 1,
     '003-Europe-案例011': 1, '005-Singapore-案例014': 1
   };
-  function hasVR(c) { return c.hasVR || !!VR_NUMBERS[c.number]; }
-  function vrUrl(c) { return c.vrUrl || VR_DEFAULT; }
+  function hasVR(c) {
+    if (c.delivery) return c.delivery === 'vr';
+    return c.hasVR || !!VR_NUMBERS[c.number];
+  }
+  // 多套真实 VR 全景，VR 案例按 id 稳定分配，演示更真实
+  var VR_TOURS = [
+    'https://img.gbuilderchina.com/panorama/direct-86c6862f-b698-4fd0-893c-355d0ba0e4a4/tour.html'
+  ];
+  function vrUrl(c) { return c.vrUrl || VR_TOURS[(c.id || 0) % VR_TOURS.length] || VR_DEFAULT; }
 
   var THEME_MAP = { '现代简约':'modern','北欧':'nordic','新中式':'chinese','轻奢':'luxury','工业风':'industrial','日式':'japanese','美式':'american' };
   function tagClass(style) {
@@ -31,31 +38,31 @@
     ];
   }
   function caseModels(c) {
+    var s = caseSoftware(c);  // 单一设计软件
+    var sz = (40 + (c.id || 1) % 30);
     return [
-      { file: c.name + '.max', fmt: '3DMax', size: (40 + (c.id||1) % 30) + 'MB' },
-      { file: c.name + '.skp', fmt: 'SketchUp', size: (25 + (c.id||1) % 20) + 'MB' },
-      { file: c.name + '.fbx', fmt: 'FBX', size: (18 + (c.id||1) % 12) + 'MB' }
+      { file: c.name + s.ext, fmt: s.name, size: sz + 'MB' },
+      { file: c.name + '_导出.fbx', fmt: 'FBX(通用导出)', size: Math.round(sz * 0.6) + 'MB' }
     ];
   }
-  // 源文件适配的设计软件（按案例 id 稳定生成）
-  var ALL_SOFTWARE = [
-    { name: '3DMax', icon: '🟥', ext: '.max' },
-    { name: '酷家乐', icon: '🟧', ext: '.kjl' },
-    { name: '三维家', icon: '🟦', ext: '.3vj' },
-    { name: 'SketchUp草图大师', icon: '🟩', ext: '.skp' },
-    { name: 'AutoCAD', icon: '🟪', ext: '.dwg' }
-  ];
+  // 源文件适配的设计软件
+  var SW_DEF = {
+    max: { key:'max', name: '3DMax', icon: '🟥', ext: '.max' },
+    kjl: { key:'kjl', name: '酷家乐', icon: '🟧', ext: '.kjl' },
+    swj: { key:'swj', name: '三维家', icon: '🟦', ext: '.3vj' },
+    su:  { key:'su',  name: 'SketchUp草图大师', icon: '🟩', ext: '.skp' },
+    cad: { key:'cad', name: 'AutoCAD', icon: '🟪', ext: '.dwg' }
+  };
+  var ALL_SOFTWARE = [SW_DEF.max, SW_DEF.kjl, SW_DEF.swj, SW_DEF.su, SW_DEF.cad];
+  // 本案例的设计软件（单一：该案例由哪个软件设计制作）
   function caseSoftware(c) {
-    var id = c.id || 1;
-    // 至少含 3DMax 与 SketchUp，其余按 id 决定
-    var list = [ALL_SOFTWARE[0], ALL_SOFTWARE[3]];
-    if (id % 2 === 0) list.push(ALL_SOFTWARE[1]);       // 酷家乐
-    if (id % 3 === 0) list.push(ALL_SOFTWARE[2]);       // 三维家
-    list.push(ALL_SOFTWARE[4]);                          // AutoCAD
-    // 去重
-    var seen = {}, out = [];
-    list.forEach(function (s) { if (!seen[s.name]) { seen[s.name] = 1; out.push(s); } });
-    return out;
+    // c.software 现为单一字符串（如 'max'）；兼容旧数组取第一个
+    var key = c && c.software;
+    if (Array.isArray(key)) key = key[0];
+    if (key && SW_DEF[key]) return SW_DEF[key];
+    // 回退：按 id 稳定分配一个
+    var pool = ['max', 'su', 'kjl', 'swj'];
+    return SW_DEF[pool[(c && c.id || 0) % pool.length]];
   }
   function caseCads(c) {
     return [
@@ -142,16 +149,23 @@
         prods.map(function (p) { return [p.name, p.sku, p.cat, p.qty, dlBtn(p.name)]; }))) +
       section('3D模型文件', table(['文件名','格式','大小','操作'],
         models.map(function (m) { return [m.file, m.fmt, m.size, dlBtn(m.file)]; }))) +
-      '<h4 style="margin:0 0 8px;">源文件适配软件</h4>' +
-      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">' +
-        caseSoftware(c).map(function (s) { return '<span class="sw-chip">' + s.icon + ' ' + s.name + ' <code>' + s.ext + '</code></span>'; }).join('') +
-      '</div>' +
+      '<h4 style="margin:0 0 8px;">设计软件 <span style="font-size:12px;font-weight:400;color:var(--text-muted);">（本案例使用以下软件设计制作，复用前请确认你具备该软件）</span></h4>' +
+      (function () {
+        var s = caseSoftware(c);
+        return '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">' +
+            '<span class="sw-chip ok" style="font-size:14px;padding:8px 14px;">' + s.icon + ' 由 ' + s.name + ' 设计 <code>' + s.ext + '</code></span>' +
+          '</div>' +
+          '<div class="sw-warn">⚠ 本案例源文件为 ' + s.name + '（' + s.ext + '）格式，复用下载后需使用 ' + s.name + ' 打开，其他软件无法直接编辑。</div>';
+      })() +
+      '<div style="height:14px;"></div>' +
       section('CAD图纸列表', table(['文件名','格式','操作'],
         cads.map(function (d) { return [d.file, d.fmt, dlBtn(d.file)]; }))) +
-      '<h4 style="margin:0 0 8px;">客户交付资料</h4>' +
+      '<h4 style="margin:0 0 8px;">客户交付方案 <span style="font-size:12px;font-weight:400;color:var(--text-muted);">（' + (hasVR(c) ? '本案例提供全屋 VR 全景' : '本案例提供全屋效果图 + PPT 提案') + '）</span></h4>' +
       '<div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;">' +
         '<button class="btn btn-secondary" onclick="GDCase.viewPPT(' + c.id + ')">📄 PPT设计提案</button>' +
-        '<button class="btn btn-secondary" onclick="GDCase.view(' + c.id + ')">' + (hasVR(c)?'🔗 全屋VR全景':'🖼 案例效果图') + '</button>' +
+        (hasVR(c)
+          ? '<button class="btn btn-primary" onclick="GDCase.view(' + c.id + ')">🔗 进入全屋VR全景</button>'
+          : '<button class="btn btn-primary" onclick="GDCase.view(' + c.id + ')">🖼 查看全屋效果图（按空间）</button>') +
         '<button class="btn btn-secondary" onclick="GDCase.exportBOM(' + c.id + ')">📋 导出选品清单(BOM)</button>' +
       '</div>' +
       '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
@@ -184,15 +198,45 @@
       document.getElementById('gdvrFrame').src = vrUrl(c);
       openModal('gdvrModal');
     } else {
-      document.getElementById('gdimgTitle').textContent = '案例效果图 · ' + c.name;
+      // 全屋效果图：左侧空间清单，右侧该空间多图轮播
+      var spaces = c.spaceList || (c.space ? [c.space] : ['客厅','主卧','厨房','餐厅']);
+      GDCase._effC = c; GDCase._effSpaces = spaces; GDCase._effIdx = 0; GDCase._effImg = 0;
+      document.getElementById('gdimgTitle').textContent = '全屋效果图（设计提案）· ' + c.name;
       document.getElementById('gdimgBody').innerHTML =
-        [0,1,2,3].map(function (i) {
-          return '<div class="card-thumb" style="height:200px;border-radius:10px;overflow:hidden;">' +
-            gdThumbInner(theme(c), 800 + c.id * 10 + i, { space: c.space, style: c.style }) + '</div>';
-        }).join('');
+        '<div class="eff-layout">' +
+          '<div class="eff-spaces" id="gdEffSpaces"></div>' +
+          '<div class="eff-stage">' +
+            '<div class="eff-canvas" id="gdEffCanvas"></div>' +
+            '<div class="eff-controls">' +
+              '<button class="btn btn-ghost btn-sm" onclick="GDCase.effImg(-1)">‹ 上一张</button>' +
+              '<span class="eff-dots" id="gdEffDots"></span>' +
+              '<button class="btn btn-ghost btn-sm" onclick="GDCase.effImg(1)">下一张 ›</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      effRender();
       openModal('gdimgModal');
     }
   }
+  function effSelectSpace(i) { GDCase._effIdx = i; GDCase._effImg = 0; effRender(); }
+  function effImg(d) {
+    var n = 4; GDCase._effImg = (GDCase._effImg + d + n) % n; effRender();
+  }
+  function effRender() {
+    var c = GDCase._effC, spaces = GDCase._effSpaces, si = GDCase._effIdx, ii = GDCase._effImg;
+    var sp = spaces[si];
+    document.getElementById('gdEffSpaces').innerHTML = spaces.map(function (s, i) {
+      return '<div class="eff-space-item' + (i === si ? ' active' : '') + '" onclick="GDCase.effSpace(' + i + ')">' +
+        '<span class="eff-space-ic">' + (SPACE_ICON_MAP[s] || '🏠') + '</span> ' + s + '</div>';
+    }).join('');
+    document.getElementById('gdEffCanvas').innerHTML =
+      '<div class="eff-img">' + gdThumbInner(theme(c), 7000 + c.id * 20 + si * 4 + ii, { space: sp, style: c.style }) +
+        '<div class="eff-caption">' + sp + ' · 效果图 ' + (ii + 1) + '/4</div></div>';
+    document.getElementById('gdEffDots').innerHTML = [0,1,2,3].map(function (i) {
+      return '<span class="eff-dot' + (i === ii ? ' on' : '') + '" onclick="GDCase.effImgSet(' + i + ')"></span>';
+    }).join('');
+  }
+  var SPACE_ICON_MAP = { '客厅':'🛋️','卧室':'🛏️','主卧':'🛏️','次卧':'🛏️','厨房':'🍳','餐厅':'🍽️','书房':'📚','茶室':'🍵','卫生间':'🚿','阳台':'🌿','儿童房':'🧸','玄关':'🚪','衣帽间':'👔','庭院':'🌳','大堂':'🏛️','前台':'🛎️','会议室':'📊','包间':'🍵','门厅':'🚪' };
   function closeVR() { document.getElementById('gdvrFrame').src = ''; closeModal('gdvrModal'); }
 
   // ---- PPT proposal viewer ----
@@ -286,9 +330,9 @@
     '<div class="modal-overlay" id="gdvrModal"><div class="modal modal-lg" style="height:84vh;">' +
       '<div class="modal-header"><h2 id="gdvrTitle">VR 全景</h2><button class="modal-close" onclick="GDCase.closeVR()">✕</button></div>' +
       '<iframe id="gdvrFrame" style="width:100%;height:calc(100% - 56px);border:none;" allow="fullscreen"></iframe></div></div>' +
-    '<div class="modal-overlay" id="gdimgModal"><div class="modal modal-lg">' +
-      '<div class="modal-header"><h2 id="gdimgTitle">案例效果图</h2><button class="modal-close" onclick="closeModal(\'gdimgModal\')">✕</button></div>' +
-      '<div class="modal-body" id="gdimgBody" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"></div></div></div>' +
+    '<div class="modal-overlay" id="gdimgModal"><div class="modal modal-lg" style="max-width:1000px;">' +
+      '<div class="modal-header"><h2 id="gdimgTitle">全屋效果图</h2><button class="modal-close" onclick="closeModal(\'gdimgModal\')">✕</button></div>' +
+      '<div class="modal-body" id="gdimgBody"></div></div></div>' +
     '<div class="modal-overlay" id="gdpptModal"><div class="modal modal-lg" style="max-width:1000px;">' +
       '<div class="modal-header"><h2 id="gdpptTitle">PPT 设计提案</h2><button class="modal-close" onclick="closeModal(\'gdpptModal\')">✕</button></div>' +
       '<div class="ppt-layout"><div class="ppt-side" id="gdpptSide"></div><div class="ppt-main"><div class="ppt-canvas" id="gdpptCanvas"></div></div></div></div></div>';
@@ -303,6 +347,7 @@
     view: view, closeVR: closeVR, viewPPT: viewPPT, pptGo: pptGo,
     toggleCompareById: toggleCompareById, reuse: reuse, exportBOM: exportBOM,
     edit: edit, del: del, hasVR: hasVR, software: caseSoftware,
+    effSpace: effSelectSpace, effImg: effImg, effImgSet: function (i) { GDCase._effImg = i; effRender(); },
     _current: null, _pptCase: null, _pptIdx: 0
   };
 })();

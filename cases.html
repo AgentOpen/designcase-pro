@@ -39,16 +39,29 @@
 <script src="gdcase.js"></script>
 <script src="gdproject.js"></script>
 <script>
+// 软件组合（决定案例源文件可用哪些软件打开）
+var SW = { max:'3DMax', kjl:'酷家乐', swj:'三维家', su:'SketchUp草图大师', cad:'AutoCAD' };
+// delivery: 'vr'=全屋VR全景  'effect'=全屋效果图(PPT提案)
 var PROJECTS = [
-  {id:1, name:'滨海现代别墅全案', designer:'陈磊', designerId:'001', style:'现代简约', country:'美国', area:320, budget:120, reuseCount:56, time:'2026-05-20', theme:'modern', number:'001-America-PRJ001', hasVR:true, spaces:['客厅','餐厅','主卧','厨房','卫生间','阳台']},
-  {id:2, name:'新中式叠墅样板间', designer:'张薇', designerId:'004', style:'新中式', country:'马来西亚', area:260, budget:98, reuseCount:39, time:'2026-05-15', theme:'chinese', number:'004-Malaysia-PRJ002', hasVR:true, spaces:['客厅','书房','主卧','茶室','餐厅']},
-  {id:3, name:'北欧极简三居', designer:'林悦', designerId:'002', style:'北欧', country:'欧美', area:140, budget:42, reuseCount:47, time:'2026-05-12', theme:'nordic', number:'002-Europe-PRJ003', hasVR:false, spaces:['客厅','卧室','厨房','儿童房']},
-  {id:4, name:'轻奢平层公寓', designer:'李强', designerId:'005', style:'轻奢', country:'新加坡', area:180, budget:75, reuseCount:31, time:'2026-05-08', theme:'luxury', number:'005-Singapore-PRJ004', hasVR:true, spaces:['客厅','主卧','餐厅','衣帽间','卫生间']},
-  {id:5, name:'工业风 Loft 复式', designer:'李强', designerId:'005', style:'工业风', country:'美国', area:200, budget:60, reuseCount:18, time:'2026-05-05', theme:'industrial', number:'005-America-PRJ005', hasVR:false, spaces:['客厅','书房','卧室','厨房']},
-  {id:6, name:'日式禅意小宅', designer:'王明远', designerId:'003', style:'日式', country:'日本', area:90, budget:30, reuseCount:22, time:'2026-05-02', theme:'japanese', number:'003-Japan-PRJ006', hasVR:false, spaces:['客厅','茶室','卧室','玄关']},
-  {id:7, name:'美式乡村大宅', designer:'王明远', designerId:'003', style:'美式', country:'美国', area:280, budget:95, reuseCount:33, time:'2026-04-28', theme:'american', number:'003-America-PRJ007', hasVR:true, spaces:['客厅','餐厅','厨房','主卧','儿童房','阳台']},
-  {id:8, name:'现代简约两居', designer:'陈磊', designerId:'001', style:'现代简约', country:'欧美', area:96, budget:28, reuseCount:25, time:'2026-04-22', theme:'modern', number:'001-Europe-PRJ008', hasVR:false, spaces:['客厅','卧室','厨房','卫生间']},
+  {id:1,  name:'滨海现代别墅全案', designer:'陈磊', designerId:'001', style:'现代简约', country:'美国',     area:320, budget:120, reuseCount:56, time:'2026-05-20', theme:'modern',     seq:18, delivery:'vr',     software:'max',     spaces:['客厅','餐厅','主卧','厨房','卫生间','阳台']},
+  {id:2,  name:'新中式叠墅样板间', designer:'张薇', designerId:'004', style:'新中式',   country:'马来西亚', area:260, budget:98,  reuseCount:39, time:'2026-05-15', theme:'chinese',    seq:7,  delivery:'vr',     software:'max',    spaces:['客厅','书房','主卧','茶室','餐厅']},
+  {id:3,  name:'北欧极简三居',     designer:'林悦', designerId:'002', style:'北欧',     country:'欧美',     area:140, budget:42,  reuseCount:47, time:'2026-05-12', theme:'nordic',     seq:23, delivery:'effect', software:'su',           spaces:['客厅','卧室','厨房','儿童房']},
+  {id:4,  name:'轻奢平层公寓',     designer:'李强', designerId:'005', style:'轻奢',     country:'新加坡',   area:180, budget:75,  reuseCount:31, time:'2026-05-08', theme:'luxury',     seq:4,  delivery:'vr',     software:'swj',    spaces:['客厅','主卧','餐厅','衣帽间','卫生间']},
+  {id:5,  name:'工业风 Loft 复式',  designer:'李强', designerId:'005', style:'工业风',   country:'美国',     area:200, budget:60,  reuseCount:18, time:'2026-05-05', theme:'industrial', seq:19, delivery:'effect', software:'su',           spaces:['客厅','书房','卧室','厨房']},
+  {id:6,  name:'日式禅意小宅',     designer:'王明远', designerId:'003', style:'日式',    country:'日本',     area:90,  budget:30,  reuseCount:22, time:'2026-05-02', theme:'japanese',   seq:11, delivery:'effect', software:'su',           spaces:['客厅','茶室','卧室','玄关']},
+  {id:7,  name:'美式乡村大宅',     designer:'王明远', designerId:'003', style:'美式',    country:'美国',     area:280, budget:95,  reuseCount:33, time:'2026-04-28', theme:'american',   seq:20, delivery:'vr',     software:'kjl',    spaces:['客厅','餐厅','厨房','主卧','儿童房','阳台']},
+  {id:8,  name:'现代简约两居',     designer:'陈磊', designerId:'001', style:'现代简约', country:'欧美',     area:96,  budget:28,  reuseCount:25, time:'2026-04-22', theme:'modern',     seq:24, delivery:'effect', software:'su',           spaces:['客厅','卧室','厨房','卫生间']},
+  {id:9,  name:'法式复古公寓',     designer:'张薇', designerId:'004', style:'法式',     country:'法国',     area:150, budget:68,  reuseCount:29, time:'2026-04-18', theme:'luxury',     seq:3,  delivery:'vr',     software:'max',    spaces:['客厅','主卧','餐厅','书房']},
+  {id:10, name:'侘寂风度假别墅',   designer:'孙敏', designerId:'006', style:'侘寂',     country:'日本',     area:210, budget:88,  reuseCount:15, time:'2026-04-15', theme:'japanese',   seq:12, delivery:'effect', software:'su',                 spaces:['客厅','茶室','主卧','庭院']},
+  {id:11, name:'地中海海景三居',   designer:'周杰', designerId:'007', style:'地中海',   country:'新加坡',   area:135, budget:50,  reuseCount:20, time:'2026-04-10', theme:'nordic',     seq:5,  delivery:'vr',     software:'kjl',          spaces:['客厅','卧室','厨房','阳台']},
+  {id:12, name:'极简办公空间',     designer:'陈磊', designerId:'001', style:'极简',     country:'中国',     area:420, budget:140, reuseCount:44, time:'2026-04-06', theme:'modern',     seq:31, delivery:'vr',     software:'max',     spaces:['前台','开放区','会议室','茶水间','经理室']},
+  {id:13, name:'轻奢售楼处样板',   designer:'李强', designerId:'005', style:'轻奢',     country:'中国',     area:360, budget:160, reuseCount:38, time:'2026-04-02', theme:'luxury',     seq:32, delivery:'vr',     software:'swj', spaces:['大堂','洽谈区','样板间','VIP室']},
+  {id:14, name:'原木风亲子宅',     designer:'林悦', designerId:'002', style:'原木',     country:'马来西亚', area:120, budget:38,  reuseCount:26, time:'2026-03-28', theme:'nordic',     seq:8,  delivery:'effect', software:'kjl',           spaces:['客厅','儿童房','主卧','厨房']},
+  {id:15, name:'新中式茶室会所',   designer:'王明远', designerId:'003', style:'新中式',  country:'中国',     area:300, budget:110, reuseCount:41, time:'2026-03-24', theme:'chinese',    seq:33, delivery:'vr',     software:'max',     spaces:['门厅','茶室','包间','庭院','书画区']},
+  {id:16, name:'美式轻奢复式',     designer:'孙敏', designerId:'006', style:'美式',     country:'美国',     area:240, budget:92,  reuseCount:17, time:'2026-03-20', theme:'american',   seq:21, delivery:'effect', software:'kjl',          spaces:['客厅','餐厅','主卧','书房','衣帽间']},
 ];
+// 计算编号（设计师编号-国家码-该国第N个）
+PROJECTS.forEach(function(p){ p.number = gdCaseNumber(p.designerId, p.country, p.seq); });
 
 GDProject.mount({
   rootEl: 'caseRoot',
@@ -58,6 +71,7 @@ GDProject.mount({
   editable: false,
   copyProject: true,
   emptyText: '无匹配项目',
+  filters: ['search','style','space','country','budget','software','sort'],
   onTitle: function (t) { document.getElementById('headerTitle').textContent = t; }
 });
 </script>

@@ -266,6 +266,7 @@ const pptProposalData = {
   ]
 };
 
+var gIdx = 0;
 for (const dept in nasData) {
   for (const designer in nasData[dept].designers) {
     const dObj = nasData[dept].designers[designer];
@@ -273,19 +274,22 @@ for (const dept in nasData) {
       dObj.countries[country].forEach((caseName, idx) => {
         const styles = styleMap[designer] || ['现代简约'];
         const style = styles[idx % styles.length];
-        const hasVR = !!vrPanoramaMap[caseName];
-        nasCases.push({ name:caseName, dept, designer, designerId:dObj.id, country, style, theme:themeMap[style]||'modern', size:Math.floor(Math.random()*80+20), hasVR });      });
+        const hasVR = !!vrPanoramaMap[caseName] || (gIdx % 3 === 0);
+        nasCases.push({ name:caseName, dept, designer, designerId:dObj.id, country, style, theme:themeMap[style]||'modern', size:Math.floor(Math.random()*80+20), hasVR });
+        gIdx++;
+      });
     }
   }
 }
 
 // 为 NAS 案例补充 id / number / reuseCount，并接入统一案例模块
+var _ctrySeq = {};
 nasCases.forEach(function (c, i) {
   c.id = 3000 + i;
-  if (!c.number) {
-    var enMap = { '美国':'America','新加坡':'Singapore','马来西亚':'Malaysia','欧美':'Europe','非洲':'Africa','日本':'Japan' };
-    c.number = (c.designerId || '000') + '-' + (enMap[c.country] || c.country) + '-案例' + String(i + 1).padStart(3, '0');
-  }
+  // 该国家序号（用于编号尾号）
+  _ctrySeq[c.country] = (_ctrySeq[c.country] || 0) + 1;
+  c.seq = _ctrySeq[c.country];
+  c.number = gdCaseNumber(c.designerId, c.country, c.seq);
   if (c.reuseCount == null) c.reuseCount = Math.floor(Math.random() * 40 + 5);
   if (c.time == null) c.time = '2026-05-' + String((i % 28) + 1).padStart(2, '0');
 });
@@ -302,7 +306,7 @@ function buildNASProjects() {
         designer: c.designer, designerId: c.designerId, dept: c.dept,
         style: c.style, country: c.country, theme: c.theme,
         area: 0, budget: 0, reuseCount: 0, time: c.time, hasVR: false,
-        number: (c.designerId || '000') + '-' + c.country + '-NAS',
+        number: gdCaseNumber(c.designerId, c.country, c.seq),
         _cases: [], spaces: []
       };
     }
@@ -313,7 +317,14 @@ function buildNASProjects() {
     if (c.hasVR) g.hasVR = true;
     g.spaces.push(c.name);            // 用真实案例名作为"空间"名
   });
-  return Object.keys(groups).map(function (k) { return groups[k]; });
+  // 为每个 NAS 项目补充交付方式与设计软件（单一，演示）
+  var SW_ONE = ['max','su','kjl','swj','max'];
+  return Object.keys(groups).map(function (k, idx) {
+    var g = groups[k];
+    g.delivery = g.hasVR ? 'vr' : 'effect';
+    g.software = SW_ONE[idx % SW_ONE.length];
+    return g;
+  });
 }
 
 var NAS_PROJECTS = [];
