@@ -59,6 +59,7 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="common.js"></script>
+<script src="gdpoints.js"></script>
 <script>
 // 设计师数据（不同周期不同权重）
 var DESIGNERS = [
@@ -133,34 +134,47 @@ function rangeLabel(){
 
 function renderRanking(){
   var months = monthsInRange();
-  var rows = DESIGNERS.map(function(d){
-    var v=0;
-    months.forEach(function(mm){ v += d[METRIC] * monthFactor(d.name, mm.y, mm.m); });
-    return { name:d.name, dept:d.dept, value: Math.round(v) };
-  }).sort(function(a,b){ return b.value-a.value; });
-  var max = rows[0].value || 1;
+  var rows;
+  if (METRIC === 'points' && window.GDPoints) {
+    // 积分榜直接取钱包真实余额（含复用扣分/产出加分），与区间无关
+    var deptOf = {}; DESIGNERS.forEach(function(d){ deptOf[d.name]=d.dept; });
+    rows = GDPoints.ranking().map(function(r){
+      return { name:r.name, dept:deptOf[r.name]||'设计部', value:r.balance, delta:r.delta, initial:r.initial };
+    });
+  } else {
+    rows = DESIGNERS.map(function(d){
+      var v=0;
+      months.forEach(function(mm){ v += d[METRIC] * monthFactor(d.name, mm.y, mm.m); });
+      return { name:d.name, dept:d.dept, value: Math.round(v) };
+    }).sort(function(a,b){ return b.value-a.value; });
+  }
+  var max = rows[0] ? (rows[0].value || 1) : 1;
   var unit = METRIC==='points' ? ' 分' : (METRIC==='cases' ? ' 个' : ' 次');
-  var lbl = rangeLabel();
+  var lbl = METRIC==='points' ? '当前积分钱包' : rangeLabel();
 
   document.getElementById('podiumTitle').textContent = lbl + ' · ' + METRIC_LABEL[METRIC] + ' · 前三名';
-  document.getElementById('rankSub').textContent = lbl + ' · 共 '+months.length+' 个月 · 按' + METRIC_LABEL[METRIC].replace('榜','') + '排序';
+  document.getElementById('rankSub').textContent = METRIC==='points'
+    ? '初始 '+(window.GDPoints?GDPoints.INIT_GRANT:5000)+' 分 · 高于初始=优秀产出，低于初始=大量复用'
+    : (lbl + ' · 共 '+months.length+' 个月 · 按' + METRIC_LABEL[METRIC].replace('榜','') + '排序');
 
   var order = [1,0,2], cls=['silver','gold','bronze'];
   document.getElementById('podium').innerHTML = order.map(function(idx,i){
     var d = rows[idx]; if(!d) return '';
     return '<div class="rank-pod '+cls[i]+'"><div class="pod-avatar">'+d.name.charAt(0)+'</div>'+
       '<div style="font-weight:600;font-size:14px;">'+d.name+'</div>'+
-      '<div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">'+d.value.toLocaleString()+unit+'</div>'+
+      '<div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">'+d.value.toLocaleString()+unit+
+        (d.delta!=null?' <span class="'+(d.delta>=0?'wallet-delta-up':'wallet-delta-down')+'" style="color:'+(d.delta>=0?'#16a34a':'#dc2626')+'">'+(d.delta>=0?'+':'')+d.delta+'</span>':'')+'</div>'+
       '<div class="pod-bar">'+(idx+1)+'</div></div>';
   }).join('');
 
   document.getElementById('rankList').innerHTML = rows.map(function(d,i){
-    var me = d.name==='陈磊' ? 'style="background:var(--primary-light);border-radius:8px;"' : '';
+    var MENAME=(window.GDRole?GDRole.me():'陈磊'); var me = d.name===MENAME ? 'style="background:var(--primary-light);border-radius:8px;"' : '';
+    var deltaHtml = d.delta!=null ? '<span style="font-size:11px;color:'+(d.delta>=0?'#16a34a':'#dc2626')+';">'+(d.delta>=0?'▲ 高于初始 +':'▼ 低于初始 ')+d.delta+'</span>' : '';
     return '<div class="rank-row" '+me+'>'+
       '<div class="rank-num '+(i<3?'top':'')+'">'+(i+1)+'</div>'+
       '<div class="rank-av">'+d.name.charAt(0)+'</div>'+
-      '<div style="width:120px;"><div style="font-weight:600;font-size:13px;">'+d.name+(d.name==='陈磊'?' （我）':'')+'</div>'+
-        '<div style="font-size:11px;color:var(--text-muted);">'+d.dept+'</div></div>'+
+      '<div style="width:120px;"><div style="font-weight:600;font-size:13px;">'+d.name+(d.name===MENAME?' （我）':'')+'</div>'+
+        '<div style="font-size:11px;color:var(--text-muted);">'+d.dept+' '+deltaHtml+'</div></div>'+
       '<div class="rank-bar-wrap"><div class="rank-bar" style="width:'+(d.value/max*100)+'%;"></div></div>'+
       '<div style="width:90px;text-align:right;font-weight:700;color:var(--primary);">'+d.value.toLocaleString()+'</div>'+
       '<div style="width:30px;text-align:right;font-size:12px;">'+unit+'</div>'+

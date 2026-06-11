@@ -37,6 +37,26 @@
       { file: c.name + '.fbx', fmt: 'FBX', size: (18 + (c.id||1) % 12) + 'MB' }
     ];
   }
+  // 源文件适配的设计软件（按案例 id 稳定生成）
+  var ALL_SOFTWARE = [
+    { name: '3DMax', icon: '🟥', ext: '.max' },
+    { name: '酷家乐', icon: '🟧', ext: '.kjl' },
+    { name: '三维家', icon: '🟦', ext: '.3vj' },
+    { name: 'SketchUp草图大师', icon: '🟩', ext: '.skp' },
+    { name: 'AutoCAD', icon: '🟪', ext: '.dwg' }
+  ];
+  function caseSoftware(c) {
+    var id = c.id || 1;
+    // 至少含 3DMax 与 SketchUp，其余按 id 决定
+    var list = [ALL_SOFTWARE[0], ALL_SOFTWARE[3]];
+    if (id % 2 === 0) list.push(ALL_SOFTWARE[1]);       // 酷家乐
+    if (id % 3 === 0) list.push(ALL_SOFTWARE[2]);       // 三维家
+    list.push(ALL_SOFTWARE[4]);                          // AutoCAD
+    // 去重
+    var seen = {}, out = [];
+    list.forEach(function (s) { if (!seen[s.name]) { seen[s.name] = 1; out.push(s); } });
+    return out;
+  }
   function caseCads(c) {
     return [
       { file: '平面布局图.dwg', fmt: 'DWG' },
@@ -115,11 +135,17 @@
         kv('面积', (c.area||'-') + '㎡') + kv('预算', '¥' + (c.budget||'-') + '万') +
         kv('国家', c.country || '-') + kv('创建时间', c.time || '-') +
         kv('复用次数', (c.reuseCount!=null?c.reuseCount:'-') + ' 次') + kv('案例编号', c.number || '-') +
+        kv('复用积分价', (window.GDPoints && GDPoints.getCasePrice(c.id)!=null ? GDPoints.getCasePrice(c.id) + ' 分' : (c.points!=null? c.points+' 分':'未定价'))) +
+        kv('审核状态', (window.GDPoints ? GDPoints.getCaseStatus(c.id) : '—')) +
       '</div>' +
       section('产品清单', table(['产品名','SKU','品类','数量','操作'],
         prods.map(function (p) { return [p.name, p.sku, p.cat, p.qty, dlBtn(p.name)]; }))) +
       section('3D模型文件', table(['文件名','格式','大小','操作'],
         models.map(function (m) { return [m.file, m.fmt, m.size, dlBtn(m.file)]; }))) +
+      '<h4 style="margin:0 0 8px;">源文件适配软件</h4>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">' +
+        caseSoftware(c).map(function (s) { return '<span class="sw-chip">' + s.icon + ' ' + s.name + ' <code>' + s.ext + '</code></span>'; }).join('') +
+      '</div>' +
       section('CAD图纸列表', table(['文件名','格式','操作'],
         cads.map(function (d) { return [d.file, d.fmt, dlBtn(d.file)]; }))) +
       '<h4 style="margin:0 0 8px;">客户交付资料</h4>' +
@@ -203,7 +229,17 @@
   // ---- Reuse (persists via common.js gdPersistReuse) ----
   function reuse(id) {
     var c = find(id); if (!c) return;
-    // ensure detail modal open to show steps; if not, just animate toast
+    var ME = (window.GDRole ? GDRole.me() : '陈磊');
+    var MEID = (ME === '陈磊' ? '001' : '0XX');
+    // 先做积分结算校验
+    if (window.GDPoints) {
+      var price = GDPoints.getCasePrice(c.id);
+      if (price == null) price = c.points || 0;
+      var author = c.designer || '未知';
+      var pre = GDPoints.reuseSettle(c.id, price, author, ME);
+      if (!pre.ok) { showToast('error', '复用失败：' + pre.msg); return; }
+      GDCase._lastSettleMsg = pre.msg;
+    }
     var steps = document.getElementById('gdReuseSteps');
     if (!document.getElementById('gdcaseModal').classList.contains('show')) openDetail(id);
     steps = document.getElementById('gdReuseSteps');
@@ -216,10 +252,10 @@
       });
     }
     setTimeout(function () {
-      if (typeof gdPersistReuse === 'function') gdPersistReuse(c, { name: '陈磊', id: '001' });
+      if (typeof gdPersistReuse === 'function') gdPersistReuse(c, { name: ME, id: MEID });
       c.reuseCount = (c.reuseCount || 0) + 1;
       if (CALLBACKS.afterReuse) CALLBACKS.afterReuse();
-      showToast('success', '案例复用成功！已创建独立副本到「我的案例」');
+      showToast('success', '案例复用成功！' + (GDCase._lastSettleMsg ? '（' + GDCase._lastSettleMsg + '）' : '') + ' 已创建副本到「我的案例」');
     }, 2300);
   }
 
@@ -266,6 +302,7 @@
     renderCard: renderCard, setSource: setSource, openDetail: openDetail,
     view: view, closeVR: closeVR, viewPPT: viewPPT, pptGo: pptGo,
     toggleCompareById: toggleCompareById, reuse: reuse, exportBOM: exportBOM,
-    edit: edit, del: del, hasVR: hasVR, _current: null, _pptCase: null, _pptIdx: 0
+    edit: edit, del: del, hasVR: hasVR, software: caseSoftware,
+    _current: null, _pptCase: null, _pptIdx: 0
   };
 })();

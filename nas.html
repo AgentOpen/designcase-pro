@@ -117,13 +117,15 @@
 
         <!-- Right Panel -->
         <div class="nas-right">
-          <div class="result-count" id="nasResultCount"></div>
-          <div class="case-card-grid" id="nasCaseGrid"></div>
+          <div class="result-count" id="nasResultCount" style="display:none;"></div>
+          <div id="nasRoot"></div>
         </div>
       </div>
 
-      <!-- Pagination -->
+      <!-- Pagination (旧分页，项目视图下隐藏) -->
+      <div id="nasPaginationWrap" style="display:none;">
       <div class="nas-pagination" id="nasPagination"></div>
+      </div>
     </div>
   </div>
 </main>
@@ -196,10 +198,14 @@
 
 <div class="history-panel" id="historyPanel"><div style="padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;"><strong>操作历史</strong><button class="btn btn-ghost btn-sm" onclick="toggleHistory()">✕</button></div><div id="historyList"></div></div>
 <div class="modal-overlay" id="shortcutsModal"><div class="modal" style="max-width:600px;"><div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div><div class="modal-body"><table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody><tr><td><kbd>?</kbd></td><td>显示快捷键</td></tr><tr><td><kbd>Ctrl/Cmd + N</kbd></td><td>NAS文件管理</td></tr><tr><td><kbd>Esc</kbd></td><td>关闭弹窗</td></tr></tbody></table></div></div></div>
+<div class="compare-panel hidden" id="comparePanel"><div class="compare-header"><span>对比清单 (<span id="compareCount">0</span>)</span><button onclick="clearCompare()">清空</button></div><div class="compare-items" id="compareItems"></div></div>
+<div class="modal-overlay" id="compareModal"><div class="modal modal-lg"><div class="modal-header"><h2>空间对比</h2><button class="modal-close" onclick="closeModal('compareModal')">✕</button></div><div class="modal-body" id="compareModalBody"></div></div></div>
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="common.js"></script>
+<script src="gdpoints.js"></script>
 <script src="gdcase.js"></script>
+<script src="gdproject.js"></script>
 <script>
 // ========== NAS DATA ==========
 const nasData = {
@@ -283,7 +289,68 @@ nasCases.forEach(function (c, i) {
   if (c.reuseCount == null) c.reuseCount = Math.floor(Math.random() * 40 + 5);
   if (c.time == null) c.time = '2026-05-' + String((i % 28) + 1).padStart(2, '0');
 });
-if (window.GDCase) GDCase.setSource(function () { return nasCases; }, { afterReuse: function () { if (typeof filterCases === 'function') filterCases(); } });
+// 将扁平 NAS 案例按「设计师 + 国家」聚合为项目，每个案例成为项目下的一个空间
+var SPACE_CYCLE = ['客厅','主卧','厨房','餐厅','卫生间','书房','阳台','儿童房'];
+function buildNASProjects() {
+  var groups = {};
+  nasCases.forEach(function (c, i) {
+    var key = c.designer + '|' + c.country;
+    if (!groups[key]) {
+      groups[key] = {
+        id: 7000 + Object.keys(groups).length,
+        name: c.country + ' · ' + c.designer + ' 项目集',
+        designer: c.designer, designerId: c.designerId, dept: c.dept,
+        style: c.style, country: c.country, theme: c.theme,
+        area: 0, budget: 0, reuseCount: 0, time: c.time, hasVR: false,
+        number: (c.designerId || '000') + '-' + c.country + '-NAS',
+        _cases: [], spaces: []
+      };
+    }
+    var g = groups[key];
+    g._cases.push(c);
+    g.area += (c.size || 30);
+    g.reuseCount += (c.reuseCount || 0);
+    if (c.hasVR) g.hasVR = true;
+    g.spaces.push(c.name);            // 用真实案例名作为"空间"名
+  });
+  return Object.keys(groups).map(function (k) { return groups[k]; });
+}
+
+var NAS_PROJECTS = [];
+function nasFilteredProjects() {
+  var dept = document.getElementById('nasDeptFilter').value;
+  var designer = document.getElementById('nasDesignerFilter').value;
+  var country = document.getElementById('nasCountryFilter').value;
+  return NAS_PROJECTS.filter(function (p) {
+    return (!dept || p.dept === dept) && (!designer || p.designer === designer) && (!country || p.country === country);
+  });
+}
+
+function initNASProjects() {
+  NAS_PROJECTS = buildNASProjects();
+  GDProject.mount({
+    rootEl: 'nasRoot',
+    getProjects: function () { return nasFilteredProjects(); },
+    title: 'NAS文件管理',
+    rootLabel: '全部项目',
+    editable: false,
+    hideToolbar: true,
+    copyProject: true,
+    emptyText: '暂无匹配项目',
+    extraSpaceActions: function (u) {
+      return '<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();confirmNASDownload(\'' + u.spaceName + '\',\'' + (u.dept || '') + '\',\'' + u.designer + '\',\'' + u.country + '\')">📥 下载到我的NAS</button>';
+    }
+  });
+  // 头部空间单元继承 dept（供下载按钮使用）
+}
+
+// filterCases 现在重渲染项目列表
+function filterCases() {
+  if (!NAS_PROJECTS.length) return;
+  var inst = GDProject.get('nasRoot');
+  document.getElementById('nasResultCount').textContent = '共 ' + nasFilteredProjects().length + ' 个项目';
+  if (inst && !inst.currentProj) inst.render();
+}
 
 // ========== INIT ==========
 function buildDesignerDropdown() {
@@ -508,23 +575,15 @@ function pptNextSlide() {
   }
 }
 
-// ========== FILTER & RENDER ==========
-function filterCases() {
-  const { filtered, paginated } = getCurrentPageCases();
-  
-  document.getElementById('nasResultCount').textContent = `共 ${filtered.length} 个案例`;
-  document.getElementById('nasCaseGrid').innerHTML = paginated.map(renderNASCaseCard).join('')
-    || '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:60px;">暂无匹配案例</p>';
-  
-  renderPagination(filtered.length);
-}
-
+// ========== FILTER & RENDER（旧扁平渲染已由项目视图取代） ==========
 function resetNASFilter() {
   document.getElementById('nasDeptFilter').value = '';
   document.getElementById('nasDesignerFilter').value = '';
   document.getElementById('nasCountryFilter').value = '';
   currentPage = 1;
   buildDesignerDropdown();
+  var inst = GDProject.get('nasRoot');
+  if (inst) inst.showProjects();
   filterCases();
 }
 
@@ -614,6 +673,7 @@ function updateNASStats() {
 // Init
 buildNASTree();
 buildDesignerDropdown();
+initNASProjects();
 filterCases();
 </script>
 </body>

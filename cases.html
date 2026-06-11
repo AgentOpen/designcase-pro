@@ -5,10 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>灵感库 - George Design</title>
 <link rel="stylesheet" href="common.css">
-<style>
-/* Extra case styles */
-.case-detail-thumb { width:100%; height:300px; position:relative; overflow:hidden; border-radius:var(--radius); margin-bottom:20px; }
-</style>
 </head>
 <body>
 
@@ -26,195 +22,44 @@
   </header>
 
   <div class="page-content">
-    <div class="page active" id="page-cases">
-      <!-- Filter bar -->
-      <div class="search-bar">
-        <div class="search-input-wrap"><input type="text" placeholder="搜索案例名称、设计师..." id="caseSearch" oninput="filterCases()"></div>
-        <select id="caseStyleFilter" onchange="filterCases()">
-          <option value="">全部风格</option><option>现代简约</option><option>北欧</option><option>新中式</option><option>轻奢</option><option>工业风</option><option>日式</option><option>美式</option>
-        </select>
-        <select id="caseSpaceFilter" onchange="filterCases()">
-          <option value="">全部空间</option><option>客厅</option><option>卧室</option><option>厨房</option><option>餐厅</option><option>书房</option><option>儿童房</option>
-        </select>
-        <select id="caseDesignerFilter" onchange="filterCases()">
-          <option value="">全部设计师</option><option>陈磊</option><option>林悦</option><option>王明远</option><option>张薇</option><option>李强</option>
-        </select>
-        <select id="caseSortFilter" onchange="filterCases()">
-          <option value="newest">最新</option><option value="hottest">最热</option><option value="mostReuse">复用最多</option>
-        </select>
-        <button class="btn btn-primary" onclick="filterCases()">搜索</button>
-        <button class="btn btn-secondary" onclick="resetCaseFilter()">重置</button>
-      </div>
-      <!-- Range sliders -->
-      <div style="display:flex;gap:24px;margin-bottom:16px;flex-wrap:wrap;">
-        <div class="range-slider" style="flex:1;min-width:280px;">
-          <span style="font-size:12px;color:var(--text-secondary);font-weight:500;">面积范围:</span>
-          <input type="range" min="50" max="300" value="300" id="areaRange" oninput="document.getElementById('areaVal').textContent='50-'+this.value;filterCases();">
-          <span id="areaVal" style="font-weight:500;">50-300</span><span style="font-size:11px;">㎡</span>
-        </div>
-        <div class="range-slider" style="flex:1;min-width:280px;">
-          <span style="font-size:12px;color:var(--text-secondary);font-weight:500;">预算范围:</span>
-          <input type="range" min="5" max="100" value="100" id="budgetRange" oninput="document.getElementById('budgetVal').textContent='5-'+this.value;filterCases();">
-          <span id="budgetVal" style="font-weight:500;">5-100</span><span style="font-size:11px;">万</span>
-        </div>
-      </div>
-      <div style="margin-bottom:12px;font-size:12px;color:var(--text-secondary);" id="caseResultCount"></div>
-      <div class="case-grid" id="caseGrid"></div>
+    <div class="page active">
+      <div id="caseRoot"></div>
     </div>
   </div>
 </main>
 
-<!-- Case Detail Modal -->
-<div class="modal-overlay" id="caseDetailModal">
-  <div class="modal modal-lg">
-    <div class="modal-header"><h2 id="caseDetailTitle">案例详情</h2><button class="modal-close" onclick="closeModal('caseDetailModal')">✕</button></div>
-    <div class="modal-body">
-      <div class="case-detail-thumb" id="caseDetailThumb"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
-        <div><strong>案例名称:</strong> <span id="cdName"></span></div>
-        <div><strong>设计师:</strong> <span id="cdDesigner"></span></div>
-        <div><strong>风格:</strong> <span id="cdStyle"></span></div>
-        <div><strong>空间:</strong> <span id="cdSpace"></span></div>
-        <div><strong>面积:</strong> <span id="cdArea"></span></div>
-        <div><strong>预算:</strong> <span id="cdBudget"></span></div>
-        <div><strong>国家:</strong> <span id="cdCountry"></span></div>
-        <div><strong>创建时间:</strong> <span id="cdTime"></span></div>
-        <div><strong>复用次数:</strong> <span id="cdReuse"></span></div>
-        <div><strong>案例编号:</strong> <span id="cdNumber"></span></div>
-      </div>
-      <!-- Product list -->
-      <h4 style="margin-bottom:8px;">产品清单</h4>
-      <div class="table-wrap" style="margin-bottom:20px;">
-        <table id="cdProductTable">
-          <thead><tr><th>产品名</th><th>SKU</th><th>品类</th><th>数量</th><th>操作</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <!-- 3D Models -->
-      <h4 style="margin-bottom:8px;">3D模型文件</h4>
-      <div class="table-wrap" style="margin-bottom:20px;">
-        <table id="cdModelTable">
-          <thead><tr><th>文件名</th><th>格式</th><th>大小</th><th>操作</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <!-- CAD -->
-      <h4 style="margin-bottom:8px;">CAD图纸列表</h4>
-      <div class="table-wrap" style="margin-bottom:20px;">
-        <table id="cdCADTable">
-          <thead><tr><th>文件名</th><th>格式</th><th>操作</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <!-- Client delivery -->
-      <h4 style="margin-bottom:8px;">客户交付资料</h4>
-      <div style="display:flex;gap:12px;margin-bottom:20px;">
-        <button class="btn btn-primary" onclick="showToast('info','PPT设计提案下载中...');setTimeout(()=>showToast('success','提案下载完成'),2000)">📄 PPT设计提案</button>
-        <button class="btn btn-secondary" onclick="showToast('info','VR体验URL: https://vr.george-design.com/001')">🔗 全屋设计VR</button>
-      </div>
-      <!-- Action buttons -->
-      <div style="display:flex;gap:10px;">
-        <button class="btn btn-primary btn-lg" onclick="startReuse()">🔄 一键复用</button>
-        <button class="btn btn-secondary" onclick="simulateDownload('全部资料')">📦 下载全部资料</button>
-        <button class="btn btn-ghost" onclick="closeModal('caseDetailModal')">关闭</button>
-      </div>
-      <!-- Reuse steps -->
-      <div class="reuse-steps" id="reuseSteps" style="display:none;">
-        <div class="reuse-step" id="rs1"><div class="reuse-step-icon">📋</div><div class="reuse-step-text">创建副本</div></div>
-        <div class="reuse-step" id="rs2"><div class="reuse-step-icon">📁</div><div class="reuse-step-text">拷贝文件</div></div>
-        <div class="reuse-step" id="rs3"><div class="reuse-step-icon">✅</div><div class="reuse-step-text">完成</div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Download Modal -->
-<div class="modal-overlay" id="downloadModal">
-  <div class="modal" style="max-width:400px;">
-    <div class="modal-header"><h2>下载中...</h2><button class="modal-close" onclick="closeModal('downloadModal')">✕</button></div>
-    <div class="modal-body" style="text-align:center;">
-      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;" id="downloadStatus">准备下载...</div>
-      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="downloadProgressBar" style="width:0%"></div></div>
-      <div style="font-size:12px;margin-top:6px;" id="downloadPercent">0%</div>
-    </div>
-  </div>
-</div>
-
 <div class="history-panel" id="historyPanel"><div style="padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;"><strong>操作历史</strong><button class="btn btn-ghost btn-sm" onclick="toggleHistory()">✕</button></div><div id="historyList"></div></div>
-<div class="compare-panel hidden" id="comparePanel"><div class="compare-items" id="compareItems"></div></div>
-<div class="modal-overlay" id="shortcutsModal"><div class="modal" style="max-width:600px;"><div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div><div class="modal-body"><table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody><tr><td><kbd>?</kbd></td><td>显示快捷键</td></tr><tr><td><kbd>Ctrl/Cmd + C</kbd></td><td>灵感库</td></tr><tr><td><kbd>Esc</kbd></td><td>关闭弹窗</td></tr></tbody></table></div></div></div>
-<div class="modal-overlay" id="compareModal"><div class="modal modal-lg"><div class="modal-header"><h2>案例对比</h2><button class="modal-close" onclick="closeModal('compareModal')">✕</button></div><div class="modal-body" id="compareModalBody"></div></div></div>
+<div class="modal-overlay" id="shortcutsModal"><div class="modal" style="max-width:600px;"><div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div><div class="modal-body"><table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody><tr><td><kbd>?</kbd></td><td>显示快捷键</td></tr><tr><td><kbd>Esc</kbd></td><td>返回项目列表 / 关闭弹窗</td></tr></tbody></table></div></div></div>
+<div class="compare-panel hidden" id="comparePanel"><div class="compare-header"><span>对比清单 (<span id="compareCount">0</span>)</span><button onclick="clearCompare()">清空</button></div><div class="compare-items" id="compareItems"></div></div>
+<div class="modal-overlay" id="compareModal"><div class="modal modal-lg"><div class="modal-header"><h2>空间对比</h2><button class="modal-close" onclick="closeModal('compareModal')">✕</button></div><div class="modal-body" id="compareModalBody"></div></div></div>
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="common.js"></script>
+<script src="gdpoints.js"></script>
 <script src="gdcase.js"></script>
+<script src="gdproject.js"></script>
 <script>
-// ========== CASE DATA (20+) ==========
-const allCases = [
-  {id:1,name:'北欧极简客厅',designer:'陈磊',designerId:'001',style:'北欧',space:'客厅',area:85,budget:12,country:'美国',reuseCount:47,time:'2026-05-20',theme:'nordic',number:'001-America-案例001'},
-  {id:2,name:'现代主卧套房',designer:'陈磊',designerId:'001',style:'现代简约',space:'卧室',area:120,budget:18,country:'新加坡',reuseCount:35,time:'2026-05-18',theme:'modern',number:'001-Singapore-案例002'},
-  {id:3,name:'新中式茶室空间',designer:'陈磊',designerId:'001',style:'新中式',space:'书房',area:45,budget:8,country:'马来西亚',reuseCount:29,time:'2026-05-15',theme:'chinese',number:'001-Malaysia-案例003'},
-  {id:4,name:'轻奢餐厅方案',designer:'林悦',designerId:'002',style:'轻奢',space:'餐厅',area:65,budget:22,country:'欧美',reuseCount:41,time:'2026-05-17',theme:'luxury',number:'002-Europe-案例004'},
-  {id:5,name:'工业Loft公寓',designer:'林悦',designerId:'002',style:'工业风',space:'客厅',area:95,budget:15,country:'美国',reuseCount:18,time:'2026-05-14',theme:'industrial',number:'002-America-案例005'},
-  {id:6,name:'日式书房设计',designer:'王明远',designerId:'003',style:'日式',space:'书房',area:38,budget:6,country:'日本',reuseCount:22,time:'2026-05-13',theme:'japanese',number:'003-Japan-案例006'},
-  {id:7,name:'美式厨房岛台',designer:'王明远',designerId:'003',style:'美式',space:'厨房',area:55,budget:10,country:'美国',reuseCount:33,time:'2026-05-12',theme:'american',number:'003-America-案例007'},
-  {id:8,name:'现代简约三居室',designer:'陈磊',designerId:'001',style:'现代简约',space:'客厅',area:140,budget:25,country:'欧美',reuseCount:56,time:'2026-05-10',theme:'modern',number:'001-Europe-案例008'},
-  {id:9,name:'北欧儿童房',designer:'林悦',designerId:'002',style:'北欧',space:'儿童房',area:32,budget:5,country:'新加坡',reuseCount:14,time:'2026-05-08',theme:'nordic',number:'002-Singapore-案例009'},
-  {id:10,name:'新中式客厅',designer:'张薇',designerId:'004',style:'新中式',space:'客厅',area:110,budget:28,country:'马来西亚',reuseCount:39,time:'2026-05-06',theme:'chinese',number:'004-Malaysia-案例010'},
-  {id:11,name:'现代极简厨房',designer:'王明远',designerId:'003',style:'现代简约',space:'厨房',area:28,budget:7,country:'欧美',reuseCount:21,time:'2026-04-28',theme:'modern',number:'003-Europe-案例011'},
-  {id:12,name:'轻奢主卧设计',designer:'张薇',designerId:'004',style:'轻奢',space:'卧室',area:88,budget:20,country:'非洲',reuseCount:31,time:'2026-04-25',theme:'luxury',number:'004-Africa-案例012'},
-  {id:13,name:'美式客厅方案',designer:'李强',designerId:'005',style:'美式',space:'客厅',area:130,budget:35,country:'美国',reuseCount:27,time:'2026-04-22',theme:'american',number:'005-America-案例013'},
-  {id:14,name:'工业风办公室',designer:'李强',designerId:'005',style:'工业风',space:'书房',area:75,budget:16,country:'新加坡',reuseCount:19,time:'2026-04-20',theme:'industrial',number:'005-Singapore-案例014'},
-  {id:15,name:'北欧餐厅设计',designer:'陈磊',designerId:'001',style:'北欧',space:'餐厅',area:42,budget:8,country:'欧美',reuseCount:25,time:'2026-04-18',theme:'nordic',number:'001-Europe-案例015'},
-  {id:16,name:'日式玄关客厅',designer:'林悦',designerId:'002',style:'日式',space:'客厅',area:58,budget:11,country:'日本',reuseCount:16,time:'2026-04-15',theme:'japanese',number:'002-Japan-案例016'},
-  {id:17,name:'现代简约书房',designer:'陈磊',designerId:'001',style:'现代简约',space:'书房',area:25,budget:4,country:'马来西亚',reuseCount:23,time:'2026-04-12',theme:'modern',number:'001-Malaysia-案例017'},
-  {id:18,name:'新中式餐厅',designer:'张薇',designerId:'004',style:'新中式',space:'餐厅',area:68,budget:13,country:'欧美',reuseCount:28,time:'2026-04-10',theme:'chinese',number:'004-Europe-案例018'},
-  {id:19,name:'轻奢儿童房',designer:'李强',designerId:'005',style:'轻奢',space:'儿童房',area:35,budget:9,country:'新加坡',reuseCount:12,time:'2026-04-08',theme:'luxury',number:'005-Singapore-案例019'},
-  {id:20,name:'美式卧室套房',designer:'王明远',designerId:'003',style:'美式',space:'卧室',area:96,budget:19,country:'非洲',reuseCount:24,time:'2026-04-05',theme:'american',number:'003-Africa-案例020'},
-  {id:21,name:'北欧厨房改造',designer:'林悦',designerId:'002',style:'北欧',space:'厨房',area:22,budget:5,country:'欧美',reuseCount:17,time:'2026-04-02',theme:'nordic',number:'002-Europe-案例021'},
-  {id:22,name:'新中式主卧',designer:'陈磊',designerId:'001',style:'新中式',space:'卧室',area:105,budget:26,country:'马来西亚',reuseCount:34,time:'2026-03-28',theme:'chinese',number:'001-Malaysia-案例022'},
+var PROJECTS = [
+  {id:1, name:'滨海现代别墅全案', designer:'陈磊', designerId:'001', style:'现代简约', country:'美国', area:320, budget:120, reuseCount:56, time:'2026-05-20', theme:'modern', number:'001-America-PRJ001', hasVR:true, spaces:['客厅','餐厅','主卧','厨房','卫生间','阳台']},
+  {id:2, name:'新中式叠墅样板间', designer:'张薇', designerId:'004', style:'新中式', country:'马来西亚', area:260, budget:98, reuseCount:39, time:'2026-05-15', theme:'chinese', number:'004-Malaysia-PRJ002', hasVR:true, spaces:['客厅','书房','主卧','茶室','餐厅']},
+  {id:3, name:'北欧极简三居', designer:'林悦', designerId:'002', style:'北欧', country:'欧美', area:140, budget:42, reuseCount:47, time:'2026-05-12', theme:'nordic', number:'002-Europe-PRJ003', hasVR:false, spaces:['客厅','卧室','厨房','儿童房']},
+  {id:4, name:'轻奢平层公寓', designer:'李强', designerId:'005', style:'轻奢', country:'新加坡', area:180, budget:75, reuseCount:31, time:'2026-05-08', theme:'luxury', number:'005-Singapore-PRJ004', hasVR:true, spaces:['客厅','主卧','餐厅','衣帽间','卫生间']},
+  {id:5, name:'工业风 Loft 复式', designer:'李强', designerId:'005', style:'工业风', country:'美国', area:200, budget:60, reuseCount:18, time:'2026-05-05', theme:'industrial', number:'005-America-PRJ005', hasVR:false, spaces:['客厅','书房','卧室','厨房']},
+  {id:6, name:'日式禅意小宅', designer:'王明远', designerId:'003', style:'日式', country:'日本', area:90, budget:30, reuseCount:22, time:'2026-05-02', theme:'japanese', number:'003-Japan-PRJ006', hasVR:false, spaces:['客厅','茶室','卧室','玄关']},
+  {id:7, name:'美式乡村大宅', designer:'王明远', designerId:'003', style:'美式', country:'美国', area:280, budget:95, reuseCount:33, time:'2026-04-28', theme:'american', number:'003-America-PRJ007', hasVR:true, spaces:['客厅','餐厅','厨房','主卧','儿童房','阳台']},
+  {id:8, name:'现代简约两居', designer:'陈磊', designerId:'001', style:'现代简约', country:'欧美', area:96, budget:28, reuseCount:25, time:'2026-04-22', theme:'modern', number:'001-Europe-PRJ008', hasVR:false, spaces:['客厅','卧室','厨房','卫生间']},
 ];
 
-// 注册数据源给统一案例模块
-GDCase.setSource(function () { return allCases; }, { afterReuse: function () { filterCases(); } });
-
-function filterCases() {
-  const s = document.getElementById('caseSearch').value.toLowerCase();
-  const style = document.getElementById('caseStyleFilter').value;
-  const space = document.getElementById('caseSpaceFilter').value;
-  const designer = document.getElementById('caseDesignerFilter').value;
-  const areaMax = parseInt(document.getElementById('areaRange').value);
-  const budgetMax = parseInt(document.getElementById('budgetRange').value);
-  const sort = document.getElementById('caseSortFilter').value;
-
-  let filtered = allCases.filter(c =>
-    (c.name.toLowerCase()+c.designer.toLowerCase()).includes(s) &&
-    (!style||c.style===style) && (!space||c.space===space) &&
-    (!designer||c.designer===designer) &&
-    c.area <= areaMax && c.budget <= budgetMax
-  );
-
-  if (sort==='newest') filtered.sort((a,b)=>b.time.localeCompare(a.time));
-  if (sort==='hottest') filtered.sort((a,b)=>b.reuseCount-a.reuseCount);
-  if (sort==='mostReuse') filtered.sort((a,b)=>b.reuseCount-a.reuseCount);
-
-  document.getElementById('caseGrid').innerHTML = filtered.map(c => GDCase.renderCard(c, {context:'cases'})).join('') ||
-    '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px;">无匹配案例</p>';
-  document.getElementById('caseResultCount').textContent = `共 ${filtered.length} 个案例`;
-}
-
-function resetCaseFilter() {
-  document.getElementById('caseSearch').value='';
-  document.getElementById('caseStyleFilter').value='';
-  document.getElementById('caseSpaceFilter').value='';
-  document.getElementById('caseDesignerFilter').value='';
-  document.getElementById('caseSortFilter').value='newest';
-  document.getElementById('areaRange').value=300; document.getElementById('areaVal').textContent='300';
-  document.getElementById('budgetRange').value=100; document.getElementById('budgetVal').textContent='100';
-  filterCases();
-}
-
-filterCases();
+GDProject.mount({
+  rootEl: 'caseRoot',
+  projects: PROJECTS,
+  title: '灵感库',
+  rootLabel: '全部项目',
+  editable: false,
+  copyProject: true,
+  emptyText: '无匹配项目',
+  onTitle: function (t) { document.getElementById('headerTitle').textContent = t; }
+});
 </script>
 </body>
 </html>

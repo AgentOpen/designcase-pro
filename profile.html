@@ -284,7 +284,7 @@
 
       </div>
 
-      <div class="profile-tab" data-tab="admin" onclick="switchProfileTab('admin')">
+      <div class="profile-tab" data-tab="admin" id="adminTab" onclick="switchProfileTab('admin')">
         <span class="tab-icon">⚙️</span> 系统管理
       </div>
 
@@ -304,6 +304,10 @@
           </div>
         </div>
       </div>
+
+      <!-- 积分钱包 -->
+      <div id="walletCard"></div>
+      <div id="leaderTools"></div>
 
       <div class="stat-cards" style="margin-bottom:20px;">
         <div class="stat-card" style="color:#4f46e5;"><div class="stat-card-label">累计案例</div><div class="stat-card-value">24</div><div class="stat-card-sub">部门第 1</div></div>
@@ -1165,11 +1169,18 @@
 
 <div class="modal-overlay" id="shortcutsModal"><div class="modal" style="max-width:600px;"><div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div><div class="modal-body"><table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody><tr><td><kbd>?</kbd></td><td>显示快捷键</td></tr><tr><td><kbd>Ctrl/Cmd + P</kbd></td><td>个人中心</td></tr><tr><td><kbd>Esc</kbd></td><td>关闭弹窗</td></tr></tbody></table></div></div></div>
 
+<div class="modal-overlay" id="walletHistModal"><div class="modal" style="max-width:560px;"><div class="modal-header"><h2>积分明细</h2><button class="modal-close" onclick="closeModal('walletHistModal')">✕</button></div><div class="modal-body table-wrap" id="walletHistBody"></div></div></div>
+
+<div class="modal-overlay" id="grantModal"><div class="modal" style="max-width:400px;"><div class="modal-header"><h2>发放本月积分</h2><button class="modal-close" onclick="closeModal('grantModal')">✕</button></div><div class="modal-body"><div class="form-group"><label>每位成员发放积分</label><input class="input" type="number" id="grantAmount" style="width:100%;" value="5000" min="0"></div><div style="font-size:12px;color:var(--text-muted);">将为团队全体成员一次性发放该积分。</div></div><div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('grantModal')">取消</button><button class="btn btn-primary" onclick="confirmGrant()">确认发放</button></div></div></div>
+
+<div class="modal-overlay" id="reviewModal"><div class="modal" style="max-width:560px;"><div class="modal-header"><h2>案例积分审核</h2><button class="modal-close" onclick="closeModal('reviewModal')">✕</button></div><div class="modal-body" id="reviewBody"></div></div></div>
+
 <div class="toast-container" id="toastContainer"></div>
 
 
 
 <script src="common.js"></script>
+<script src="gdpoints.js"></script>
 
 <script>
 
@@ -1667,6 +1678,92 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
+// ========== 积分钱包 / 发放 / 审核 ==========
+var POINTS_ME = (window.GDRole ? GDRole.me() : '陈磊');
+var POINTS_IS_LEADER = (window.GDRole ? GDRole.isLeader() : true);
+// 系统管理（用户管理/权限/审计）仅组长可见
+(function(){
+  var at=document.getElementById('adminTab');
+  if(at && !POINTS_IS_LEADER){ at.style.display='none'; }
+  // 个人中心顶部身份与名称随角色
+  var nameEls=document.querySelectorAll('[data-profile-name]');
+  nameEls.forEach(function(el){ el.textContent=POINTS_ME; });
+})();
+function renderWallet() {
+  if (!window.GDPoints) return;
+  var w = GDPoints.getWallet(POINTS_ME);
+  var delta = w.balance - w.initial;
+  var deltaHtml = delta >= 0
+    ? '<span class="wallet-delta-up">▲ 高于初始 +' + delta + '</span>'
+    : '<span class="wallet-delta-down">▼ 低于初始 ' + delta + '</span>';
+  document.getElementById('walletCard').innerHTML =
+    '<div class="wallet-card">' +
+      '<div style="font-size:34px;">🪙</div>' +
+      '<div style="flex:1;">' +
+        '<div class="wallet-sub">我的积分钱包</div>' +
+        '<div class="wallet-balance">' + w.balance.toLocaleString() + ' <span style="font-size:14px;font-weight:500;opacity:.85;">分</span></div>' +
+        '<div class="wallet-sub">初始 ' + w.initial + ' 分 · ' + deltaHtml + '</div>' +
+      '</div>' +
+      '<button class="btn" style="background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);" onclick="openWalletHistory()">明细</button>' +
+    '</div>';
+  // 组长工具
+  var lt = document.getElementById('leaderTools');
+  if (POINTS_IS_LEADER && lt) {
+    var pending = pendingReviews();
+    lt.innerHTML =
+      '<div class="card" style="margin-bottom:20px;">' +
+        '<div class="card-header"><span class="card-title">组长工具 👑</span></div>' +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">' +
+          '<button class="btn btn-primary btn-sm" onclick="openGrant()">发放本月积分</button>' +
+          '<button class="btn btn-secondary btn-sm" onclick="openReview()">案例积分审核' + (pending.length ? '（' + pending.length + ' 待审）' : '') + '</button>' +
+          '<span style="font-size:12px;color:var(--text-muted);">给团队成员发放月度积分、审核案例积分价。</span>' +
+        '</div>' +
+      '</div>';
+  }
+}
+function pendingReviews() {
+  var cp = {};
+  try { cp = JSON.parse(localStorage.getItem('gd-case-points') || '{}'); } catch (e) {}
+  return Object.keys(cp).filter(function (id) { return cp[id].status === '待审核'; }).map(function (id) { return Object.assign({ id: id }, cp[id]); });
+}
+function openWalletHistory() {
+  var w = GDPoints.getWallet(POINTS_ME);
+  var rows = (w.history || []).map(function (h) {
+    return '<tr><td>' + h.t + '</td><td style="color:' + (h.delta >= 0 ? '#16a34a' : '#dc2626') + ';font-weight:600;">' + (h.delta >= 0 ? '+' : '') + h.delta + '</td><td>' + h.reason + '</td></tr>';
+  }).join('') || '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">暂无记录</td></tr>';
+  document.getElementById('walletHistBody').innerHTML = '<table><thead><tr><th>时间</th><th>变动</th><th>说明</th></tr></thead><tbody>' + rows + '</tbody></table>';
+  openModal('walletHistModal');
+}
+function openGrant() {
+  document.getElementById('grantAmount').value = 5000;
+  openModal('grantModal');
+}
+function confirmGrant() {
+  var amt = parseInt(document.getElementById('grantAmount').value) || 0;
+  if (amt <= 0) { showToast('warning', '请输入有效积分'); return; }
+  GDPoints.grantMonthly(amt);
+  closeModal('grantModal'); renderWallet();
+  showToast('success', '已为全体成员发放 ' + amt + ' 积分');
+}
+function openReview() {
+  var list = pendingReviews();
+  document.getElementById('reviewBody').innerHTML = list.length
+    ? list.map(function (r) {
+        return '<div class="intake-row"><div style="flex:1;"><strong>案例 #' + r.id + '</strong> · 作者 ' + r.author + ' · 申报积分价 <strong>' + r.price + '</strong> 分</div>' +
+          '<div style="display:flex;gap:8px;"><button class="btn btn-primary btn-sm" onclick="doReview(\'' + r.id + '\',true)">通过</button>' +
+          '<button class="btn btn-ghost btn-sm" onclick="doReview(\'' + r.id + '\',false)">驳回</button></div></div>';
+      }).join('')
+    : '<div style="padding:24px;text-align:center;color:var(--text-muted);">暂无待审核案例</div>';
+  openModal('reviewModal');
+}
+function doReview(id, approve) {
+  GDPoints.reviewCase(id, approve);
+  showToast(approve ? 'success' : 'info', approve ? '已通过，作者获得奖励积分' : '已驳回');
+  openReview(); renderWallet();
+}
+window.openWalletHistory = openWalletHistory; window.openGrant = openGrant; window.confirmGrant = confirmGrant;
+window.openReview = openReview; window.doReview = doReview;
+renderWallet();
 </script>
 
 </body>

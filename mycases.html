@@ -12,9 +12,8 @@
 
 <main class="main">
   <header class="header">
-    <h1 class="header-title">我的案例</h1>
+    <h1 class="header-title" id="headerTitle">我的案例</h1>
     <div class="header-actions">
-      <button class="btn btn-primary" onclick="openCreateCase()">＋ 创建新案例</button>
       <button class="dark-toggle" onclick="toggleDarkMode()">🌙</button>
       <button class="btn btn-ghost" onclick="toggleHistory()">📜</button>
       <button class="btn btn-ghost" onclick="showShortcuts()">⌨</button>
@@ -22,182 +21,189 @@
   </header>
 
   <div class="page-content">
-    <div class="page active" id="page-mycases">
-      <div class="search-bar">
-        <div class="search-input-wrap"><input type="text" placeholder="搜索我的案例..." id="myCaseSearch" oninput="filterMyCases()"></div>
-        <select id="myCaseStyleFilter" onchange="filterMyCases()"><option value="">全部风格</option><option>现代简约</option><option>北欧</option><option>新中式</option><option>轻奢</option><option>工业风</option><option>日式</option><option>美式</option></select>
-        <select id="myCaseSpaceFilter" onchange="filterMyCases()"><option value="">全部空间</option><option>客厅</option><option>卧室</option><option>厨房</option><option>餐厅</option><option>书房</option><option>儿童房</option></select>
-        <button class="btn btn-primary" onclick="filterMyCases()">搜索</button>
-        <button class="btn btn-secondary" onclick="resetMyCaseFilter()">重置</button>
-      </div>
-      <div style="margin-bottom:12px;font-size:12px;color:var(--text-secondary);" id="myCaseResultCount"></div>
-      <div class="case-grid" id="myCaseGrid"></div>
+    <div class="page active">
+      <div id="myRoot"></div>
     </div>
   </div>
 </main>
 
-<!-- Create Case Modal -->
-<div class="modal-overlay" id="createCaseModal">
+<!-- 新建/编辑项目 -->
+<div class="modal-overlay" id="projModal">
   <div class="modal modal-lg">
-    <div class="modal-header"><h2>创建新案例</h2><button class="modal-close" onclick="closeModal('createCaseModal')">✕</button></div>
+    <div class="modal-header"><h2 id="projModalTitle">新建项目</h2><button class="modal-close" onclick="closeModal('projModal')">✕</button></div>
     <div class="modal-body">
       <div class="form-row">
-        <div class="form-group"><label>案例名称</label><input type="text" id="newCaseName" placeholder="输入案例名称"></div>
-        <div class="form-group"><label>风格</label><select id="newCaseStyle"><option>现代简约</option><option>北欧</option><option>新中式</option><option>轻奢</option><option>工业风</option><option>日式</option><option>美式</option></select></div>
+        <div class="form-group"><label>项目名称</label><input type="text" id="pName" placeholder="如 江景豪宅全案"></div>
+        <div class="form-group"><label>风格</label><select id="pStyle"><option>现代简约</option><option>北欧</option><option>新中式</option><option>轻奢</option><option>工业风</option><option>日式</option><option>美式</option></select></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>空间</label><select id="newCaseSpace"><option>客厅</option><option>卧室</option><option>厨房</option><option>餐厅</option><option>书房</option><option>儿童房</option><option>玄关</option></select></div>
-        <div class="form-group"><label>面积 (㎡)</label><input type="number" id="newCaseArea" placeholder="如 85" min="10" max="500"></div>
+        <div class="form-group"><label>面积 (㎡)</label><input type="number" id="pArea" placeholder="如 180" min="10" max="2000"></div>
+        <div class="form-group"><label>预算 (万)</label><input type="number" id="pBudget" placeholder="如 60" min="1"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>预算 (万)</label><input type="number" id="newCaseBudget" placeholder="如 12" min="1"></div>
-        <div class="form-group"><label>国家</label><select id="newCaseCountry"><option>美国</option><option>新加坡</option><option>马来西亚</option><option>欧美</option><option>非洲</option><option>日本</option></select></div>
+        <div class="form-group" style="flex:1;"><label>国家/地区</label><select id="pCountry"><option>美国</option><option>新加坡</option><option>马来西亚</option><option>欧美</option><option>非洲</option><option>日本</option></select></div>
+        <div class="form-group" style="flex:1;"><label>是否含 VR 全景</label><select id="pVR"><option value="no">效果图</option><option value="yes">VR全景</option></select></div>
+        <div class="form-group" style="flex:1;"><label>复用积分价（每空间）🪙</label><input type="number" id="pPoints" placeholder="如 150" min="0" value="150"></div>
       </div>
-      <div class="form-group"><label>标签 (逗号分隔)</label><input type="text" id="newCaseTags" placeholder="如 精装,简约,自然光"></div>
-      <div class="form-group"><label>上传源文件 (模拟)</label><div style="border:1px dashed var(--border);border-radius:var(--radius-sm);padding:20px;text-align:center;color:var(--text-muted);">点击上传 .max / .skp / .fbx 文件</div></div>
-      <div class="form-group"><label>上传产品图 (模拟)</label><div style="border:1px dashed var(--border);border-radius:var(--radius-sm);padding:20px;text-align:center;color:var(--text-muted);">点击上传 JPG/PNG 产品图</div></div>
-      <div class="form-group"><label>上传CAD图纸 (模拟)</label><div style="border:1px dashed var(--border);border-radius:var(--radius-sm);padding:20px;text-align:center;color:var(--text-muted);">点击上传 .dwg 图纸文件</div></div>
-      <div class="form-group"><label>产品清单编辑器</label><textarea placeholder="产品名称, SKU, 数量 （每行一条）" rows="4"></textarea></div>
+      <div class="form-group"><label>包含空间（可多选）</label>
+        <div id="spacePick" class="space-pick"></div>
+      </div>
+      <div class="form-group" style="font-size:12px;color:var(--text-muted);">提示：每个空间内含产品清单 / 3D模型 / CAD图纸（演示自动生成）。</div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('createCaseModal')">取消</button>
-      <button class="btn btn-primary" onclick="createNewCase()">创建案例</button>
+      <button class="btn btn-secondary" onclick="closeModal('projModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveProject()">保存</button>
     </div>
   </div>
 </div>
 
 <div class="history-panel" id="historyPanel"><div style="padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;"><strong>操作历史</strong><button class="btn btn-ghost btn-sm" onclick="toggleHistory()">✕</button></div><div id="historyList"></div></div>
-<div class="compare-panel hidden" id="comparePanel"><div class="compare-items" id="compareItems"></div></div>
-<div class="modal-overlay" id="shortcutsModal"><div class="modal" style="max-width:600px;"><div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div><div class="modal-body"><table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody><tr><td><kbd>?</kbd></td><td>显示快捷键</td></tr><tr><td><kbd>Ctrl/Cmd + M</kbd></td><td>我的案例</td></tr><tr><td><kbd>Esc</kbd></td><td>关闭弹窗</td></tr></tbody></table></div></div></div>
+<div class="modal-overlay" id="shortcutsModal"><div class="modal" style="max-width:600px;"><div class="modal-header"><h2>快捷键参考</h2><button class="modal-close" onclick="closeModal('shortcutsModal')">✕</button></div><div class="modal-body"><table><thead><tr><th>快捷键</th><th>功能</th></tr></thead><tbody><tr><td><kbd>?</kbd></td><td>显示快捷键</td></tr><tr><td><kbd>Esc</kbd></td><td>返回 / 关闭弹窗</td></tr></tbody></table></div></div></div>
+<div class="compare-panel hidden" id="comparePanel"><div class="compare-header"><span>对比清单 (<span id="compareCount">0</span>)</span><button onclick="clearCompare()">清空</button></div><div class="compare-items" id="compareItems"></div></div>
+<div class="modal-overlay" id="compareModal"><div class="modal modal-lg"><div class="modal-header"><h2>空间对比</h2><button class="modal-close" onclick="closeModal('compareModal')">✕</button></div><div class="modal-body" id="compareModalBody"></div></div></div>
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="common.js"></script>
+<script src="gdpoints.js"></script>
 <script src="gdcase.js"></script>
+<script src="gdproject.js"></script>
 <script>
-// My cases (Chen Lei's cases)
-let myCases = [
-  {id:101,name:'北欧极简客厅',designer:'陈磊',designerId:'001',style:'北欧',space:'客厅',area:85,budget:12,country:'美国',reuseCount:47,time:'2026-05-20',theme:'nordic',number:'001-America-案例001'},
-  {id:102,name:'现代主卧套房',designer:'陈磊',designerId:'001',style:'现代简约',space:'卧室',area:120,budget:18,country:'新加坡',reuseCount:35,time:'2026-05-18',theme:'modern',number:'001-Singapore-案例002'},
-  {id:103,name:'新中式茶室空间',designer:'陈磊',designerId:'001',style:'新中式',space:'书房',area:45,budget:8,country:'马来西亚',reuseCount:29,time:'2026-05-15',theme:'chinese',number:'001-Malaysia-案例003'},
-  {id:104,name:'现代简约三居室',designer:'陈磊',designerId:'001',style:'现代简约',space:'客厅',area:140,budget:25,country:'欧美',reuseCount:56,time:'2026-05-10',theme:'modern',number:'001-Europe-案例008'},
-  {id:105,name:'北欧餐厅设计',designer:'陈磊',designerId:'001',style:'北欧',space:'餐厅',area:42,budget:8,country:'欧美',reuseCount:25,time:'2026-04-18',theme:'nordic',number:'001-Europe-案例015'},
-  {id:106,name:'现代简约书房',designer:'陈磊',designerId:'001',style:'现代简约',space:'书房',area:25,budget:4,country:'马来西亚',reuseCount:23,time:'2026-04-12',theme:'modern',number:'001-Malaysia-案例017'},
-  {id:107,name:'新中式主卧',designer:'陈磊',designerId:'001',style:'新中式',space:'卧室',area:105,budget:26,country:'马来西亚',reuseCount:34,time:'2026-03-28',theme:'chinese',number:'001-Malaysia-案例022'},
-];
-let nextCaseId = 200;
+var SPACE_OPTS = ['客厅','餐厅','主卧','卧室','厨房','书房','卫生间','阳台','儿童房','茶室','玄关','衣帽间'];
+var THEME_BY_STYLE = {'现代简约':'modern','北欧':'nordic','新中式':'chinese','轻奢':'luxury','工业风':'industrial','日式':'japanese','美式':'american'};
+var ME = (window.GDRole ? GDRole.me() : '陈磊');
+var MEID = (ME==='陈磊'?'001':'0'+(['林悦','王明远','张薇','李强','孙敏','周杰'].indexOf(ME)+2).toString().padStart(2,'0'));
 
-// Merge persisted reuse-copies + user-created cases (localStorage) on top of seeds
-(function () {
-  var stored = (window.GDStore ? GDStore.get('gd-mycases', []) : []);
-  if (stored && stored.length) {
-    // newest first; avoid id clashes with seeds
-    stored.forEach(function (c) { if (!myCases.some(function (x) { return x.id === c.id; })) myCases.unshift(c); });
-  }
-})();
-function gdSaveMine() {
-  // persist only the non-seed cases (id >= 200 for created, >= 900 for reuse copies)
-  if (!window.GDStore) return;
-  var persist = myCases.filter(function (c) { return c.id >= 200; });
-  GDStore.set('gd-mycases', persist);
+// 我的项目：每个设计师有自己的种子；只显示属于当前身份的项目
+function loadMine(){
+  var seedByUser = {
+    '陈磊': [
+      {id:1,name:'我的滨海别墅复盘',designer:'陈磊',designerId:'001',style:'现代简约',country:'美国',area:300,budget:110,reuseCount:18,time:'2026-05-19',theme:'modern',number:'001-Mine-PRJ001',hasVR:true,spaces:['客厅','主卧','厨房','餐厅']},
+      {id:2,name:'新中式自宅方案',designer:'陈磊',designerId:'001',style:'新中式',country:'马来西亚',area:130,budget:36,reuseCount:9,time:'2026-05-11',theme:'chinese',number:'001-Mine-PRJ002',hasVR:false,spaces:['客厅','书房','主卧']},
+    ],
+    '林悦': [
+      {id:11,name:'北欧两居改造',designer:'林悦',designerId:'002',style:'北欧',country:'欧美',area:96,budget:28,reuseCount:22,time:'2026-05-18',theme:'nordic',number:'002-Mine-PRJ011',hasVR:false,spaces:['客厅','卧室','厨房']},
+    ],
+    '王明远': [
+      {id:21,name:'日式禅意小宅',designer:'王明远',designerId:'003',style:'日式',country:'日本',area:80,budget:24,reuseCount:12,time:'2026-05-14',theme:'japanese',number:'003-Mine-PRJ021',hasVR:false,spaces:['客厅','茶室','卧室']},
+    ]
+  };
+  var seed = (seedByUser[ME] || []).slice();
+  try{ var v=JSON.parse(localStorage.getItem('gd-my-projects')); if(v&&v.length){
+    // 只取属于当前身份的持久化项目
+    v.filter(function(p){ return (p.designer||'陈磊')===ME; }).forEach(function(p){
+      if(!seed.some(function(s){return s.id===p.id;})) seed.unshift(p);
+      else { var i=seed.findIndex(function(s){return s.id===p.id;}); seed[i]=p; }
+    });
+  }}catch(e){}
+  return seed;
+}
+var MY = loadMine();
+var nextPid = MY.reduce(function(m,p){return Math.max(m,p.id);}, Date.now()%100000)+1;
+// 保存时合并回全量（保留其他人的项目）
+function saveMine(){
+  var all=[]; try{ all=JSON.parse(localStorage.getItem('gd-my-projects'))||[]; }catch(e){}
+  var others = all.filter(function(p){ return (p.designer||'陈磊')!==ME; });
+  localStorage.setItem('gd-my-projects', JSON.stringify(others.concat(MY)));
 }
 
-// 注册数据源（含编辑/删除回调）
-GDCase.setSource(function () { return myCases; }, {
-  afterReuse: function () { /* reuse copy goes to gd-mycases; refresh after reload */ filterMyCases(); },
-  onEdit: function (id) { editMyCase(id); },
-  onDelete: function (id) { deleteMyCase(id); }
+GDProject.mount({
+  rootEl: 'myRoot',
+  getProjects: function(){ return MY; },
+  title: '我的案例',
+  rootLabel: '我的项目',
+  createLabel: '新建项目',
+  editable: true,
+  emptyText: '还没有项目，点「新建项目」开始',
+  onTitle: function(t){ document.getElementById('headerTitle').textContent = t; },
+  onCreate: function(){ openProjForm(null); },
+  onEdit: function(id){ openProjForm(id); },
+  onDelete: function(id){ delProject(id); }
 });
 
-let editingId = null;
-
-function filterMyCases() {
-  const s = document.getElementById('myCaseSearch').value.toLowerCase();
-  const style = document.getElementById('myCaseStyleFilter').value;
-  const space = document.getElementById('myCaseSpaceFilter').value;
-  const filtered = myCases.filter(c =>
-    (c.name.toLowerCase()+c.designer.toLowerCase()).includes(s) &&
-    (!style||c.style===style) && (!space||c.space===space)
-  );
-  document.getElementById('myCaseGrid').innerHTML = filtered.map(c => GDCase.renderCard(c, {context:'mycases'})).join('') ||
-    '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px;">暂无匹配案例</p>';
-  document.getElementById('myCaseResultCount').textContent = `共 ${filtered.length} 个案例`;
+// ---- 新建/编辑 表单 ----
+var editingPid = null;
+function renderSpacePick(selected){
+  selected = selected || [];
+  document.getElementById('spacePick').innerHTML = SPACE_OPTS.map(function(sp){
+    var on = selected.indexOf(sp)>=0;
+    return '<label class="space-pick-item'+(on?' on':'')+'"><input type="checkbox" value="'+sp+'" '+(on?'checked':'')+' onchange="this.parentNode.classList.toggle(\'on\',this.checked)"> '+sp+'</label>';
+  }).join('');
 }
-
-function resetMyCaseFilter() {
-  document.getElementById('myCaseSearch').value='';
-  document.getElementById('myCaseStyleFilter').value='';
-  document.getElementById('myCaseSpaceFilter').value='';
-  filterMyCases();
-}
-
-function openCreateCase() {
-  editingId = null;
-  document.querySelector('#createCaseModal h2').textContent = '创建新案例';
-  document.querySelectorAll('#createCaseModal input, #createCaseModal textarea').forEach(el => { el.value=''; });
-  openModal('createCaseModal');
-}
-window.openCreateCase = openCreateCase;
-
-function createNewCase() {
-  const name = document.getElementById('newCaseName').value.trim();
-  if (!name) { showToast('warning', '请输入案例名称'); return; }
-  const data = {
-    style: document.getElementById('newCaseStyle').value,
-    space: document.getElementById('newCaseSpace').value,
-    area: parseInt(document.getElementById('newCaseArea').value) || 80,
-    budget: parseInt(document.getElementById('newCaseBudget').value) || 10,
-    country: document.getElementById('newCaseCountry').value,
-  };
-  if (editingId) {
-    // 就地更新
-    const c = myCases.find(x => x.id === editingId);
-    if (c) { c.name = name; Object.assign(c, data); }
-    gdSaveMine(); closeModal('createCaseModal'); filterMyCases();
-    showToast('success', '案例「' + name + '」已更新');
-    editingId = null;
-    return;
+function openProjForm(id){
+  editingPid = id;
+  if(id){
+    var p = MY.find(function(x){return x.id===id;}); if(!p) return;
+    document.getElementById('projModalTitle').textContent='编辑项目';
+    document.getElementById('pName').value=p.name;
+    document.getElementById('pStyle').value=p.style;
+    document.getElementById('pArea').value=p.area;
+    document.getElementById('pBudget').value=p.budget;
+    document.getElementById('pCountry').value=p.country;
+    document.getElementById('pVR').value=p.hasVR?'yes':'no';
+    document.getElementById('pPoints').value = (p.casePoints!=null?p.casePoints:150);
+    renderSpacePick(p.spaces);
+  } else {
+    document.getElementById('projModalTitle').textContent='新建项目';
+    document.getElementById('pName').value='';
+    document.getElementById('pArea').value='';
+    document.getElementById('pBudget').value='';
+    document.getElementById('pStyle').value='现代简约';
+    document.getElementById('pCountry').value='美国';
+    document.getElementById('pVR').value='no';
+    document.getElementById('pPoints').value=150;
+    renderSpacePick(['客厅','主卧']);
   }
-  const c = {
-    id: nextCaseId++, name: name, designer: '陈磊', designerId: '001',
-    style: data.style, space: data.space, area: data.area, budget: data.budget, country: data.country,
-    reuseCount: 0, time: gdToday(), theme: 'modern', number: '001-New-案例' + nextCaseId
+  openModal('projModal');
+}
+function saveProject(){
+  var name=document.getElementById('pName').value.trim();
+  if(!name){ showToast('warning','请输入项目名称'); return; }
+  var spaces = Array.prototype.slice.call(document.querySelectorAll('#spacePick input:checked')).map(function(i){return i.value;});
+  if(!spaces.length){ showToast('warning','请至少选择一个空间'); return; }
+  var style=document.getElementById('pStyle').value;
+  var pts=parseInt(document.getElementById('pPoints').value); if(isNaN(pts)||pts<0) pts=0;
+  var data={
+    name:name, style:style, theme:THEME_BY_STYLE[style]||'modern',
+    area:parseInt(document.getElementById('pArea').value)||100,
+    budget:parseInt(document.getElementById('pBudget').value)||20,
+    country:document.getElementById('pCountry').value,
+    hasVR:document.getElementById('pVR').value==='yes',
+    casePoints:pts,
+    spaces:spaces
   };
-  myCases.unshift(c);
-  gdSaveMine();
-  closeModal('createCaseModal');
-  filterMyCases();
-  showToast('success', '案例「' + name + '」创建成功');
-  document.querySelectorAll('#createCaseModal input').forEach(el => { if(el.type!=='submit') el.value=''; });
+  var theProj;
+  if(editingPid){
+    var p=MY.find(function(x){return x.id===editingPid;});
+    Object.assign(p,data); theProj=p;
+    showToast('success','项目「'+name+'」已更新');
+  } else {
+    theProj=Object.assign({id:nextPid, designer:ME, designerId:MEID, reuseCount:0, time:gdToday(), number:MEID+'-Mine-PRJ'+nextPid}, data);
+    MY.unshift(theProj);
+    nextPid++;
+    showToast('success','项目「'+name+'」已创建，积分价待审核');
+  }
+  // 为该项目每个空间登记积分价（新建/改价 → 待审核，需组长在仪表盘审核通过后才计分）
+  if(window.GDPoints){
+    theProj.spaces.forEach(function(sp,i){
+      var sid=theProj.id*100+i;
+      GDPoints.setCasePoints(sid, pts, ME, '待审核');
+    });
+  }
+  saveMine();
+  closeModal('projModal');
+  var inst=GDProject.get('myRoot');
+  if(inst.currentProj && editingPid){ inst.renderSpaces(editingPid); } else { inst.showProjects(); }
+  editingPid=null;
 }
-
-function editMyCase(id) {
-  const c = myCases.find(x => x.id === id);
-  if (!c) return;
-  editingId = id;
-  document.querySelector('#createCaseModal h2').textContent = '编辑案例';
-  document.getElementById('newCaseName').value = c.name;
-  document.getElementById('newCaseStyle').value = c.style;
-  document.getElementById('newCaseSpace').value = c.space;
-  document.getElementById('newCaseArea').value = c.area;
-  document.getElementById('newCaseBudget').value = c.budget;
-  document.getElementById('newCaseCountry').value = c.country;
-  openModal('createCaseModal');
+function delProject(id){
+  var p=MY.find(function(x){return x.id===id;}); if(!p) return;
+  if(!confirm('确定删除项目「'+p.name+'」？其下所有空间也会删除。')) return;
+  MY=MY.filter(function(x){return x.id!==id;});
+  saveMine();
+  var inst=GDProject.get('myRoot'); inst.showProjects();
+  showToast('error','项目「'+p.name+'」已删除');
 }
-
-function deleteMyCase(id) {
-  const idx = myCases.findIndex(x => x.id === id);
-  if (idx < 0) return;
-  const name = myCases[idx].name;
-  if (!confirm('确定删除案例「' + name + '」？')) return;
-  myCases.splice(idx, 1);
-  gdSaveMine();
-  filterMyCases();
-  showToast('error', '案例「' + name + '」已删除');
-}
-window.editMyCase = editMyCase;
-window.deleteMyCase = deleteMyCase;
-
-filterMyCases();
+window.openProjForm=openProjForm; window.saveProject=saveProject; window.delProject=delProject;
 </script>
 </body>
 </html>

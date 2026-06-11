@@ -30,8 +30,8 @@
       <!-- 欢迎条 -->
       <div class="home-hero">
         <div>
-          <div class="home-hero-greeting">下午好，陈磊 👋</div>
-          <div class="home-hero-sub">资深设计师 · 部门主管 · 设计一部　|　本月你已复用 47 次，部门排名 <strong>第 1</strong></div>
+          <div class="home-hero-greeting" id="heroGreeting">下午好 👋</div>
+          <div class="home-hero-sub" id="heroSub"></div>
         </div>
         <div class="home-hero-actions">
           <button class="btn btn-primary" onclick="navigateTo('mycases')">＋ 创建案例</button>
@@ -42,7 +42,7 @@
       <!-- Tab 切换 -->
       <div class="home-tabs">
         <div class="home-tab active" data-tab="overview" onclick="switchHomeTab('overview')">个人概览</div>
-        <div class="home-tab" data-tab="team" onclick="switchHomeTab('team')">团队数据</div>
+        <div class="home-tab" data-tab="team" data-leader="1" onclick="switchHomeTab('team')">团队数据</div>
         <div class="home-tab" data-tab="activity" onclick="switchHomeTab('activity')">复用流水</div>
       </div>
 
@@ -91,6 +91,14 @@
             <div class="quick-action-icon" style="background:linear-gradient(135deg,#fff7ed,#fed7aa);color:var(--warning);">⬆</div>
             <div class="quick-action-text">上传文件</div>
           </div>
+        </div>
+
+        <div class="card" style="margin-bottom:24px;">
+          <div class="card-header">
+            <span class="card-title">我的任务 · 待办</span>
+            <a href="team.html" class="btn btn-ghost btn-sm">前往任务看板</a>
+          </div>
+          <div id="myTasksBody"></div>
         </div>
 
         <div class="card" style="margin-bottom:24px;">
@@ -259,6 +267,7 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="common.js"></script>
+<script src="gdpoints.js"></script>
 <script>
 // ===== Home tab switching =====
 function switchHomeTab(tab) {
@@ -380,8 +389,66 @@ function markAllRead() {
 window.openNotifications = openNotifications;
 window.markAllRead = markAllRead;
 
+// 我的任务（从团队任务数据读取，按截止/紧急度排序）
+function renderMyTasks() {
+  var ME = '陈磊';
+  var tasks = [];
+  try { tasks = JSON.parse(localStorage.getItem('gd-tasks') || '[]'); } catch (e) {}
+  var projs = [];
+  try { projs = JSON.parse(localStorage.getItem('gd-projects') || '[]'); } catch (e) {}
+  function projName(id) { var p = projs.find(function (x) { return x.id === id; }); return p ? p.name : '未关联项目'; }
+  var seedTasks = [
+    { id: 3, title: '滨海别墅 - 主卧深化', who: '陈磊', projId: 1, prio: '高', status: '进行中', due: '2026-06-12' },
+    { id: 7, title: '樾府 - 全套交付', who: '陈磊', projId: 3, prio: '高', status: '已完成', due: '2026-05-09' }
+  ];
+  var src = (tasks && tasks.length) ? tasks : seedTasks;
+  var mine = src.filter(function (t) { return t.who === ME && t.status !== '已完成'; });
+  var prioRank = { '高': 0, '中': 1, '低': 2 };
+  var today = (window.gdToday ? gdToday() : '2026-06-11');
+  mine.sort(function (a, b) {
+    var ao = (a.due && a.due < today) ? 0 : 1, bo = (b.due && b.due < today) ? 0 : 1;
+    return ao - bo || (prioRank[a.prio] - prioRank[b.prio]) || ((a.due || '').localeCompare(b.due || ''));
+  });
+  var PRIO_TAG = { '高': 'tag-red', '中': 'tag-orange', '低': 'tag-green' };
+  var el = document.getElementById('myTasksBody');
+  if (!el) return;
+  if (!mine.length) { el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);">暂无待办任务 🎉</div>'; return; }
+  el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>任务</th><th>所属项目</th><th>紧急度</th><th>截止时间</th><th>状态</th></tr></thead><tbody>' +
+    mine.map(function (t) {
+      var overdue = t.due && t.due < today;
+      var dueCell = t.due ? ('<span style="' + (overdue ? 'color:#dc2626;font-weight:600;' : '') + '">' + t.due + (overdue ? ' · 逾期' : '') + '</span>') : '-';
+      return '<tr><td>' + t.title + (t.source === '外部' ? ' <span class="tag tag-red" style="font-size:10px;">外部</span>' : '') + '</td>' +
+        '<td>' + projName(t.projId) + '</td>' +
+        '<td><span class="tag ' + PRIO_TAG[t.prio] + '">' + t.prio + '</span></td>' +
+        '<td>' + dueCell + '</td>' +
+        '<td>' + t.status + '</td></tr>';
+    }).join('') + '</tbody></table></div>';
+}
+
 seedNotifications();
 renderActivityFeed();
+renderMyTasks();
+// 角色差异化：hero 文案 + 团队数据仅组长可见
+(function(){
+  var me = (window.GDRole ? GDRole.me() : '陈磊');
+  var leader = (window.GDRole ? GDRole.isLeader() : true);
+  var g=document.getElementById('heroGreeting'); if(g) g.textContent='下午好，'+me+' 👋';
+  var sub=document.getElementById('heroSub');
+  if(sub) sub.innerHTML = leader
+    ? '资深设计师 · 部门主管 · 设计一部　|　管理视角：可查看团队数据、分配任务、审核积分'
+    : '设计师 · 设计一部　|　个人视角：聚焦我的任务与案例产出';
+  var teamTab=document.querySelector('.home-tab[data-leader="1"]');
+  if(teamTab && !leader) teamTab.style.display='none';
+  // 组长：待审核提醒
+  if(leader && window.GDPoints){
+    var cp={}; try{ cp=JSON.parse(localStorage.getItem('gd-case-points')||'{}'); }catch(e){}
+    var pend=Object.keys(cp).filter(function(id){return cp[id].status==='待审核';}).length;
+    if(pend>0){
+      var body=document.getElementById('myTasksBody');
+      if(body) body.insertAdjacentHTML('beforebegin','<div class="review-reminder">👑 有 <strong>'+pend+'</strong> 个案例积分待你审核 · <a onclick="navigateTo(\'profile\')">前往个人中心审核</a></div>');
+    }
+  }
+})();
 if (typeof renderSidebar === 'function') { renderSidebar(); highlightCurrentNav(); }
 </script>
 </body>

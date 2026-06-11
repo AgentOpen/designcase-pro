@@ -25,6 +25,53 @@ document.addEventListener('DOMContentLoaded', () => {
 // ========== SIDEBAR (centralized, rendered into <aside id="sidebar">) ==========
 // Single source of truth for the left nav. 首页 merges 工作台+数据看板;
 // 系统管理 folded into 个人中心.
+// ========== 演示角色（管理端/用户端）全站共享 ==========
+var GD_LEADER = '陈磊';
+var GD_DESIGNERS = ['陈磊','林悦','王明远','张薇','李强','孙敏','周杰'];
+var GDRole = {
+  role: function () { return localStorage.getItem('gd-demo-role') || 'leader'; },
+  me: function () { return localStorage.getItem('gd-demo-me') || (this.role() === 'leader' ? GD_LEADER : '林悦'); },
+  isLeader: function () { return this.role() === 'leader' && this.me() === GD_LEADER; },
+  set: function (role, me) {
+    localStorage.setItem('gd-demo-role', role);
+    localStorage.setItem('gd-demo-me', me || (role === 'leader' ? GD_LEADER : '林悦'));
+  },
+  initial: function (n) { return (n || '').charAt(0); },
+  // 统一权限判断（组长既是设计师又是管理者，权限是设计师的超集）
+  can: function (action) {
+    var leader = this.isLeader();
+    var perms = {
+      // 管理者专属
+      assignTask: leader,         // 派发任务给他人
+      createProject: leader,      // 新建协作项目
+      editAnyProgress: leader,    // 编辑任意项目进度/状态
+      deleteProject: leader,      // 删除协作项目
+      manageIntake: leader,       // 登记/分配外部派单
+      editAnyStatus: leader,      // 修改任意成员状态
+      grantPoints: leader,        // 发放积分
+      reviewCases: leader,        // 审核案例积分
+      viewTeamOverview: leader,   // 团队总览数据
+      inviteMembers: leader,      // 邀请同事加入项目
+      // 设计师（含组长）通用
+      reuseCase: true,
+      copyProject: true,
+      createOwnCase: true,
+      updateOwnProgress: true,
+      editOwnStatus: true,
+      viewRanking: true
+    };
+    return !!perms[action];
+  }
+};
+window.GDRole = GDRole;
+function gdSwitchRole(role) {
+  GDRole.set(role, role === 'leader' ? GD_LEADER : (document.getElementById('gdRoleWho') ? document.getElementById('gdRoleWho').value : '林悦'));
+  location.reload();
+}
+function gdSwitchMe(name) { GDRole.set('designer', name); location.reload(); }
+window.gdSwitchRole = gdSwitchRole;
+window.gdSwitchMe = gdSwitchMe;
+
 var GD_NAV = [
   { section: '主菜单', items: [
     { page: 'home',     icon: '⊞', label: '首页',       href: 'dashboard.html' },
@@ -59,13 +106,30 @@ function renderSidebar() {
           '<span class="nav-icon">' + it.icon + '</span> ' + it.label + badge + '</a>';
       }).join('') + '</div>';
   }).join('');
+  var me = GDRole.me();
+  var isLeader = GDRole.isLeader();
+  var roleName = isLeader ? '资深设计师 · 部门主管' : '设计师';
+  var roleSwitcher =
+    '<div class="sidebar-role">' +
+      '<div class="sidebar-role-label">演示身份</div>' +
+      '<div class="sidebar-role-btns">' +
+        '<button class="srole-btn ' + (GDRole.role() === 'leader' ? 'active' : '') + '" onclick="event.stopPropagation();gdSwitchRole(\'leader\')">👑 管理端</button>' +
+        '<button class="srole-btn ' + (GDRole.role() === 'designer' ? 'active' : '') + '" onclick="event.stopPropagation();gdSwitchRole(\'designer\')">🎨 用户端</button>' +
+      '</div>' +
+      (GDRole.role() === 'designer'
+        ? '<select id="gdRoleWho" class="srole-sel" onclick="event.stopPropagation()" onchange="gdSwitchMe(this.value)">' +
+            GD_DESIGNERS.filter(function (n) { return n !== GD_LEADER; }).map(function (n) { return '<option' + (n === me ? ' selected' : '') + '>' + n + '</option>'; }).join('') +
+          '</select>'
+        : '') +
+    '</div>';
   aside.innerHTML =
     '<div class="sidebar-logo"><div class="sidebar-logo-icon">G</div><div class="sidebar-logo-text">George Design</div></div>' +
     '<nav class="sidebar-nav">' + navHtml + '</nav>' +
+    roleSwitcher +
     '<div class="sidebar-user" onclick="window.location.href=\'profile.html\'" style="cursor:pointer" title="个人中心">' +
-      '<div class="sidebar-avatar chen">陈</div>' +
-      '<div class="sidebar-user-info"><div class="sidebar-user-name">陈磊</div>' +
-      '<div class="sidebar-user-role">资深设计师 · 部门主管</div></div></div>';
+      '<div class="sidebar-avatar chen">' + GDRole.initial(me) + '</div>' +
+      '<div class="sidebar-user-info"><div class="sidebar-user-name">' + me + '</div>' +
+      '<div class="sidebar-user-role">' + roleName + '</div></div></div>';
 }
 
 // ========== NAV HIGHLIGHT + TITLE ==========
@@ -201,6 +265,8 @@ function toggleCompare(caseData) {
 function updateComparePanel() {
   const panel = document.getElementById('comparePanel');
   const items = document.getElementById('compareItems');
+  const cnt = document.getElementById('compareCount');
+  if (cnt) cnt.textContent = App.compareList.length;
   if (!panel || !items) return;
   if (App.compareList.length === 0) {
     panel.classList.add('hidden');
@@ -209,10 +275,12 @@ function updateComparePanel() {
     items.innerHTML = App.compareList.map((c, i) =>
       `<div class="compare-item">${c.name} <span class="remove" onclick="App.compareList.splice(${i},1);updateComparePanel();showToast('info','已移除')">\u2715</span></div>`
     ).join('');
-    items.innerHTML += `<button class="btn btn-primary btn-sm" onclick="openCompareModal()">对比 (${App.compareList.length})</button>
-      <button class="btn btn-ghost btn-sm" onclick="App.compareList=[];updateComparePanel()">清空</button>`;
+    items.innerHTML += `<button class="btn btn-primary btn-sm" onclick="openCompareModal()">对比 (${App.compareList.length})</button>`;
   }
 }
+function clearCompare() { App.compareList = []; updateComparePanel(); }
+window.clearCompare = clearCompare;
+window.updateComparePanel = updateComparePanel;
 
 function openCompareModal() {
   if (App.compareList.length < 2) { showToast('warning', '请至少选择2个案例进行对比'); return; }
