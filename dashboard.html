@@ -46,98 +46,50 @@
         <div class="home-tab" data-tab="activity" onclick="switchHomeTab('activity')">复用流水</div>
       </div>
 
-      <!-- ============ 个人概览 ============ -->
+      <!-- ============ 个人概览（按角色分：任务 + 绩效） ============ -->
       <div class="home-panel active" id="home-overview">
+
+        <!-- 角色范围说明条 -->
+        <div id="tierBanner"></div>
+
+        <!-- 今日焦点：紧急/今日截止/逾期 横幅（设计师视角） -->
+        <div id="focusBanner"></div>
+
+        <!-- 待接受的项目邀约（设计师视角，有则显示） -->
+        <div id="inviteCard"></div>
+
+        <!-- 项目/任务 状态聚合（按角色：总负责人=全部门，部门负责人=本部门，设计师=个人） -->
+        <div class="proj-stat-row" id="projStatRow"></div>
+
+        <!-- 待分配项目 / 任务看板（按角色切换内容） -->
+        <div class="card" id="taskSectionCard" style="margin-bottom:20px;">
+          <div class="card-header">
+            <span class="card-title" id="taskSectionTitle">📋 我的任务</span>
+            <a href="team.html" class="btn btn-ghost btn-sm">前往协作</a>
+          </div>
+          <div id="taskSectionBody"></div>
+        </div>
+
+        <!-- 绩效（佣金）：按角色范围 + 期间切换 + 自定义区间 -->
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-header">
+            <span class="card-title">💰 <span id="perfScopeLabel">我的</span>绩效 · 佣金</span>
+            <span id="perfLevelTag"></span>
+          </div>
+          <div class="perf-period-tabs" id="perfPeriodTabs"></div>
+          <div class="perf-cards" id="perfCards"></div>
+          <div id="perfDeptBreak"></div>
+          <div class="perf-note" id="perfNote"></div>
+        </div>
+      </div>
+
+      <!-- ============ 个人概览 OLD (hidden) ============ -->
+      <div class="home-panel" id="home-overview-old" style="display:none;">
         <div class="stat-cards">
           <div class="stat-card" style="color:#4f46e5;">
             <div class="stat-card-label">我的案例数</div>
             <div class="stat-card-value">24</div>
             <div class="stat-card-sub">本月新增 3 个</div>
-          </div>
-          <div class="stat-card" style="color:#3b82f6;">
-            <div class="stat-card-label">本月复用次数</div>
-            <div class="stat-card-value">47</div>
-            <div class="stat-card-sub">较上月 +12%</div>
-            <div class="stat-card-progress"><div class="stat-card-progress-bar blue" style="width:65%"></div></div>
-          </div>
-          <div class="stat-card" style="color:#4f46e5;">
-            <div class="stat-card-label">3D模型下载量</div>
-            <div class="stat-card-value">189</div>
-            <div class="stat-card-sub">本月累计</div>
-            <div class="stat-card-progress"><div class="stat-card-progress-bar purple" style="width:72%"></div></div>
-          </div>
-          <div class="stat-card" style="color:#f59e0b;">
-            <div class="stat-card-label">NAS使用量</div>
-            <div class="stat-card-value">156 GB</div>
-            <div class="stat-card-sub">配额 500 GB · 31.2%</div>
-            <div class="stat-card-progress"><div class="stat-card-progress-bar orange" style="width:31%"></div></div>
-          </div>
-        </div>
-
-        <div class="quick-actions">
-          <div class="quick-action" onclick="navigateTo('mycases')">
-            <div class="quick-action-icon" style="background:linear-gradient(135deg,#eef2ff,#e0e7ff);color:var(--primary);">＋</div>
-            <div class="quick-action-text">创建案例</div>
-          </div>
-          <div class="quick-action" onclick="navigateTo('cases')">
-            <div class="quick-action-icon" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);color:var(--success);">⊟</div>
-            <div class="quick-action-text">浏览灵感库</div>
-          </div>
-          <div class="quick-action" onclick="navigateTo('products')">
-            <div class="quick-action-icon" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);color:var(--info);">⬇</div>
-            <div class="quick-action-text">下载模型</div>
-          </div>
-          <div class="quick-action" onclick="navigateTo('nas')">
-            <div class="quick-action-icon" style="background:linear-gradient(135deg,#fff7ed,#fed7aa);color:var(--warning);">⬆</div>
-            <div class="quick-action-text">上传文件</div>
-          </div>
-        </div>
-
-        <div class="card" style="margin-bottom:24px;">
-          <div class="card-header">
-            <span class="card-title">我的任务 · 待办</span>
-            <a href="team.html" class="btn btn-ghost btn-sm">前往任务看板</a>
-          </div>
-          <div id="myTasksBody"></div>
-        </div>
-
-        <div class="card" style="margin-bottom:24px;">
-          <div class="card-header">
-            <span class="card-title">最近案例</span>
-            <a href="mycases.html" class="btn btn-ghost btn-sm">查看全部</a>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>案例名称</th><th>风格</th><th>空间</th><th>创建时间</th><th>复用次数</th><th>操作</th></tr></thead>
-              <tbody>
-                <tr><td>现代简约三居室</td><td><span class="tag tag-blue">现代简约</span></td><td>客厅</td><td>2026-05-20</td><td>47</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
-                <tr><td>新中式别墅设计</td><td><span class="tag tag-purple">新中式</span></td><td>客厅</td><td>2026-05-18</td><td>29</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
-                <tr><td>现代极简厨房方案</td><td><span class="tag tag-blue">现代简约</span></td><td>厨房</td><td>2026-05-15</td><td>22</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
-                <tr><td>新中式茶室空间</td><td><span class="tag tag-purple">新中式</span></td><td>书房</td><td>2026-05-12</td><td>9</td><td><a href="mycases.html" class="btn btn-ghost btn-sm">查看</a></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header"><span class="card-title">推荐产品</span><a href="products.html" class="btn btn-ghost btn-sm">前往素材库</a></div>
-          <div class="product-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr));">
-            <div class="product-card" onclick="navigateTo('products')">
-              <div class="card-thumb"><div class="card-thumb-placeholder theme-sofa" style="height:120px;"></div></div>
-              <div class="card-body"><div class="card-body-title">北欧简约沙发</div><div class="card-body-tags"><span class="tag tag-blue">北欧风</span><span class="tag tag-green">客厅</span></div></div>
-            </div>
-            <div class="product-card" onclick="navigateTo('products')">
-              <div class="card-thumb"><div class="card-thumb-placeholder theme-lamp" style="height:120px;"></div></div>
-              <div class="card-body"><div class="card-body-title">现代极简吊灯</div><div class="card-body-tags"><span class="tag tag-blue">现代简约</span><span class="tag tag-green">客厅</span></div></div>
-            </div>
-            <div class="product-card" onclick="navigateTo('products')">
-              <div class="card-thumb"><div class="card-thumb-placeholder theme-bed" style="height:120px;"></div></div>
-              <div class="card-body"><div class="card-body-title">新中式实木床</div><div class="card-body-tags"><span class="tag tag-purple">新中式</span><span class="tag tag-green">卧室</span></div></div>
-            </div>
-            <div class="product-card" onclick="navigateTo('products')">
-              <div class="card-thumb"><div class="card-thumb-placeholder theme-table" style="height:120px;"></div></div>
-              <div class="card-body"><div class="card-body-title">轻奢大理石茶几</div><div class="card-body-tags"><span class="tag tag-orange">轻奢</span><span class="tag tag-green">客厅</span></div></div>
-            </div>
           </div>
         </div>
       </div>
@@ -264,10 +216,23 @@
 </div>
 
 <!-- Toast Container -->
+<!-- 新邀约/新任务 弹窗提醒 -->
+<div class="modal-overlay" id="notifyModal">
+  <div class="modal" style="max-width:440px;">
+    <div class="modal-header"><h2 id="notifyTitle">🔔 新消息</h2><button class="modal-close" onclick="closeModal('notifyModal')">✕</button></div>
+    <div class="modal-body" id="notifyBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('notifyModal')">稍后处理</button>
+      <button class="btn btn-primary" id="notifyGoBtn">查看详情</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="common.js"></script>
 <script src="gdpoints.js"></script>
+<script src="gdperf.js"></script>
 <script>
 // ===== Home tab switching =====
 function switchHomeTab(tab) {
@@ -390,62 +355,445 @@ window.openNotifications = openNotifications;
 window.markAllRead = markAllRead;
 
 // 我的任务（从团队任务数据读取，按截止/紧急度排序）
+// ====== 我的任务看板（待开始/进行中/已完成 + 主设计师/进度/截止）======
+var DASH_SEED_TASKS = [
+  { id: 3, title: '滨海别墅 - 主卧深化', who: '陈磊', projId: 1, prio: '高', status: '进行中', due: '2026-06-12' },
+  { id: 4, title: '滨海别墅 - 客厅建模', who: '陈磊', projId: 1, prio: '中', status: '待开始', due: '2026-06-18' },
+  { id: 7, title: '樾府 - 全套交付', who: '陈磊', projId: 3, prio: '高', status: '已完成', due: '2026-05-09' }
+];
 function renderMyTasks() {
-  var ME = '陈磊';
+  var ME = (window.GDRole ? GDRole.me() : '陈磊');
   var tasks = [];
   try { tasks = JSON.parse(localStorage.getItem('gd-tasks') || '[]'); } catch (e) {}
   var projs = [];
   try { projs = JSON.parse(localStorage.getItem('gd-projects') || '[]'); } catch (e) {}
   function projName(id) { var p = projs.find(function (x) { return x.id === id; }); return p ? p.name : '未关联项目'; }
-  var seedTasks = [
-    { id: 3, title: '滨海别墅 - 主卧深化', who: '陈磊', projId: 1, prio: '高', status: '进行中', due: '2026-06-12' },
-    { id: 7, title: '樾府 - 全套交付', who: '陈磊', projId: 3, prio: '高', status: '已完成', due: '2026-05-09' }
-  ];
-  var src = (tasks && tasks.length) ? tasks : seedTasks;
-  var mine = src.filter(function (t) { return t.who === ME && t.status !== '已完成'; });
-  var prioRank = { '高': 0, '中': 1, '低': 2 };
+  var src = (tasks && tasks.length) ? tasks : DASH_SEED_TASKS;
+  var mine = src.filter(function (t) { return t.who === ME; });
   var today = (window.gdToday ? gdToday() : '2026-06-11');
-  mine.sort(function (a, b) {
-    var ao = (a.due && a.due < today) ? 0 : 1, bo = (b.due && b.due < today) ? 0 : 1;
-    return ao - bo || (prioRank[a.prio] - prioRank[b.prio]) || ((a.due || '').localeCompare(b.due || ''));
-  });
   var PRIO_TAG = { '高': 'tag-red', '中': 'tag-orange', '低': 'tag-green' };
-  var el = document.getElementById('myTasksBody');
-  if (!el) return;
-  if (!mine.length) { el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);">暂无待办任务 🎉</div>'; return; }
-  el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>任务</th><th>所属项目</th><th>紧急度</th><th>截止时间</th><th>状态</th></tr></thead><tbody>' +
-    mine.map(function (t) {
-      var overdue = t.due && t.due < today;
-      var dueCell = t.due ? ('<span style="' + (overdue ? 'color:#dc2626;font-weight:600;' : '') + '">' + t.due + (overdue ? ' · 逾期' : '') + '</span>') : '-';
-      return '<tr><td>' + t.title + (t.source === '外部' ? ' <span class="tag tag-red" style="font-size:10px;">外部</span>' : '') + '</td>' +
-        '<td>' + projName(t.projId) + '</td>' +
-        '<td><span class="tag ' + PRIO_TAG[t.prio] + '">' + t.prio + '</span></td>' +
-        '<td>' + dueCell + '</td>' +
-        '<td>' + t.status + '</td></tr>';
-    }).join('') + '</tbody></table></div>';
+
+  // 进度推断：待开始 0%，已完成 100%，进行中取 t.progress 或按优先级给个演示值
+  function progressOf(t) {
+    if (t.status === '已完成') return 100;
+    if (t.status === '待开始') return 0;
+    if (t.status === '待审核') return 90;
+    if (typeof t.progress === 'number') return t.progress;
+    return ({ '高': 70, '中': 45, '低': 30 })[t.prio] || 40;
+  }
+  // 是否主设计师：演示规则——项目成员里我排第一 / 或任务标记 lead；否则按 id 奇偶
+  function isLead(t) {
+    if (typeof t.isLead === 'boolean') return t.isLead;
+    var p = projs.find(function (x) { return x.id === t.projId; });
+    if (p && p.members && p.members[0] === ME) return true;
+    return (t.id % 2 === 1);
+  }
+
+  var COLS = [
+    { key: '待开始', icon: '○', cls: 'col-todo' },
+    { key: '进行中', icon: '◐', cls: 'col-doing' },
+    { key: '已完成', icon: '●', cls: 'col-done' }
+  ];
+
+  // 顶部三数字
+  var statRow = document.getElementById('taskStatRow');
+  if (statRow) {
+    statRow.innerHTML = COLS.map(function (c) {
+      var n = mine.filter(function (t) { return t.status === c.key; }).length;
+      var overdue = mine.filter(function (t) { return t.status === c.key && t.due && t.due < today && c.key !== '已完成'; }).length;
+      return '<div class="task-stat ' + c.cls + '">' +
+        '<div class="task-stat-num">' + n + '</div>' +
+        '<div class="task-stat-label">' + c.icon + ' ' + c.key + (overdue ? ' · <span style="color:#dc2626;">' + overdue + ' 逾期</span>' : '') + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // 三列看板
+  var board = document.getElementById('taskBoard');
+  if (!board) return;
+  board.innerHTML = COLS.map(function (c) {
+    var items = mine.filter(function (t) { return t.status === c.key; })
+      .sort(function (a, b) { return (a.due || '').localeCompare(b.due || ''); });
+    var cards = items.map(function (t) {
+      var pct = progressOf(t);
+      var overdue = t.due && t.due < today && c.key !== '已完成';
+      var lead = isLead(t);
+      var p = projs.find(function (x) { return x.id === t.projId; });
+      return '<div class="tb-card">' +
+        '<div class="tb-card-top">' +
+          '<span class="tb-role ' + (lead ? 'lead' : 'assist') + '">' + (lead ? '主设计师' : '协作') + '</span>' +
+          '<span class="tag ' + PRIO_TAG[t.prio] + '" style="font-size:10px;">' + t.prio + '</span>' +
+        '</div>' +
+        '<div class="tb-title">' + t.title + (t.source === '外部' ? ' <span class="tag tag-red" style="font-size:9px;">外部</span>' : '') + '</div>' +
+        '<div class="tb-proj">📂 ' + projName(t.projId) + '</div>' +
+        '<div class="tb-progress-row"><div class="tb-progress"><div class="tb-progress-fill" style="width:' + pct + '%;"></div></div><span class="tb-pct">' + pct + '%</span></div>' +
+        '<div class="tb-due' + (overdue ? ' overdue' : '') + '">📅 ' + (t.due || '待定') + (overdue ? ' · 逾期' : '') + '</div>' +
+      '</div>';
+    }).join('') || '<div class="tb-empty">暂无</div>';
+    return '<div class="tb-col">' +
+      '<div class="tb-col-head ' + c.cls + '">' + c.icon + ' ' + c.key + ' <span class="tb-count">' + items.length + '</span></div>' +
+      '<div class="tb-col-body">' + cards + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ====== 我的绩效 / 佣金 ======
+// ====== 绩效（按角色范围 + 期间切换 + 自定义区间） ======
+var PERF_STATE = { period: 'thisMonth', from: '2026-01', to: '2026-06' };
+function perfScope() {
+  var tier = (window.GDOrg ? GDOrg.tier() : 'designer');
+  var me = (window.GDRole ? GDRole.me() : '陈磊');
+  if (tier === 'gm') return { kind: 'group', names: GDOrg.allDesigners(), label: '全公司', showDept: true };
+  if (tier === 'head') { var d = GDOrg.deptOf(me); return { kind: 'group', names: GDOrg.membersOf(d), label: d, showDept: false }; }
+  return { kind: 'person', names: [me], label: '我的', showDept: false };
+}
+function renderPerfByTier() {
+  if (!window.GDPerf) return;
+  var sc = perfScope();
+  var scopeLabel = document.getElementById('perfScopeLabel'); if (scopeLabel) scopeLabel.textContent = sc.label;
+  var tag = document.getElementById('perfLevelTag');
+  if (tag) {
+    if (sc.kind === 'person') { var lv = GDPerf.levelInfo(sc.names[0]); tag.innerHTML = '<span class="lvl-badge">★ ' + lv.label + '（' + GDPerf.levelOf(sc.names[0]) + '）</span>'; }
+    else tag.innerHTML = '<span class="lvl-badge">' + sc.names.length + ' 位设计师汇总</span>';
+  }
+  // 期间切换 tabs（含自定义）
+  var tabs = document.getElementById('perfPeriodTabs');
+  if (tabs) {
+    var defs = [{ k: 'thisMonth', l: '本月' }, { k: 'lastMonth', l: '上月' }, { k: 'thisQuarter', l: '本季度' }, { k: 'custom', l: '自定义区间' }];
+    tabs.innerHTML = defs.map(function (d) {
+      return '<button class="perf-tab' + (PERF_STATE.period === d.k ? ' active' : '') + '" onclick="setPerfPeriod(\'' + d.k + '\')">' + d.l + '</button>';
+    }).join('') +
+    (PERF_STATE.period === 'custom'
+      ? '<span class="perf-range"><input type="month" id="perfFrom" value="' + PERF_STATE.from + '" min="2025-12" max="2026-06" onchange="onPerfRange()"> 至 ' +
+        '<input type="month" id="perfTo" value="' + PERF_STATE.to + '" min="2025-12" max="2026-06" onchange="onPerfRange()"></span>'
+      : '');
+  }
+  // 数据
+  var data;
+  if (PERF_STATE.period === 'custom') {
+    data = sc.kind === 'person' ? GDPerf.rangeSummary(sc.names[0], PERF_STATE.from, PERF_STATE.to)
+                                : GDPerf.groupRangeSummary(sc.names, PERF_STATE.from, PERF_STATE.to);
+  } else {
+    data = sc.kind === 'person' ? GDPerf.summary(sc.names[0], PERF_STATE.period)
+                                : GDPerf.groupSummary(sc.names, PERF_STATE.period);
+  }
+  var periodLabel = ({ thisMonth: '本月', lastMonth: '上月', thisQuarter: '本季度', custom: PERF_STATE.from + ' ~ ' + PERF_STATE.to })[PERF_STATE.period];
+  // 三个指标卡：案例数 / 平方数 / 佣金
+  var cards = document.getElementById('perfCards');
+  if (cards) {
+    cards.innerHTML =
+      '<div class="perf-card p-blue"><div class="perf-label">' + periodLabel + ' · 设计案例</div><div class="perf-value">' + data.count + ' <span class="perf-unit">个</span></div><div class="perf-sub">' + sc.label + '</div></div>' +
+      '<div class="perf-card p-gray"><div class="perf-label">' + periodLabel + ' · 设计平方</div><div class="perf-value">' + data.area.toLocaleString() + ' <span class="perf-unit">㎡</span></div><div class="perf-sub">累计交付面积</div></div>' +
+      '<div class="perf-card p-green"><div class="perf-label">' + periodLabel + ' · 设计佣金</div><div class="perf-value">¥' + data.commission.toLocaleString() + '</div><div class="perf-sub">绩效合计</div></div>';
+  }
+  // 总负责人：分部门拆解表
+  var dept = document.getElementById('perfDeptBreak');
+  if (dept) {
+    if (sc.showDept) {
+      var rows = (PERF_STATE.period === 'custom' ? GDPerf.deptRangeBreakdown(PERF_STATE.from, PERF_STATE.to) : GDPerf.deptBreakdown(PERF_STATE.period))
+        .sort(function (a, b) { return b.commission - a.commission; });
+      dept.innerHTML = '<div class="perf-dept-title">各部门绩效拆解（' + periodLabel + '）</div>' +
+        '<div class="table-wrap"><table><thead><tr><th>部门</th><th>案例数</th><th>设计平方</th><th>佣金</th></tr></thead><tbody>' +
+        rows.map(function (r) { return '<tr><td>' + r.dept + '</td><td>' + r.count + ' 个</td><td>' + r.area.toLocaleString() + ' ㎡</td><td><strong>¥' + r.commission.toLocaleString() + '</strong></td></tr>'; }).join('') +
+        '</tbody></table></div>';
+    } else dept.innerHTML = '';
+  }
+  var note = document.getElementById('perfNote');
+  if (note) note.innerHTML = '💡 佣金 = 设计案例平方数 × 每平佣金 × 设计师等级系数。' + (sc.kind === 'person' ? '<a onclick="navigateTo(\'profile\')" style="color:var(--primary);cursor:pointer;">查看我的等级明细</a>' : '汇总范围：' + sc.label + '（' + sc.names.length + ' 人）');
+}
+function setPerfPeriod(p) { PERF_STATE.period = p; renderPerfByTier(); }
+function onPerfRange() {
+  var f = document.getElementById('perfFrom'), t = document.getElementById('perfTo');
+  if (f) PERF_STATE.from = f.value; if (t) PERF_STATE.to = t.value;
+  if (PERF_STATE.from > PERF_STATE.to) { var tmp = PERF_STATE.from; PERF_STATE.from = PERF_STATE.to; PERF_STATE.to = tmp; }
+  renderPerfByTier();
+}
+window.setPerfPeriod = setPerfPeriod; window.onPerfRange = onPerfRange;
+
+// 焦点横幅/邀约/弹窗：仅设计师视角显示
+function renderFocusBannerByTier() {
+  var tier = (window.GDOrg ? GDOrg.tier() : 'designer');
+  var el = document.getElementById('focusBanner');
+  if (tier !== 'designer') { if (el) el.innerHTML = ''; return; }
+  renderFocusBanner();
+}
+function renderInviteCardByTier() {
+  var tier = (window.GDOrg ? GDOrg.tier() : 'designer');
+  var el = document.getElementById('inviteCard');
+  if (tier !== 'designer') { if (el) el.innerHTML = ''; return; }
+  renderInviteCard();
+}
+function checkNewNotificationsByTier() {
+  var tier = (window.GDOrg ? GDOrg.tier() : 'designer');
+  if (tier !== 'designer') return;
+  checkNewNotifications();
+}
+
+// ====== 今日焦点横幅（紧急/今日截止/逾期） ======
+function renderFocusBanner() {
+  var ME = (window.GDRole ? GDRole.me() : '陈磊');
+  var tasks = []; try { tasks = JSON.parse(localStorage.getItem('gd-tasks') || '[]'); } catch (e) {}
+  if (!tasks.length) tasks = DASH_SEED_TASKS;
+  var mine = tasks.filter(function (t) { return t.who === ME && t.status !== '已完成'; });
+  var today = (window.gdToday ? gdToday() : '2026-06-13');
+  var overdue = mine.filter(function (t) { return t.due && t.due < today; });
+  var dueToday = mine.filter(function (t) { return t.due === today; });
+  var urgent = mine.filter(function (t) { return t.prio === '高' && t.due >= today; });
+  var el = document.getElementById('focusBanner'); if (!el) return;
+  if (!overdue.length && !dueToday.length && !urgent.length) {
+    el.innerHTML = '<div class="focus-banner ok">✅ 今日没有逾期或紧急任务，安排良好。共 ' + mine.length + ' 项待办。</div>';
+    return;
+  }
+  var parts = [];
+  if (overdue.length) parts.push('<span class="fb-chip fb-red">⏰ ' + overdue.length + ' 项逾期</span>');
+  if (dueToday.length) parts.push('<span class="fb-chip fb-orange">📅 ' + dueToday.length + ' 项今日截止</span>');
+  if (urgent.length) parts.push('<span class="fb-chip fb-purple">🔥 ' + urgent.length + ' 项高优先级</span>');
+  var first = overdue[0] || dueToday[0] || urgent[0];
+  el.innerHTML = '<div class="focus-banner alert">' +
+    '<div class="fb-left"><span class="fb-title">今日焦点</span>' + parts.join('') + '</div>' +
+    '<div class="fb-right">最紧急：<strong>' + (first ? first.title : '') + '</strong> <a onclick="navigateTo(\'team\')" style="color:#fff;text-decoration:underline;cursor:pointer;">去处理</a></div>' +
+  '</div>';
+}
+
+// ====== 待接受的项目邀约卡 ======
+var DASH_SEED_INVITES = [{ id: 1, projId: 2, to: '陈磊', from: '张薇', status: '待接受' }];
+var DASH_SEED_PROJS = [
+  { id: 1, name: '滨海别墅全案', members: ['陈磊', '林悦', '王明远'] },
+  { id: 2, name: '万象城商业空间', members: ['张薇', '李强'] },
+  { id: 3, name: '樾府样板间', members: ['陈磊', '孙敏'] }
+];
+function dashProjs() { var p = []; try { p = JSON.parse(localStorage.getItem('gd-projects') || '[]'); } catch (e) {} return p.length ? p : DASH_SEED_PROJS; }
+function dashInvites() { var v = []; try { v = JSON.parse(localStorage.getItem('gd-invites') || 'null'); } catch (e) {} return v || DASH_SEED_INVITES; }
+function renderInviteCard() {
+  var ME = (window.GDRole ? GDRole.me() : '陈磊');
+  var invites = dashInvites();
+  var projs = dashProjs();
+  function pn(id) { var p = projs.find(function (x) { return x.id === id; }); return p ? p.name : '项目'; }
+  var mine = invites.filter(function (iv) { return iv.to === ME && iv.status === '待接受'; });
+  var el = document.getElementById('inviteCard'); if (!el) return;
+  if (!mine.length) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div class="card invite-card" style="margin-bottom:20px;">' +
+    '<div class="card-header"><span class="card-title">📨 邀请你参与的项目 <span class="tag tag-red">' + mine.length + '</span></span></div>' +
+    mine.map(function (iv) {
+      return '<div class="invite-row">' +
+        '<div><div class="invite-proj">' + pn(iv.projId) + '</div>' +
+          '<div class="invite-from">来自 ' + (iv.from || '组长') + ' 的邀请　·　点击查看项目详情</div></div>' +
+        '<div style="display:flex;gap:8px;">' +
+          '<button class="btn btn-primary btn-sm" onclick="gotoProject(' + iv.projId + ')">查看项目</button>' +
+        '</div>' +
+      '</div>';
+    }).join('') + '</div>';
+}
+function gotoProject(projId) {
+  try { localStorage.setItem('gd-open-project', String(projId)); } catch (e) {}
+  window.location.href = 'team.html';
+}
+window.gotoProject = gotoProject;
+
+// ====== 新邀约/新任务 弹窗提醒（仅首次出现时弹一次） ======
+function checkNewNotifications() {
+  var ME = (window.GDRole ? GDRole.me() : '陈磊');
+  var invites = dashInvites();
+  var tasks = []; try { tasks = JSON.parse(localStorage.getItem('gd-tasks') || '[]'); } catch (e) {}
+  if (!tasks.length) tasks = DASH_SEED_TASKS;
+  var projs = dashProjs();
+  function pn(id) { var p = projs.find(function (x) { return x.id === id; }); return p ? p.name : '项目'; }
+
+  // 已提醒过的 id 集合（避免重复弹）
+  var seen = {}; try { seen = JSON.parse(localStorage.getItem('gd-notify-seen') || '{}'); } catch (e) {}
+
+  var newInvites = invites.filter(function (iv) { return iv.to === ME && iv.status === '待接受' && !seen['inv' + iv.id]; });
+  var newTasks = tasks.filter(function (t) { return t.who === ME && t.status === '待开始' && t.source === '外部' && !seen['task' + t.id]; });
+
+  if (!newInvites.length && !newTasks.length) return;
+
+  var body = document.getElementById('notifyBody');
+  var goBtn = document.getElementById('notifyGoBtn');
+  var title = document.getElementById('notifyTitle');
+  var jumpProj = null;
+
+  if (newInvites.length) {
+    var iv = newInvites[0]; jumpProj = iv.projId;
+    title.textContent = '📨 新的项目邀请';
+    body.innerHTML = '<div style="font-size:14px;margin-bottom:8px;">' + (iv.from || '组长') + ' 邀请你参与项目：</div>' +
+      '<div style="font-size:16px;font-weight:700;color:var(--primary);margin-bottom:8px;">' + pn(iv.projId) + '</div>' +
+      (newInvites.length > 1 ? '<div style="font-size:12px;color:var(--text-muted);">另有 ' + (newInvites.length - 1) + ' 个邀请待查看</div>' : '') +
+      (newTasks.length ? '<div style="font-size:12px;color:var(--text-muted);margin-top:6px;">同时你有 ' + newTasks.length + ' 个新分配任务</div>' : '');
+  } else {
+    var tk = newTasks[0]; jumpProj = tk.projId;
+    title.textContent = '🆕 新分配的任务';
+    body.innerHTML = '<div style="font-size:14px;margin-bottom:8px;">你被分配了一个新任务：</div>' +
+      '<div style="font-size:16px;font-weight:700;color:var(--primary);margin-bottom:4px;">' + tk.title + '</div>' +
+      '<div style="font-size:13px;color:var(--text-secondary);">所属项目：' + pn(tk.projId) + '　·　截止：' + (tk.due || '待定') + '　·　优先级：' + tk.prio + '</div>' +
+      (newTasks.length > 1 ? '<div style="font-size:12px;color:var(--text-muted);margin-top:6px;">另有 ' + (newTasks.length - 1) + ' 个新任务</div>' : '');
+  }
+  goBtn.onclick = function () { gotoProject(jumpProj); };
+
+  // 标记已提醒
+  newInvites.forEach(function (iv) { seen['inv' + iv.id] = 1; });
+  newTasks.forEach(function (t) { seen['task' + t.id] = 1; });
+  try { localStorage.setItem('gd-notify-seen', JSON.stringify(seen)); } catch (e) {}
+
+  if (typeof openModal === 'function') openModal('notifyModal');
+}
+
+// ====================================================================
+//  3 级角色（总负责人/部门负责人/设计师）任务 + 绩效
+// ====================================================================
+var DASH_PROJECTS = [
+  { id: 201, name: '云溪雅苑·样板间', dept: '', status: '待分配', due: '2026-06-20', client: '云溪地产', area: 180 },
+  { id: 202, name: '滨江壹号·大平层', dept: '', status: '待分配', due: '2026-06-22', client: '滨江集团', area: 240 },
+  { id: 203, name: '海德公园·别墅', dept: '', status: '待分配', due: '2026-06-25', client: '海德置业', area: 360 },
+  { id: 204, name: '滨海别墅全案', dept: '设计一部', who: '陈磊', status: '进行中', due: '2026-06-18', client: '私人客户', area: 320, progress: 65 },
+  { id: 205, name: '北欧极简三居', dept: '设计一部', who: '林悦', status: '进行中', due: '2026-06-13', client: '李女士', area: 140, progress: 40 },
+  { id: 206, name: '美式乡村大宅', dept: '设计二部', who: '王明远', status: '进行中', due: '2026-06-19', client: '王先生', area: 280, progress: 55 },
+  { id: 207, name: '新中式叠墅', dept: '设计三部', who: '张薇', status: '进行中', due: '2026-06-13', client: '陈总', area: 260, progress: 30 },
+  { id: 208, name: '轻奢平层公寓', dept: '设计四部', who: '李强', status: '进行中', due: '2026-06-24', client: '赵女士', area: 180, progress: 70 },
+  { id: 209, name: '工业风 Loft', dept: '设计四部', who: '李强', status: '进行中', due: '2026-06-09', client: '孙先生', area: 200, progress: 45 },
+  { id: 210, name: '侘寂度假别墅', dept: '设计五部', who: '孙敏', status: '进行中', due: '2026-06-10', client: '周总', area: 210, progress: 25 },
+  { id: 211, name: '极简办公空间', dept: '设计一部', who: '陈磊', status: '进行中', due: '2026-06-13', client: '某科技公司', area: 420, progress: 90 }
+];
+var DASH_TODAY = '2026-06-13';
+function dashAllProjects() {
+  var p = []; try { p = JSON.parse(localStorage.getItem('gd-dash-projects') || 'null'); } catch (e) {}
+  return p || DASH_PROJECTS;
+}
+function scopedProjects() {
+  var all = dashAllProjects();
+  var tier = (window.GDOrg ? GDOrg.tier() : 'designer');
+  var me = (window.GDRole ? GDRole.me() : '陈磊');
+  if (tier === 'gm') return all;
+  if (tier === 'head') { var dept = GDOrg.deptOf(me); return all.filter(function (p) { return p.dept === dept || p.status === '待分配'; }); }
+  return all.filter(function (p) { return p.who === me; });
+}
+function bucketProjects(list) {
+  var today = DASH_TODAY;
+  return {
+    待分配: list.filter(function (p) { return p.status === '待分配'; }),
+    今日交付: list.filter(function (p) { return p.due === today && p.status !== '待分配' && p.status !== '已交付'; }),
+    进行中: list.filter(function (p) { return p.status === '进行中' && p.due >= today; }),
+    逾期: list.filter(function (p) { return p.status === '进行中' && p.due < today; })
+  };
+}
+function renderProjStatRow() {
+  var tier = (window.GDOrg ? GDOrg.tier() : 'designer');
+  var el = document.getElementById('projStatRow'); if (!el) return;
+  if (tier === 'designer') { el.innerHTML = ''; return; }
+  var b = bucketProjects(scopedProjects());
+  var defs = [
+    { key: '待分配', icon: '📥', cls: 'ps-todo', desc: '待指派设计' },
+    { key: '今日交付', icon: '🎯', cls: 'ps-today', desc: '今天到期交付' },
+    { key: '进行中', icon: '🔨', cls: 'ps-doing', desc: '设计进行中' },
+    { key: '逾期', icon: '⏰', cls: 'ps-over', desc: '已超期未交付' }
+  ];
+  el.innerHTML = defs.map(function (d) {
+    return '<div class="proj-stat ' + d.cls + '">' +
+      '<div class="ps-top"><span class="ps-icon">' + d.icon + '</span><span class="ps-num">' + b[d.key].length + '</span></div>' +
+      '<div class="ps-label">' + d.key + '</div><div class="ps-desc">' + d.desc + '</div></div>';
+  }).join('');
+}
+function renderTaskSection() {
+  var tier = (window.GDOrg ? GDOrg.tier() : 'designer');
+  var title = document.getElementById('taskSectionTitle');
+  var body = document.getElementById('taskSectionBody');
+  if (!body) return;
+  if (tier === 'designer') {
+    if (title) title.textContent = '📋 我的任务（今日待办优先）';
+    body.innerHTML = '<div class="task-stat-row" id="taskStatRow"></div><div class="task-board" id="taskBoard"></div>';
+    renderMyTasks();
+    return;
+  }
+  var me = (window.GDRole ? GDRole.me() : '陈磊');
+  var scopeLabel = tier === 'gm' ? '全部门' : GDOrg.deptOf(me);
+  if (title) title.textContent = '📋 ' + scopeLabel + ' · 项目管理';
+  var b = bucketProjects(scopedProjects());
+  var assignTargets = tier === 'gm' ? GDOrg.allDepts() : GDOrg.membersOf(GDOrg.deptOf(me));
+  var assignLabel = tier === 'gm' ? '分配给部门' : '分配给设计师';
+  function projRow(p, showAssign) {
+    var overdue = p.status === '进行中' && p.due < DASH_TODAY;
+    var pieces = '';
+    if (p.dept) pieces += '<span class="pr-tag">' + p.dept + '</span>';
+    if (p.who) pieces += '<span class="pr-who">' + p.who.charAt(0) + ' ' + p.who + '</span>';
+    var right;
+    if (showAssign) {
+      right = '<div class="pr-assign">' +
+        '<select class="pr-select" id="assign_' + p.id + '"><option value="">' + assignLabel + '…</option>' +
+          assignTargets.map(function (t) { return '<option>' + t + '</option>'; }).join('') + '</select>' +
+        '<button class="btn btn-primary btn-sm" onclick="doAssignProject(' + p.id + ')">分配</button></div>';
+    } else {
+      right = '<div class="pr-right">' +
+        (typeof p.progress === 'number' ? '<div class="pr-prog"><div class="pr-prog-fill" style="width:' + p.progress + '%;"></div></div><span class="pr-pct">' + p.progress + '%</span>' : '') +
+        '<span class="pr-due' + (overdue ? ' overdue' : '') + '">📅 ' + p.due + (overdue ? ' 逾期' : '') + '</span></div>';
+    }
+    return '<div class="proj-row"><div class="pr-main"><div class="pr-name">' + p.name + '</div>' +
+      '<div class="pr-meta">' + (p.client ? '客户：' + p.client + '　' : '') + (p.area ? p.area + '㎡' : '') + ' ' + pieces + '</div></div>' + right + '</div>';
+  }
+  function section(label, icon, arr, showAssign, cls) {
+    return '<div class="proj-sec"><div class="proj-sec-head ' + (cls || '') + '">' + icon + ' ' + label + ' <span class="proj-sec-count">' + arr.length + '</span></div>' +
+      (arr.length ? arr.map(function (p) { return projRow(p, showAssign); }).join('') : '<div class="proj-sec-empty">暂无</div>') + '</div>';
+  }
+  body.innerHTML =
+    section('待分配项目（' + assignLabel + '）', '📥', b['待分配'], true, 'ps-todo-h') +
+    section('今日交付', '🎯', b['今日交付'], false, 'ps-today-h') +
+    section('进行中', '🔨', b['进行中'], false, 'ps-doing-h') +
+    section('逾期', '⏰', b['逾期'], false, 'ps-over-h');
+}
+function doAssignProject(pid) {
+  var sel = document.getElementById('assign_' + pid);
+  var target = sel ? sel.value : '';
+  if (!target) { if (window.showToast) showToast('warning', '请选择分配目标'); return; }
+  var all = dashAllProjects();
+  var p = all.find(function (x) { return x.id === pid; });
+  if (!p) return;
+  var tier = (window.GDOrg ? GDOrg.tier() : 'designer');
+  if (tier === 'gm') { p.dept = target; p.status = '进行中'; p.progress = 0; p.who = GDOrg.headOf(target) || ''; }
+  else { p.who = target; p.dept = GDOrg.deptOf(target); p.status = '进行中'; p.progress = 0; }
+  try { localStorage.setItem('gd-dash-projects', JSON.stringify(all)); } catch (e) {}
+  if (window.showToast) showToast('success', '已将「' + p.name + '」分配给 ' + target);
+  renderProjStatRow(); renderTaskSection();
+}
+window.doAssignProject = doAssignProject;
+function renderTierBanner() {
+  var tier = (window.GDOrg ? GDOrg.tier() : 'designer');
+  var me = (window.GDRole ? GDRole.me() : '陈磊');
+  var el = document.getElementById('tierBanner'); if (!el) return;
+  var txt, scope;
+  if (tier === 'gm') { txt = '🏢 设计总负责人视角'; scope = '可查看与分配 全部 5 个部门 的项目，绩效汇总全公司'; }
+  else if (tier === 'head') { txt = '🗂️ 部门负责人视角 · ' + GDOrg.deptOf(me); scope = '可查看与分配 本部门 的项目，绩效汇总本部门'; }
+  else { txt = '🎨 设计师视角 · ' + me; scope = '查看分配/邀请给我的项目与任务，绩效为个人数据'; }
+  el.innerHTML = '<div class="tier-banner"><span class="tier-badge">' + txt + '</span><span class="tier-scope">' + scope + '</span></div>';
 }
 
 seedNotifications();
 renderActivityFeed();
-renderMyTasks();
+renderTierBanner();
+renderFocusBannerByTier();
+renderInviteCardByTier();
+renderProjStatRow();
+renderTaskSection();
+renderPerfByTier();
+setTimeout(checkNewNotificationsByTier, 600);
 // 角色差异化：hero 文案 + 团队数据仅组长可见
 (function(){
   var me = (window.GDRole ? GDRole.me() : '陈磊');
+  var tier = (window.GDOrg ? GDOrg.tier() : 'designer');
   var leader = (window.GDRole ? GDRole.isLeader() : true);
   var g=document.getElementById('heroGreeting'); if(g) g.textContent='下午好，'+me+' 👋';
   var sub=document.getElementById('heroSub');
-  if(sub) sub.innerHTML = leader
-    ? '资深设计师 · 部门主管 · 设计一部　|　管理视角：可查看团队数据、分配任务、审核积分'
-    : '设计师 · 设计一部　|　个人视角：聚焦我的任务与案例产出';
+  if(sub){
+    if(tier==='gm') sub.innerHTML = '设计总负责人　|　统筹 5 个部门：待分配项目、交付进度、逾期预警与全公司绩效';
+    else if(tier==='head') sub.innerHTML = (window.GDOrg?GDOrg.deptOf(me):'设计一部')+' · 部门负责人　|　管理本部门项目分配、交付与绩效';
+    else sub.innerHTML = (window.GDOrg?GDOrg.deptOf(me):'设计一部')+' · 设计师　|　聚焦我的任务、邀约与个人绩效';
+  }
   var teamTab=document.querySelector('.home-tab[data-leader="1"]');
-  if(teamTab && !leader) teamTab.style.display='none';
-  // 组长：待审核提醒
-  if(leader && window.GDPoints){
+  if(teamTab && tier==='designer') teamTab.style.display='none';
+  // 负责人：待审核提醒
+  if(tier!=='designer' && window.GDPoints){
     var cp={}; try{ cp=JSON.parse(localStorage.getItem('gd-case-points')||'{}'); }catch(e){}
     var pend=Object.keys(cp).filter(function(id){return cp[id].status==='待审核';}).length;
     if(pend>0){
-      var body=document.getElementById('myTasksBody');
-      if(body) body.insertAdjacentHTML('beforebegin','<div class="review-reminder">👑 有 <strong>'+pend+'</strong> 个案例积分待你审核 · <a onclick="navigateTo(\'profile\')">前往个人中心审核</a></div>');
+      var body=document.getElementById('perfCards');
+      if(body) body.closest('.card').insertAdjacentHTML('beforebegin','<div class="review-reminder">👑 有 <strong>'+pend+'</strong> 个案例积分待你审核 · <a onclick="navigateTo(\'profile\')">前往个人中心审核</a></div>');
     }
   }
 })();

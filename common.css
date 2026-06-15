@@ -833,3 +833,128 @@ body.dark .sw-warn { background:#3a2a12; border-color:#7c4a1e; color:#fdba74; }
 .folder-sw-label { font-size:11px; color:var(--text-muted); }
 .sw-pill { display:inline-flex; align-items:center; gap:3px; font-size:11px; padding:2px 8px; border-radius:6px; background:var(--bg); border:1px solid var(--border); color:var(--text-secondary); white-space:nowrap; }
 .folder-deliver-badge { position:absolute; right:8px; top:8px; z-index:3; background:rgba(0,0,0,.62); color:#fff; border-radius:999px; padding:3px 10px; font-size:11px; font-weight:600; }
+
+/* ===== 首页：绩效卡 ===== */
+.perf-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:12px; }
+.perf-card { border-radius:var(--radius); padding:18px 20px; border:1px solid var(--border); position:relative; overflow:hidden; }
+.perf-card.p-blue { background:linear-gradient(135deg,#eef2ff,#e0e7ff); }
+.perf-card.p-gray { background:linear-gradient(135deg,#f8fafc,#f1f5f9); }
+.perf-card.p-green { background:linear-gradient(135deg,#ecfdf5,#d1fae5); }
+.perf-label { font-size:12px; color:var(--text-secondary); margin-bottom:6px; }
+.perf-value { font-size:26px; font-weight:800; color:#1e293b; }
+.perf-sub { font-size:11px; color:var(--text-muted); margin-top:4px; }
+.perf-note { font-size:12px; color:var(--text-secondary); background:var(--bg); border-radius:var(--radius-sm); padding:10px 14px; }
+.lvl-badge { font-size:12px; font-weight:600; color:#b45309; background:#fff7ed; border:1px solid #fdba74; border-radius:999px; padding:3px 12px; }
+body.dark .perf-card.p-blue { background:#1e2147; } body.dark .perf-card.p-gray { background:#1e293b; } body.dark .perf-card.p-green { background:#064e3b; }
+body.dark .perf-value { color:#f1f5f9; }
+body.dark .lvl-badge { background:#3a2a12; color:#fdba74; }
+
+/* ===== 首页：任务三数字 ===== */
+.task-stat-row { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px; }
+.task-stat { border-radius:var(--radius); padding:16px 20px; border:1px solid var(--border); background:var(--card-bg); }
+.task-stat-num { font-size:30px; font-weight:800; line-height:1; }
+.task-stat-label { font-size:13px; color:var(--text-secondary); margin-top:6px; }
+.task-stat.col-todo .task-stat-num { color:#64748b; }
+.task-stat.col-doing .task-stat-num { color:#4f46e5; }
+.task-stat.col-done .task-stat-num { color:#16a34a; }
+
+/* ===== 首页：任务看板 ===== */
+.task-board { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.tb-col { background:var(--bg); border-radius:var(--radius); padding:10px; }
+.tb-col-head { font-size:13px; font-weight:600; padding:6px 8px 10px; display:flex; align-items:center; gap:6px; }
+.tb-col-head.col-todo { color:#64748b; } .tb-col-head.col-doing { color:#4f46e5; } .tb-col-head.col-done { color:#16a34a; }
+.tb-count { margin-left:auto; background:var(--card-bg); border-radius:999px; padding:1px 9px; font-size:11px; color:var(--text-secondary); }
+.tb-col-body { display:flex; flex-direction:column; gap:8px; }
+.tb-card { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px; }
+.tb-card-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.tb-role { font-size:10px; font-weight:600; padding:2px 8px; border-radius:999px; }
+.tb-role.lead { background:#eef2ff; color:#4f46e5; }
+.tb-role.assist { background:#f1f5f9; color:#64748b; }
+body.dark .tb-role.lead { background:#1e2147; color:#a5b4fc; } body.dark .tb-role.assist { background:#1e293b; color:#94a3b8; }
+.tb-title { font-size:13px; font-weight:600; margin-bottom:4px; }
+.tb-proj { font-size:11px; color:var(--text-muted); margin-bottom:8px; }
+.tb-progress-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.tb-progress { flex:1; height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+.tb-progress-fill { height:100%; background:linear-gradient(90deg,#4f46e5,#7c73f0); border-radius:3px; }
+.tb-pct { font-size:11px; font-weight:600; color:var(--text-secondary); min-width:32px; text-align:right; }
+.tb-due { font-size:11px; color:var(--text-secondary); }
+.tb-due.overdue { color:#dc2626; font-weight:600; }
+.tb-empty { text-align:center; color:var(--text-muted); font-size:12px; padding:16px 0; }
+@media (max-width:768px){ .perf-cards,.task-stat-row,.task-board{grid-template-columns:1fr;} }
+
+/* ===== 首页：今日焦点横幅 ===== */
+.focus-banner { border-radius:var(--radius); padding:14px 18px; margin-bottom:20px; font-size:13px; }
+.focus-banner.ok { background:linear-gradient(135deg,#ecfdf5,#d1fae5); color:#065f46; border:1px solid #6ee7b7; }
+.focus-banner.alert { background:linear-gradient(135deg,#4f46e5,#6d28d9); color:#fff; display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; }
+.fb-left { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.fb-title { font-weight:700; font-size:14px; }
+.fb-chip { font-size:12px; padding:3px 10px; border-radius:999px; background:rgba(255,255,255,.2); }
+.fb-right { font-size:13px; }
+body.dark .focus-banner.ok { background:#064e3b; color:#6ee7b7; }
+
+/* ===== 首页：邀约卡 ===== */
+.invite-card { border:1px solid #c7d2fe; }
+body.dark .invite-card { border-color:#3730a3; }
+.invite-row { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 4px; border-bottom:1px solid var(--border); }
+.invite-row:last-child { border-bottom:none; }
+.invite-proj { font-size:14px; font-weight:600; }
+.invite-from { font-size:12px; color:var(--text-secondary); margin-top:2px; }
+
+/* ===== 侧栏 3 级视角切换 ===== */
+.sidebar-tier-btns { display:flex; flex-direction:column; gap:6px; }
+.stier-btn { width:100%; text-align:left; padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:rgba(255,255,255,.75); font-size:12px; cursor:pointer; transition:all var(--transition); }
+.stier-btn:hover { background:rgba(255,255,255,.1); color:#fff; }
+.stier-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); font-weight:600; }
+
+/* ===== 首页 角色范围说明条 ===== */
+.tier-banner { display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:linear-gradient(135deg,#eef2ff,#e0e7ff); border:1px solid #c7d2fe; border-radius:var(--radius); padding:12px 16px; margin-bottom:18px; }
+.tier-badge { font-weight:700; font-size:14px; color:#3730a3; }
+.tier-scope { font-size:12px; color:#4f46e5; }
+body.dark .tier-banner { background:#1e2147; border-color:#3730a3; } body.dark .tier-badge{color:#c7d2fe;} body.dark .tier-scope{color:#a5b4fc;}
+
+/* ===== 首页 项目状态四宫格（负责人视角） ===== */
+.proj-stat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+.proj-stat { border-radius:var(--radius); padding:16px 18px; border:1px solid var(--border); background:var(--card-bg); }
+.ps-top { display:flex; align-items:center; gap:8px; }
+.ps-icon { font-size:18px; }
+.ps-num { font-size:28px; font-weight:800; line-height:1; }
+.ps-label { font-size:13px; font-weight:600; margin-top:8px; }
+.ps-desc { font-size:11px; color:var(--text-muted); margin-top:2px; }
+.proj-stat.ps-todo .ps-num{color:#0ea5e9;} .proj-stat.ps-today .ps-num{color:#f59e0b;}
+.proj-stat.ps-doing .ps-num{color:#4f46e5;} .proj-stat.ps-over .ps-num{color:#dc2626;}
+.proj-stat.ps-over{border-color:#fecaca;}
+
+/* ===== 首页 项目分组列表（负责人视角） ===== */
+.proj-sec { margin-bottom:16px; }
+.proj-sec-head { font-size:13px; font-weight:700; padding:8px 10px; border-radius:8px 8px 0 0; display:flex; align-items:center; gap:6px; background:var(--bg); }
+.proj-sec-head.ps-todo-h{color:#0369a1;background:#f0f9ff;} .proj-sec-head.ps-today-h{color:#b45309;background:#fffbeb;}
+.proj-sec-head.ps-doing-h{color:#4338ca;background:#eef2ff;} .proj-sec-head.ps-over-h{color:#b91c1c;background:#fef2f2;}
+.proj-sec-count{margin-left:auto;background:var(--card-bg);border-radius:999px;padding:1px 9px;font-size:11px;}
+.proj-sec-empty{padding:12px;text-align:center;color:var(--text-muted);font-size:12px;border:1px dashed var(--border);border-top:none;border-radius:0 0 8px 8px;}
+.proj-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid var(--border);border-top:none;background:var(--card-bg);}
+.proj-row:last-child{border-radius:0 0 8px 8px;}
+.pr-main{min-width:0;flex:1;}
+.pr-name{font-size:14px;font-weight:600;}
+.pr-meta{font-size:11px;color:var(--text-secondary);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.pr-tag{background:#eef2ff;color:#4f46e5;padding:1px 7px;border-radius:6px;font-size:10px;}
+.pr-who{background:#f1f5f9;color:#475569;padding:1px 7px;border-radius:6px;font-size:10px;}
+body.dark .pr-tag{background:#1e2147;color:#a5b4fc;} body.dark .pr-who{background:#1e293b;color:#94a3b8;}
+.pr-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.pr-prog{width:80px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.pr-prog-fill{height:100%;background:linear-gradient(90deg,#4f46e5,#7c73f0);}
+.pr-pct{font-size:11px;color:var(--text-secondary);min-width:32px;}
+.pr-due{font-size:11px;color:var(--text-secondary);white-space:nowrap;}
+.pr-due.overdue{color:#dc2626;font-weight:600;}
+.pr-assign{display:flex;gap:6px;flex-shrink:0;}
+.pr-select{padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--card-bg);color:var(--text);}
+@media (max-width:768px){.proj-stat-row{grid-template-columns:repeat(2,1fr);}.proj-row{flex-direction:column;align-items:flex-start;}.pr-assign{width:100%;}.pr-select{flex:1;}}
+
+/* ===== 首页 绩效 期间切换 + 自定义区间 ===== */
+.perf-period-tabs{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+.perf-tab{padding:6px 14px;border-radius:999px;border:1px solid var(--border);background:var(--card-bg);font-size:12px;cursor:pointer;color:var(--text-secondary);transition:all var(--transition);}
+.perf-tab:hover{border-color:var(--primary);}
+.perf-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);font-weight:600;}
+.perf-range{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);}
+.perf-range input{padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--card-bg);color:var(--text);}
+.perf-unit{font-size:14px;font-weight:600;color:var(--text-secondary);}
+.perf-dept-title{font-size:13px;font-weight:600;margin:6px 0 8px;}

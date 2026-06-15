@@ -805,6 +805,13 @@ renderProjects();
 renderKanban();
 refreshInviteDot();
 refreshIntakeDot();
+// 从首页「查看项目」跳转：自动打开对应项目详情
+(function(){
+  var pid=null; try{ pid=localStorage.getItem('gd-open-project'); }catch(e){}
+  if(pid){ try{ localStorage.removeItem('gd-open-project'); }catch(e){}
+    var id=parseInt(pid); if(id && projById(id)) setTimeout(function(){ openProjDetail(id); }, 300);
+  }
+})();
 </script>
 </body>
 </html>

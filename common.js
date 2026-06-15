@@ -65,6 +65,61 @@ var GDRole = {
   }
 };
 window.GDRole = GDRole;
+
+// ========== 组织架构（3 级角色：设计总负责人 / 部门负责人 / 设计师） ==========
+// 演示层级通过 localStorage 'gd-demo-tier' 控制：gm（总负责人）/ head（部门负责人）/ designer（设计师）
+// 与既有 role(leader/designer) 解耦：tier 仅用于首页数据范围演示
+var GD_ORG = {
+  depts: {
+    '设计一部': ['陈磊', '林悦'],
+    '设计二部': ['王明远'],
+    '设计三部': ['张薇'],
+    '设计四部': ['李强'],
+    '设计五部': ['孙敏', '周杰']
+  },
+  gm: '陈磊',                       // 设计总负责人
+  heads: {                          // 各部门负责人
+    '设计一部': '陈磊', '设计二部': '王明远', '设计三部': '张薇', '设计四部': '李强', '设计五部': '孙敏'
+  }
+};
+var GDOrg = {
+  data: GD_ORG,
+  allDepts: function () { return Object.keys(GD_ORG.depts); },
+  deptOf: function (name) {
+    var d = GD_ORG.depts, k;
+    for (k in d) { if (d[k].indexOf(name) >= 0) return k; }
+    return '设计一部';
+  },
+  membersOf: function (dept) { return (GD_ORG.depts[dept] || []).slice(); },
+  allDesigners: function () {
+    var out = []; Object.keys(GD_ORG.depts).forEach(function (k) { out = out.concat(GD_ORG.depts[k]); }); return out;
+  },
+  headOf: function (dept) { return GD_ORG.heads[dept]; },
+  isGM: function (name) { return name === GD_ORG.gm; },
+  isHead: function (name) { var h = GD_ORG.heads, k; for (k in h) { if (h[k] === name) return true; } return false; },
+  // 当前演示层级：gm / head / designer
+  tier: function () {
+    var t = localStorage.getItem('gd-demo-tier');
+    if (t) return t;
+    // 未显式设置时按身份推断：陈磊→gm，其它部门负责人→head，其余→designer
+    var me = GDRole.me();
+    if (this.isGM(me)) return 'gm';
+    if (this.isHead(me)) return 'head';
+    return 'designer';
+  },
+  setTier: function (t) { localStorage.setItem('gd-demo-tier', t); },
+  tierLabel: function (t) { return ({ gm: '设计总负责人', head: '部门负责人', designer: '设计师' })[t || this.tier()]; }
+};
+window.GDOrg = GDOrg;
+function gdSwitchTier(t) {
+  GDOrg.setTier(t);
+  // 切换层级时同步一个合理的身份
+  if (t === 'gm') GDRole.set('leader', GD_ORG.gm);
+  else if (t === 'head') GDRole.set('leader', GD_ORG.heads['设计二部']); // 王明远：纯部门负责人演示
+  else GDRole.set('designer', '林悦');
+  location.reload();
+}
+window.gdSwitchTier = gdSwitchTier;
 // ========== 案例编号规则：设计师编号(3) - 国家码(3) - 该国家第N个(4) ==========
 // 例：1000-USA-0018 → 设计师 100、美国、第 18 个
 var GD_COUNTRY_CODE = {
@@ -126,14 +181,16 @@ function renderSidebar() {
   var me = GDRole.me();
   var isLeader = GDRole.isLeader();
   var roleName = isLeader ? '资深设计师 · 部门主管' : '设计师';
+  var curTier = (window.GDOrg ? GDOrg.tier() : 'designer');
   var roleSwitcher =
     '<div class="sidebar-role">' +
-      '<div class="sidebar-role-label">演示身份</div>' +
-      '<div class="sidebar-role-btns">' +
-        '<button class="srole-btn ' + (GDRole.role() === 'leader' ? 'active' : '') + '" onclick="event.stopPropagation();gdSwitchRole(\'leader\')">👑 管理端</button>' +
-        '<button class="srole-btn ' + (GDRole.role() === 'designer' ? 'active' : '') + '" onclick="event.stopPropagation();gdSwitchRole(\'designer\')">🎨 用户端</button>' +
+      '<div class="sidebar-role-label">演示视角（首页数据范围）</div>' +
+      '<div class="sidebar-tier-btns">' +
+        '<button class="stier-btn ' + (curTier === 'gm' ? 'active' : '') + '" onclick="event.stopPropagation();gdSwitchTier(\'gm\')">🏢 总负责人</button>' +
+        '<button class="stier-btn ' + (curTier === 'head' ? 'active' : '') + '" onclick="event.stopPropagation();gdSwitchTier(\'head\')">🗂️ 部门负责人</button>' +
+        '<button class="stier-btn ' + (curTier === 'designer' ? 'active' : '') + '" onclick="event.stopPropagation();gdSwitchTier(\'designer\')">🎨 设计师</button>' +
       '</div>' +
-      (GDRole.role() === 'designer'
+      (curTier === 'designer'
         ? '<select id="gdRoleWho" class="srole-sel" onclick="event.stopPropagation()" onchange="gdSwitchMe(this.value)">' +
             GD_DESIGNERS.filter(function (n) { return n !== GD_LEADER; }).map(function (n) { return '<option' + (n === me ? ' selected' : '') + '>' + n + '</option>'; }).join('') +
           '</select>'
