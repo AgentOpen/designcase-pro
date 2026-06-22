@@ -1,1656 +1,227 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>George Design - 设计师的灵感资源库</title>
-<link rel="stylesheet" href="common.css">
-<style>
-/* ========== 知末网 1:1 仿照样式 ========== */
-
-/* 全局重置 */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-:root {
-  /* 知末网颜色系统 */
-  --znz-bg: #F5F5F5;
-  --znz-sidebar-bg: #F3F3F3;
-  --znz-white: #FFFFFF;
-  --znz-black: #000000;
-  --znz-text-dark: #222222;
-  --znz-text-gray: #333333;
-  --znz-text-light: #999999;
-  --znz-footer-bg: #1E1E1F;
-  --znz-hot-text: #E92027;
-  --znz-hot-bg: #FFE4E5;
-  --znz-search-btn-bg: #E2F3EC;
-  --znz-search-btn-text: #2B6150;
-  --znz-primary: #1677FF; /* 知末网主蓝 */
-  
-  /* 圆角系统 */
-  --znz-radius-search: 50px;
-  --znz-radius-search-btn: 999px;
-  --znz-radius-banner: 16px;
-  --znz-radius-menu: 8px;
-  --znz-radius-card: 12px;
-  --znz-radius-hot: 4px 4px 4px 0px;
-  
-  /* 字体系统 */
-  --znz-font-family: "PingFang SC", "Microsoft YaHei", SimSun, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --znz-font-size-base: 14px;
-  --znz-font-size-lg: 16px;
-  --znz-font-size-sm: 12px;
-  --znz-font-size-xs: 9px;
-  
-  /* 间距系统 */
-  --znz-spacing-xs: 4px;
-  --znz-spacing-sm: 8px;
-  --znz-spacing-md: 12px;
-  --znz-spacing-lg: 16px;
-  --znz-spacing-xl: 20px;
-  --znz-spacing-2xl: 24px;
-  --znz-spacing-3xl: 32px;
-  --znz-spacing-4xl: 40px;
-  --znz-spacing-5xl: 46px;
-}
-
-body {
-  font-family: var(--znz-font-family);
-  font-size: var(--znz-font-size-base);
-  color: rgba(0, 0, 0, 0.85);
-  background-color: var(--znz-bg);
-  line-height: 1.5;
-  overflow-x: hidden;
-  display: block; /* 覆盖 common.css 的 body{display:flex}，否则布局不撑满出现右侧白屏 */
-  min-height: 100vh;
-}
-.znz-layout { width: 100%; }
-
-/* ========== 全站布局 ========== */
-.znz-layout {
-  display: flex;
-  min-height: 100vh;
-  background-color: var(--znz-sidebar-bg);
-}
-
-/* ========== 左侧栏菜单 (206px) - sticky 固定，随页面滚动保持可见 ========== */
-.znz-sidebar {
-  width: 206px;
-  background-color: var(--znz-sidebar-bg);
-  flex-shrink: 0;
-  padding: var(--znz-spacing-xl) var(--znz-spacing-sm);
-  height: 100vh;
-  position: sticky;
-  top: 0;
-  overflow-y: auto;
-  align-self: flex-start;
-}
-
-.znz-logo {
-  display: flex;
-  align-items: center;
-  gap: var(--znz-spacing-sm);
-  padding: var(--znz-spacing-md) var(--znz-spacing-sm);
-  margin-bottom: var(--znz-spacing-xl);
-}
-
-.znz-logo-icon {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, var(--znz-primary), #7c3aed);
-  border-radius: var(--znz-radius-menu);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--znz-white);
-  font-weight: 700;
-  font-size: 16px;
-}
-
-.znz-logo-text {
-  font-size: var(--znz-font-size-lg);
-  font-weight: 600;
-  color: var(--znz-black);
-}
-
-.znz-menu-group {
-  margin-bottom: var(--znz-spacing-xl);
-}
-
-.znz-menu-group-title {
-  font-size: var(--znz-font-size-sm);
-  color: var(--znz-text-light);
-  padding: 0 var(--znz-spacing-sm);
-  margin-bottom: var(--znz-spacing-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.znz-menu-item {
-  display: flex;
-  align-items: center;
-  gap: var(--znz-spacing-sm);
-  padding: var(--znz-spacing-md) var(--znz-spacing-sm);
-  margin-bottom: var(--znz-spacing-sm);
-  border-radius: var(--znz-radius-menu);
-  color: var(--znz-black);
-  font-size: var(--znz-font-size-lg);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  height: 42px;
-  position: relative;
-}
-
-.znz-menu-item:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.znz-menu-item.active {
-  background-color: var(--znz-white);
-  color: var(--znz-black);
-  font-weight: 500;
-}
-
-.znz-menu-item-tag {
-  font-size: var(--znz-font-size-xs);
-  font-weight: 600;
-  color: var(--znz-hot-text);
-  background-color: var(--znz-hot-bg);
-  border-radius: var(--znz-radius-hot);
-  padding: 1px 4px;
-  height: 15px;
-  line-height: 1.2;
-  margin-left: 5px;
-}
-
-.znz-menu-item-icon {
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--znz-text-gray);
-}
-
-.znz-menu-item-text {
-  flex: 1;
-}
-
-/* ========== 右侧内容区 ========== */
-.znz-content {
-  flex: 1;
-  padding: var(--znz-spacing-sm) var(--znz-spacing-sm) var(--znz-spacing-sm) 0;
-  background-color: var(--znz-sidebar-bg);
-  min-width: 0;
-}
-
-/* ========== 顶部操作栏 ========== */
-.znz-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 60px;
-  margin-bottom: var(--znz-spacing-lg);
-}
-
-.znz-header-left {
-  display: flex;
-  align-items: center;
-  gap: var(--znz-spacing-lg);
-}
-
-.znz-header-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--znz-black);
-}
-
-.znz-header-filter {
-  font-size: var(--znz-font-size-base);
-  color: var(--znz-text-gray);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: var(--znz-spacing-xs);
-}
-
-.znz-header-right {
-  display: flex;
-  align-items: center;
-  gap: var(--znz-spacing-md);
-  width: 373px;
-  justify-content: flex-end;
-}
-
-.znz-header-btn {
-  padding: var(--znz-spacing-sm) var(--znz-spacing-lg);
-  border-radius: var(--znz-radius-menu);
-  font-size: var(--znz-font-size-base);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
-  white-space: nowrap;
-}
-
-.znz-header-btn-primary {
-  background-color: var(--znz-primary);
-  color: var(--znz-white);
-}
-
-.znz-header-btn-primary:hover {
-  background-color: #0958d9;
-}
-
-.znz-header-btn-outline {
-  background-color: transparent;
-  border-color: var(--znz-text-light);
-  color: var(--znz-text-gray);
-}
-
-.znz-header-btn-outline:hover {
-  border-color: var(--znz-primary);
-  color: var(--znz-primary);
-}
-
-.znz-header-btn-vip {
-  background-color: #FFD700;
-  color: #8B4513;
-  font-weight: 600;
-}
-
-.znz-header-btn-vip:hover {
-  background-color: #FFC107;
-}
-
-.znz-header-btn-dark {
-  background-color: #111;
-  color: #fff;
-  border-radius: 999px;
-  padding: 8px 20px;
-}
-.znz-header-btn-dark:hover { background-color: #000; }
-
-/* ========== 登录弹窗 ========== */
-.znz-login-overlay {
-  position: fixed; inset: 0; z-index: 1000;
-  background: rgba(20,20,22,.55);
-  display: none; align-items: center; justify-content: center;
-  backdrop-filter: blur(2px);
-}
-.znz-login-overlay.active { display: flex; }
-.znz-login-modal {
-  display: flex; width: 880px; max-width: 94vw; height: 520px; max-height: 90vh;
-  background: #fff; border-radius: 20px; overflow: hidden;
-  box-shadow: 0 30px 80px rgba(0,0,0,.35); position: relative;
-}
-.znz-login-visual { width: 46%; flex-shrink: 0; position: relative; background: #2a2a2a; }
-.znz-login-visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.znz-login-form { flex: 1; padding: 56px 48px; position: relative; }
-.znz-login-close {
-  position: absolute; top: 18px; right: 18px; width: 34px; height: 34px;
-  border-radius: 50%; border: none; background: #f1f1f1; color: #666;
-  font-size: 18px; cursor: pointer; line-height: 34px; text-align: center;
-}
-.znz-login-close:hover { background: #e5e5e5; }
-.znz-login-title { font-size: 30px; font-weight: 800; color: #111; margin: 0 0 8px; }
-.znz-login-sub { font-size: 14px; color: #888; margin-bottom: 30px; }
-.znz-login-label { font-size: 12px; letter-spacing: .08em; color: #999; font-weight: 600; margin: 16px 0 8px; }
-.znz-login-input-wrap { position: relative; }
-.znz-login-input {
-  width: 100%; height: 48px; border: none; background: #f4f4f5; border-radius: 10px;
-  padding: 0 44px 0 16px; font-size: 14px; color: #111; box-sizing: border-box;
-}
-.znz-login-input:focus { outline: 2px solid #111; background: #fff; }
-.znz-login-eye {
-  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-  background: none; border: none; cursor: pointer; color: #999; font-size: 16px;
-}
-.znz-login-submit {
-  width: 100%; height: 52px; margin-top: 26px; border: none; border-radius: 12px;
-  background: #111; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer;
-}
-.znz-login-submit:hover { background: #000; }
-.znz-login-divider { display: flex; align-items: center; gap: 12px; color: #aaa; font-size: 12px; margin: 22px 0 16px; }
-.znz-login-divider::before, .znz-login-divider::after { content: ''; flex: 1; height: 1px; background: #eee; }
-.znz-login-wechat {
-  width: 100%; height: 52px; border: none; border-radius: 12px; background: #f4f4f5;
-  color: #333; font-size: 15px; cursor: pointer; display: flex; align-items: center;
-  justify-content: center; gap: 8px;
-}
-.znz-login-wechat:hover { background: #ebebeb; }
-.znz-login-hint { font-size: 12px; color: #b0b0b0; margin-top: 14px; text-align: center; }
-@media (max-width: 640px) { .znz-login-visual { display: none; } .znz-login-form { padding: 44px 28px; } }
-
-.znz-header-user {
-  display: flex;
-  align-items: center;
-  gap: var(--znz-spacing-sm);
-  cursor: pointer;
-}
-
-.znz-header-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: var(--znz-primary);
-  color: var(--znz-white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-}
-
-/* ========== 搜索区域 ========== */
-.znz-search-container {
-  width: 900px;
-  height: 60px;
-  margin: var(--znz-spacing-lg) auto var(--znz-spacing-3xl);
-  position: relative;
-}
-
-.znz-search-box {
-  width: 100%;
-  height: 100%;
-  background-color: var(--znz-white);
-  border-radius: var(--znz-radius-search);
-  padding: var(--znz-spacing-xs) 200px var(--znz-spacing-xs) 30px;
-  border: none;
-  font-size: var(--znz-font-size-lg);
-  color: var(--znz-text-dark);
-  outline: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.znz-search-box::placeholder {
-  color: var(--znz-text-light);
-}
-
-.znz-search-btn {
-  position: absolute;
-  right: var(--znz-spacing-xs);
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: var(--znz-search-btn-bg);
-  color: var(--znz-search-btn-text);
-  border-radius: var(--znz-radius-search-btn);
-  padding: var(--znz-spacing-sm) var(--znz-spacing-lg);
-  font-size: var(--znz-font-size-sm);
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.znz-search-btn:hover {
-  background-color: #d1f0e3;
-}
-
-/* ========== Banner 轮播区域 ========== */
-.znz-banner {
-  width: calc(100% - 12px);
-  height: 440px;
-  border-radius: var(--znz-radius-banner);
-  margin: 0 auto var(--znz-spacing-3xl);
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, #2b2f36, #14161a); /* 图片加载失败时的深色兜底 */
-}
-
-.znz-banner-slide {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.8s ease;
-}
-
-.znz-banner-slide.active {
-  opacity: 1;
-}
-
-.znz-banner-img {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; opacity: 0; transition: opacity .6s ease; z-index: 0;
-}
-.znz-banner-img.loaded { opacity: 1; }
-.znz-banner-slide::after {
-  content: ''; position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(180deg, rgba(0,0,0,.30), rgba(0,0,0,.42));
-}
-
-.znz-banner-overlay {
-  position: absolute; inset: 0; z-index: 3;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 22px; padding: 0 24px;
-}
-.znz-banner-tabs { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-.znz-banner-tab {
-  padding: 8px 18px; border-radius: 999px; cursor: pointer;
-  font-size: 16px; font-weight: 600; color: #fff;
-  text-shadow: 0 1px 4px rgba(0,0,0,.4); transition: all .2s ease;
-}
-.znz-banner-tab:hover { background: rgba(255,255,255,.18); }
-.znz-banner-tab.active { background: #fff; color: #111; text-shadow: none; }
-.znz-hero-search {
-  width: min(1180px, 92%); height: 64px; background: #fff;
-  border-radius: 999px; display: flex; align-items: center;
-  padding: 0 8px 0 28px; box-shadow: 0 12px 40px rgba(0,0,0,.25);
-}
-.znz-hero-search-input {
-  flex: 1; border: none; outline: none; font-size: 16px; color: #333;
-  background: transparent; height: 100%;
-}
-.znz-hero-search-cam {
-  border: none; background: transparent; font-size: 20px; cursor: pointer;
-  padding: 0 16px; color: #666;
-}
-.znz-hero-search-btn {
-  border: none; background: #e60023; color: #fff; font-size: 16px; font-weight: 600;
-  height: 48px; padding: 0 30px; border-radius: 999px; cursor: pointer;
-  display: flex; align-items: center; gap: 6px;
-}
-.znz-hero-search-btn:hover { background: #cc001f; }
-
-.znz-banner-dots {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  z-index: 2;
-}
-
-.znz-banner-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.znz-banner-dot.active {
-  background: #fff;
-  width: 24px;
-  border-radius: 4px;
-}
-
-/* ========== 分类标签区 ========== */
-.znz-category-tabs {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  margin-bottom: var(--znz-spacing-xl);
-  overflow-x: auto;
-  padding: 0 var(--znz-spacing-sm);
-}
-
-.znz-category-tab {
-  padding: var(--znz-spacing-md) var(--znz-spacing-xl);
-  font-size: var(--znz-font-size-base);
-  color: var(--znz-text-gray);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-.znz-category-tab:hover {
-  color: var(--znz-black);
-}
-
-.znz-category-tab.active {
-  color: var(--znz-text-dark);
-  border-bottom-color: var(--znz-primary);
-  font-weight: 600;
-}
-
-.znz-category-tab-hot {
-  position: absolute;
-  top: -8px;
-  right: 4px;
-  font-size: var(--znz-font-size-xs);
-  color: var(--znz-hot-text);
-  background-color: var(--znz-hot-bg);
-  padding: 1px 4px;
-  border-radius: var(--znz-radius-hot);
-  font-weight: 600;
-}
-
-/* ========== 一级分类过滤 ========== */
-.znz-primary-categories {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--znz-spacing-sm);
-  margin-bottom: var(--znz-spacing-xl);
-  padding: 0 var(--znz-spacing-sm);
-}
-
-.znz-category-link {
-  padding: var(--znz-spacing-sm) var(--znz-spacing-lg);
-  font-size: var(--znz-font-size-base);
-  color: var(--znz-text-gray);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  border-radius: var(--znz-radius-menu);
-}
-
-.znz-category-link:hover {
-  color: var(--znz-black);
-  background-color: rgba(0, 0, 0, 0.03);
-}
-
-.znz-category-link.active {
-  color: var(--znz-text-dark);
-  font-weight: 600;
-  background-color: rgba(22, 119, 255, 0.08);
-}
-
-/* ========== 风格过滤 ========== */
-.znz-style-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--znz-spacing-sm);
-  margin-bottom: var(--znz-spacing-3xl);
-  padding: 0 var(--znz-spacing-sm);
-}
-
-.znz-style-tag {
-  padding: var(--znz-spacing-xs) var(--znz-spacing-md);
-  font-size: var(--znz-font-size-base);
-  color: var(--znz-text-gray);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.znz-style-tag:hover {
-  color: var(--znz-black);
-}
-
-.znz-style-tag.active {
-  color: var(--znz-text-dark);
-  font-weight: 600;
-}
-
-/* ========== 资源卡片网格 ========== */
-.znz-results-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: var(--znz-spacing-xl);
-  padding: 0 var(--znz-spacing-sm);
-  margin-bottom: var(--znz-spacing-4xl);
-}
-
-.znz-resource-card {
-  width: 100%;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.znz-card-wrapper {
-  width: 100%;
-  background-color: var(--znz-white);
-  border-radius: var(--znz-radius-card);
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.znz-resource-card:hover .znz-card-wrapper {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
-
-.znz-card-image {
-  position: relative;
-  width: 100%;
-  height: 0;
-  padding-bottom: 87%; /* 287:250 ≈ 1.148 */
-  overflow: hidden;
-  border-radius: var(--znz-radius-card);
-  transition: all 0.5s ease;
-}
-
-.znz-resource-card:hover .znz-card-image {
-  transform: scale(1.05);
-}
-
-.znz-card-image img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: all 0.5s ease;
-}
-
-.znz-card-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
-  opacity: 0;
-  transition: all 1s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: var(--znz-spacing-md);
-  color: var(--znz-white);
-  border-radius: var(--znz-radius-card);
-}
-
-.znz-resource-card:hover .znz-card-overlay {
-  opacity: 1;
-}
-
-.znz-card-title {
-  font-size: var(--znz-font-size-base);
-  font-weight: 600;
-  margin-bottom: var(--znz-spacing-xs);
-  line-height: 1.3;
-}
-
-.znz-card-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: var(--znz-font-size-sm);
-  opacity: 0.9;
-}
-
-.znz-card-info {
-  padding: var(--znz-spacing-md);
-}
-
-.znz-card-name {
-  font-size: var(--znz-font-size-base);
-  font-weight: 500;
-  color: var(--znz-text-dark);
-  margin-bottom: var(--znz-spacing-xs);
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.znz-card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--znz-spacing-xs);
-  margin-bottom: var(--znz-spacing-sm);
-}
-
-.znz-card-tag {
-  font-size: var(--znz-font-size-xs);
-  padding: 2px 6px;
-  background-color: rgba(0, 0, 0, 0.04);
-  border-radius: 4px;
-  color: var(--znz-text-gray);
-}
-
-.znz-card-tag.free {
-  background-color: rgba(16, 185, 129, 0.1);
-  color: #10b981;
-}
-
-.znz-card-tag.hot {
-  background-color: rgba(245, 158, 11, 0.1);
-  color: #f59e0b;
-}
-
-.znz-card-tag.premium {
-  background-color: rgba(22, 119, 255, 0.1);
-  color: var(--znz-primary);
-}
-
-.znz-card-stats {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: var(--znz-font-size-sm);
-  color: var(--znz-text-light);
-}
-
-.znz-card-type {
-  font-weight: 500;
-}
-
-.znz-card-downloads {
-  display: flex;
-  align-items: center;
-  gap: var(--znz-spacing-xs);
-}
-
-/* ========== 加载更多 ========== */
-.znz-load-more {
-  text-align: center;
-  padding: var(--znz-spacing-3xl) 0;
-}
-
-.znz-load-btn {
-  padding: var(--znz-spacing-md) var(--znz-spacing-3xl);
-  background-color: transparent;
-  border: 1px solid var(--znz-text-light);
-  border-radius: var(--znz-radius-menu);
-  color: var(--znz-text-gray);
-  font-size: var(--znz-font-size-base);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.znz-load-btn:hover {
-  border-color: var(--znz-primary);
-  color: var(--znz-primary);
-}
-
-/* ========== 页脚 ========== */
-.znz-footer {
-  background-color: var(--znz-footer-bg);
-  color: var(--znz-text-light);
-  padding-top: var(--znz-spacing-5xl);
-  margin-top: var(--znz-spacing-4xl);
-}
-
-.znz-footer-top {
-  max-width: 1146px;
-  margin: 0 auto;
-  padding-bottom: var(--znz-spacing-4xl);
-}
-
-.znz-footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--znz-spacing-3xl);
-}
-
-.znz-footer-column {
-  flex: 1;
-  min-width: 150px;
-}
-
-.znz-footer-title {
-  font-size: var(--znz-font-size-base);
-  font-weight: 600;
-  color: var(--znz-white);
-  margin-bottom: var(--znz-spacing-lg);
-}
-
-.znz-footer-list {
-  list-style: none;
-}
-
-.znz-footer-list li {
-  margin-bottom: var(--znz-spacing-sm);
-}
-
-.znz-footer-list a {
-  color: var(--znz-text-light);
-  text-decoration: none;
-  font-size: var(--znz-font-size-base);
-  transition: color 0.2s ease;
-}
-
-.znz-footer-list a:hover {
-  color: var(--znz-white);
-}
-
-.znz-footer-bottom {
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: var(--znz-spacing-lg) 0;
-  text-align: center;
-  font-size: var(--znz-font-size-sm);
-}
-
-.znz-footer-copyright {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-/* ========== 响应式 ========== */
-@media (max-width: 1600px) {
-  .znz-results-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (max-width: 1200px) {
-  .znz-results-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  .znz-search-container {
-    width: 100%;
-    max-width: 600px;
-  }
-}
-
-@media (max-width: 768px) {
-  .znz-layout {
-    flex-direction: column;
-  }
-  
-  /* 关键修复：移动端取消 sticky/100vh，否则首屏被空侧栏占满（白屏） */
-  .znz-sidebar {
-    width: 100%;
-    padding: var(--znz-spacing-md);
-    position: static;
-    height: auto;
-    overflow-y: visible;
-  }
-  
-  .znz-menu-group {
-    display: none;
-  }
-  
-  .znz-menu-group:first-child {
-    display: block;
-  }
-  
-  /* 首组菜单横向排布，节省纵向空间 */
-  .znz-menu-group:first-child {
-    display: flex;
-    gap: 4px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .znz-menu-group:first-child .znz-menu-group-title { display: none; }
-  .znz-menu-group:first-child .znz-menu-item { flex-shrink: 0; }
-  
-  .znz-content {
-    padding: var(--znz-spacing-sm);
-  }
-  
-  .znz-results-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--znz-spacing-md);
-  }
-  
-  .znz-header-right {
-    width: auto;
-  }
-  
-  .znz-header-btn {
-    padding: var(--znz-spacing-sm);
-    font-size: var(--znz-font-size-sm);
-  }
-  
-  .znz-banner {
-    height: 360px;
-  }
-  
-  .znz-banner-overlay { gap: 14px; padding: 0 12px; }
-  .znz-banner-tabs { gap: 4px; }
-  .znz-banner-tab { font-size: 13px; padding: 6px 12px; }
-  .znz-hero-search { height: 50px; padding: 0 4px 0 16px; }
-  .znz-hero-search-input { font-size: 14px; }
-  .znz-hero-search-cam { padding: 0 8px; font-size: 17px; }
-  .znz-hero-search-btn { height: 40px; padding: 0 18px; font-size: 14px; }
-}
-
-@media (max-width: 480px) {
-  .znz-results-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .znz-category-tabs {
-    padding: 0;
-  }
-  
-  .znz-category-tab {
-    padding: var(--znz-spacing-md) var(--znz-spacing-lg);
-  }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI 全屋装修设计平台 — 8 步设计闭环演示" />
+  <title>AI 全屋装修设计平台</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    #root{display:flex;flex-direction:column;height:100%}
+    #boot{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      background:#f5f6f8;color:#5a6678;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+      font-size:14px;text-align:center;padding:40px;z-index:1000}
+    #boot .sp{width:32px;height:32px;border:3px solid #e5e8ed;border-top-color:#2563eb;
+      border-radius:50%;animation:bsp 1s linear infinite;margin-bottom:16px}
+    @keyframes bsp{to{transform:rotate(360deg)}}
+    #boot .status{color:#8a96a8;font-size:12px;margin-top:8px;font-family:'SF Mono',ui-monospace,monospace}
+    #boot h3{color:#1a2233;font-weight:600;margin-bottom:6px;font-size:16px}
+    #boot.error .sp{display:none}
+    #boot.error h3{color:#dc2626}
+    #boot pre{background:#fff;border:1px solid #e5e8ed;border-radius:6px;padding:12px 16px;
+      margin-top:16px;text-align:left;font-size:11px;color:#5a6678;max-width:560px;
+      max-height:200px;overflow:auto;font-family:'SF Mono',monospace;line-height:1.6}
+    #boot .retry{margin-top:16px;background:#2563eb;color:#fff;border:none;padding:9px 22px;
+      border-radius:6px;cursor:pointer;font-size:13px;font-weight:600}
+    #boot .retry:hover{background:#1d4ed8}
+    #boot code{background:#fff;border:1px solid #e5e8ed;padding:2px 6px;border-radius:4px;color:#2563eb;font-size:11px}
+  </style>
 </head>
 <body>
-<div class="znz-layout">
-  <!-- 左侧栏菜单 -->
-  <aside class="znz-sidebar">
-    <div class="znz-logo">
-      <div class="znz-logo-icon">G</div>
-      <div class="znz-logo-text">George Design</div>
-    </div>
-    
-    <div class="znz-menu-group">
-      <div class="znz-menu-group-title">导航</div>
-      <div class="znz-menu-item active" data-nav="all">
-        <div class="znz-menu-item-icon">🏠</div>
-        <div class="znz-menu-item-text">首页</div>
-      </div>
-      <div class="znz-menu-item" data-nav="3dmodel">
-        <div class="znz-menu-item-icon">📚</div>
-        <div class="znz-menu-item-text">素材库</div>
-      </div>
-      <div class="znz-menu-item" data-nav="case">
-        <div class="znz-menu-item-icon">💡</div>
-        <div class="znz-menu-item-text">灵感库</div>
-      </div>
-      <div class="znz-menu-item" data-nav="external">
-        <div class="znz-menu-item-icon">🎨</div>
-        <div class="znz-menu-item-text">AI生图</div>
-        <div class="znz-menu-item-tag">HOT</div>
-      </div>
-      <div class="znz-menu-item" data-nav="external">
-        <div class="znz-menu-item-icon">🤖</div>
-        <div class="znz-menu-item-text">AI智能体</div>
-      </div>
-      <div class="znz-menu-item" data-nav="external">
-        <div class="znz-menu-item-icon">☁️</div>
-        <div class="znz-menu-item-text">云渲染</div>
-      </div>
-    </div>
-  </aside>
-  
-  <!-- 右侧内容区 -->
-  <main class="znz-content">
-    <!-- 顶部操作栏 -->
-    <header class="znz-header">
-      <div class="znz-header-left">
-        <h1 class="znz-header-title">素材库</h1>
-        <div class="znz-header-filter">
-          <span>全部</span>
-          <span>▼</span>
-        </div>
-      </div>
-      
-      <div class="znz-header-right">
-        <button class="znz-header-btn znz-header-btn-outline">上传</button>
-        <button class="znz-header-btn znz-header-btn-dark" id="loginEntryBtn" onclick="openLoginModal()">登录/注册</button>
-        <button class="znz-header-btn znz-header-btn-dark" id="consoleBtn" style="display:none;" onclick="window.location.href='dashboard.html'">控制台</button>
-        <button class="znz-header-btn znz-header-btn-outline" id="logoutBtn" style="display:none;" onclick="logout()">退出</button>
-        <div class="znz-header-user" id="userBadge" style="display:none;" title="点击进入控制台" onclick="window.location.href='dashboard.html'">
-          <div class="znz-header-avatar" id="userAvatar">演</div>
-        </div>
-      </div>
-    </header>
-    
-    <!-- Banner Hero：分类标签 + 搜索框 叠在 banner 图上（知末式） -->
-    <section class="znz-banner">
-      <div class="znz-banner-slide active">
-        <img class="znz-banner-img" src="https://loremflickr.com/1600/520/modern,architecture,villa?lock=11" alt="" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
-      </div>
-      <div class="znz-banner-slide">
-        <img class="znz-banner-img" src="https://loremflickr.com/1600/520/mountain,architecture,house?lock=12" alt="" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
-      </div>
-      <div class="znz-banner-slide">
-        <img class="znz-banner-img" src="https://loremflickr.com/1600/520/villa,forest,night?lock=13" alt="" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
-      </div>
-
-      <div class="znz-banner-overlay">
-        <div class="znz-banner-tabs">
-          <div class="znz-banner-tab active" data-tab="all">全部</div>
-          <div class="znz-banner-tab" data-tab="3dmodel">3D模型</div>
-          <div class="znz-banner-tab" data-tab="sumodel">SU模型</div>
-          <div class="znz-banner-tab" data-tab="texture">图库</div>
-          <div class="znz-banner-tab" data-tab="case">案例</div>
-          <div class="znz-banner-tab" data-tab="material">贴图</div>
-          <div class="znz-banner-tab" data-tab="cad">CAD</div>
-          <div class="znz-banner-tab" data-tab="text">文本</div>
-          <div class="znz-banner-tab" data-tab="render">效果图</div>
-          <div class="znz-banner-tab" data-tab="more">更多</div>
-        </div>
-        <div class="znz-hero-search">
-          <input type="text" class="znz-hero-search-input" placeholder="搜索你需要的设计资源..." id="searchInput">
-          <button class="znz-hero-search-cam" title="图搜">📷</button>
-          <button class="znz-hero-search-btn" id="heroSearchBtn">🔍 搜索</button>
-        </div>
-      </div>
-
-      <div class="znz-banner-dots">
-        <span class="znz-banner-dot active" data-index="0"></span>
-        <span class="znz-banner-dot" data-index="1"></span>
-        <span class="znz-banner-dot" data-index="2"></span>
-      </div>
-    </section>
-    
-    <!-- 分类标签区（资源类型）-->
-    <div class="znz-category-tabs">
-      <div class="znz-category-tab active" data-tab="all">全部</div>
-      <div class="znz-category-tab" data-tab="3dmodel">3D模型</div>
-      <div class="znz-category-tab" data-tab="sumodel">SU模型</div>
-      <div class="znz-category-tab" data-tab="texture">贴图</div>
-      <div class="znz-category-tab" data-tab="case">案例</div>
-      <div class="znz-category-tab" data-tab="material">素材</div>
-      <div class="znz-category-tab" data-tab="cad">CAD</div>
-      <div class="znz-category-tab" data-tab="ai">
-        AI生图
-        <span class="znz-category-tab-hot">HOT</span>
-      </div>
-    </div>
-    
-    <!-- 一级分类过滤 -->
-    <div class="znz-primary-categories">
-      <div class="znz-category-link active">推荐</div>
-      <div class="znz-category-link">家具</div>
-      <div class="znz-category-link">家装</div>
-      <div class="znz-category-link">工装</div>
-      <div class="znz-category-link">硬装构件</div>
-      <div class="znz-category-link">装饰品</div>
-      <div class="znz-category-link">灯具</div>
-      <div class="znz-category-link">用品/器材</div>
-      <div class="znz-category-link">景观</div>
-      <div class="znz-category-link">植物</div>
-      <div class="znz-category-link">窗帘布艺</div>
-      <div class="znz-category-link">建筑</div>
-      <div class="znz-category-link">人物/动物</div>
-      <div class="znz-category-link">展厅/展台</div>
-      <div class="znz-category-link">广告/美陈</div>
-      <div class="znz-category-link">舞台</div>
-      <div class="znz-category-link">其他模型</div>
-      <div class="znz-category-link">3D材质</div>
-      <div class="znz-category-link">家装鸟瞰</div>
-    </div>
-    
-    <!-- 风格过滤 -->
-    <div class="znz-style-tags">
-      <div class="znz-style-tag active">全部</div>
-      <div class="znz-style-tag">现代</div>
-      <div class="znz-style-tag">新中式</div>
-      <div class="znz-style-tag">中式</div>
-      <div class="znz-style-tag">法式</div>
-      <div class="znz-style-tag">美式</div>
-      <div class="znz-style-tag">欧式</div>
-      <div class="znz-style-tag">日式</div>
-      <div class="znz-style-tag">意式</div>
-      <div class="znz-style-tag">轻奢</div>
-      <div class="znz-style-tag">复古</div>
-      <div class="znz-style-tag">极简</div>
-      <div class="znz-style-tag">中古</div>
-      <div class="znz-style-tag">奶油</div>
-      <div class="znz-style-tag">简约</div>
-      <div class="znz-style-tag">侘寂</div>
-      <div class="znz-style-tag">原木</div>
-      <div class="znz-style-tag">北欧</div>
-      <div class="znz-style-tag">禅意</div>
-      <div class="znz-style-tag">简欧</div>
-      <div class="znz-style-tag">工业</div>
-    </div>
-    
-    <!-- 资源卡片网格 -->
-    <div class="znz-results-grid" id="resultsGrid">
-      <!-- 卡片由JS动态生成 -->
-    </div>
-    
-    <!-- 加载更多 -->
-    <div class="znz-load-more">
-      <button class="znz-load-btn" id="loadMoreBtn">加载更多</button>
-    </div>
-    
-    <!-- 页脚 -->
-    <footer class="znz-footer">
-      <div class="znz-footer-top">
-        <div class="znz-footer-links">
-          <div class="znz-footer-column">
-            <h3 class="znz-footer-title">发现AI创作</h3>
-            <ul class="znz-footer-list">
-              <li><a href="#">关于我们</a></li>
-              <li><a href="#">知末协议</a></li>
-              <li><a href="#">品牌来源</a></li>
-              <li><a href="#">关于我们</a></li>
-              <li><a href="#">联系我们</a></li>
-              <li><a href="#">加入我们</a></li>
-            </ul>
-          </div>
-          <div class="znz-footer-column">
-            <h3 class="znz-footer-title">常见问题</h3>
-            <ul class="znz-footer-list">
-              <li><a href="#">上传要求</a></li>
-              <li><a href="#">下载问题</a></li>
-              <li><a href="#">充值支付</a></li>
-              <li><a href="#">提现收益</a></li>
-              <li><a href="#">帮助中心</a></li>
-            </ul>
-          </div>
-          <div class="znz-footer-column">
-            <h3 class="znz-footer-title">法律声明</h3>
-            <ul class="znz-footer-list">
-              <li><a href="#">免责声明</a></li>
-              <li><a href="#">本网站内容由用户自行上传，如权利人发现存在误传其他作品情形，请及时与本站联系。</a></li>
-            </ul>
-          </div>
-          <div class="znz-footer-column">
-            <h3 class="znz-footer-title">许可证明</h3>
-            <ul class="znz-footer-list">
-              <li><a href="#">增值电信业务经营许可证（ICP）苏ICP备18050492号</a></li>
-              <li><a href="#">苏公网安备32011302320646号</a></li>
-              <li><a href="#">@2026 znzmo.com</a></li>
-              <li><a href="#">知末网保留所有权利</a></li>
-              <li><a href="#">苏ICP备18050492号</a></li>
-              <li><a href="#">南京喵熊网络科技有限公司</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="znz-footer-bottom">
-        <p class="znz-footer-copyright">© 2026 George Design · 设计师内部SaaS系统</p>
-      </div>
-    </footer>
-  </main>
-</div>
-
-<!-- 登录弹窗 -->
-<div class="znz-login-overlay" id="loginModal">
-  <div class="znz-login-modal">
-    <div class="znz-login-visual">
-      <img src="https://loremflickr.com/700/520/living,room,interior,modern?lock=42" alt=""
-           onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(135deg,#3a3a3a,#1d1d1d)'">
-    </div>
-    <div class="znz-login-form">
-      <button class="znz-login-close" onclick="closeLoginModal()">✕</button>
-      <h2 class="znz-login-title">欢迎回来！</h2>
-      <p class="znz-login-sub">登录以获取海量数据与信息。</p>
-      <div class="znz-login-label">EMAIL</div>
-      <div class="znz-login-input-wrap">
-        <input type="email" id="loginEmail" class="znz-login-input" placeholder="请输入邮箱地址">
-      </div>
-      <div class="znz-login-label">PASSWORD</div>
-      <div class="znz-login-input-wrap">
-        <input type="password" id="loginPassword" class="znz-login-input" placeholder="请输入密码">
-        <button class="znz-login-eye" onclick="togglePwdVisible()" title="显示/隐藏密码">👁</button>
-      </div>
-      <button class="znz-login-submit" onclick="doLogin()">登录</button>
-      <div class="znz-login-divider">或通过以下方式登录</div>
-      <button class="znz-login-wechat" onclick="doLogin()">💬 使用企微账号登录</button>
-      <div class="znz-login-hint">演示环境已内置账号，直接点「登录」即可体验</div>
-    </div>
+  <div id="root"></div>
+  <div id="boot">
+    <div class="sp"></div>
+    <h3 id="bootTitle">正在加载 AI 全屋装修设计平台</h3>
+    <div class="status" id="bootStatus">准备依赖...</div>
+    <pre id="bootLog" style="display:none"></pre>
+    <button class="retry" id="bootRetry" style="display:none" onclick="location.reload()">重新加载</button>
   </div>
-</div>
 
-<script src="common.js"></script>
-<script>
-// ========== 全局状态 ==========
-let AppState = {
-  isLoggedIn: localStorage.getItem('gd-logged-in') === 'true',
-  username: localStorage.getItem('gd-username') || '',
+  <script>
+  (function(){
+    'use strict';
+    var bootStatus = document.getElementById('bootStatus');
+    var bootTitle  = document.getElementById('bootTitle');
+    var bootLog    = document.getElementById('bootLog');
+    var bootRetry  = document.getElementById('bootRetry');
+    var bootEl     = document.getElementById('boot');
+    var logs = [];
 
-  demoAccount: {
-    email: localStorage.getItem('gd-demo-email') ||
-      ('designer' + Math.floor(1000 + Math.random() * 9000) + '@george.design'),
-    password: 'demo1234',
-    name: '陈磊'
-  },
-
-  resources: [],
-  filteredResources: [],
-  
-  filters: {
-    searchKeyword: '',
-    activeTab: 'all',
-    activeCategory: '推荐',
-    activeStyle: '全部'
-  },
-  
-  pagination: {
-    currentPage: 1,
-    pageSize: 20,
-    hasMore: false
-  }
-};
-
-// ========== 初始化 ==========
-document.addEventListener('DOMContentLoaded', async () => {
-  await loadResources();
-  initUI();
-  renderResults();
-  initEventListeners();
-});
-
-// ========== 数据加载 ==========
-function gdResPhoto(r) {
-  var kwByType = { '3dmodel':'interior 3d render', sumodel:'architecture model', texture:'material texture surface', case:'interior design room', material:'fabric material', cad:'architecture blueprint' };
-  var kw = (kwByType[r.type] || 'interior design') + ' ' + (r.category2 || '');
-  return (window.gdPhoto ? gdPhoto(kw, 5000 + r.id, 600, 440) : '');
-}
-async function loadResources() {
-  try {
-    const response = await fetch('data/resources.json');
-    const data = await response.json();
-    AppState.resources = data.resources;
-    AppState.filteredResources = [...AppState.resources];
-  } catch (error) {
-    console.error('加载资源数据失败:', error);
-    AppState.resources = getFallbackResources();
-    AppState.filteredResources = [...AppState.resources];
-  }
-}
-
-function getFallbackResources() {
-  return [
-    { id: 1, name: '现代意式极简餐厅', type: '3dmodel', category1: '家装', category2: '意式', category3: '精品', downloads: 2340, isFree: false, isHot: true },
-    { id: 2, name: '新中式客厅沙发组合', type: '3dmodel', category1: '家具', category2: '新中式', category3: '精品', downloads: 1890, isFree: false, isHot: true },
-    { id: 3, name: '法式轻奢卧室吊灯', type: '3dmodel', category1: '灯具', category2: '法式', category3: '推荐', downloads: 1250, isFree: true, isHot: false },
-    { id: 4, name: '北欧简约书桌', type: '3dmodel', category1: '家具', category2: '北欧', category3: '免费', downloads: 980, isFree: true, isHot: true },
-    { id: 5, name: '工业风咖啡厅SU模型', type: 'sumodel', category1: '工装', category2: '工业', category3: '精品', downloads: 1560, isFree: false, isHot: true },
-    { id: 6, name: '现代简约住宅SU', type: 'sumodel', category1: '家装', category2: '现代', category3: '推荐', downloads: 2100, isFree: true, isHot: true },
-    { id: 7, name: '大理石纹理贴图', type: 'texture', category1: '硬装构件', category2: '现代', category3: '免费', downloads: 3200, isFree: true, isHot: true },
-    { id: 8, name: '木纹地板贴图', type: 'texture', category1: '硬装构件', category2: '原木', category3: '免费', downloads: 2800, isFree: true, isHot: true },
-    { id: 9, name: '商业空间案例', type: 'case', category1: '工装', category2: '现代', category3: '热门', downloads: 890, isFree: true, isHot: true },
-    { id: 10, name: '别墅庭院景观案例', type: 'case', category1: '景观', category2: '新中式', category3: '精品', downloads: 760, isFree: false, isHot: false },
-    { id: 11, name: '金属材质素材', type: 'material', category1: '硬装构件', category2: '现代', category3: '免费', downloads: 1450, isFree: true, isHot: true },
-    { id: 12, name: '布艺窗帘素材', type: 'material', category1: '装饰品', category2: '奶油', category3: '推荐', downloads: 1100, isFree: true, isHot: false },
-    { id: 13, name: '建筑平面图CAD', type: 'cad', category1: '建筑', category2: '现代', category3: '精品', downloads: 670, isFree: false, isHot: false },
-    { id: 14, name: '卫生间详图CAD', type: 'cad', category1: '家装', category2: '现代', category3: '免费', downloads: 540, isFree: true, isHot: false },
-    { id: 15, name: '奶油风客厅', type: '3dmodel', category1: '家装', category2: '奶油', category3: '热门', downloads: 1680, isFree: true, isHot: true },
-    { id: 16, name: '原木风卧室', type: '3dmodel', category1: '家装', category2: '原木', category3: '免费', downloads: 1250, isFree: true, isHot: true },
-    { id: 17, name: '复古风书房', type: '3dmodel', category1: '家装', category2: '复古', category3: '精品', downloads: 980, isFree: false, isHot: false },
-    { id: 18, name: '极简主义客厅', type: '3dmodel', category1: '家装', category2: '极简', category3: '推荐', downloads: 1320, isFree: true, isHot: true },
-    { id: 19, name: '商业展厅SU', type: 'sumodel', category1: '工装', category2: '现代', category3: '热门', downloads: 1450, isFree: false, isHot: true },
-    { id: 20, name: '医院空间SU', type: 'sumodel', category1: '工装', category2: '现代', category3: '免费', downloads: 780, isFree: true, isHot: false },
-    { id: 21, name: '学校教室SU', type: 'sumodel', category1: '工装', category2: '现代', category3: '推荐', downloads: 920, isFree: true, isHot: false },
-    { id: 22, name: '瓷砖纹理贴图', type: 'texture', category1: '硬装构件', category2: '现代', category3: '免费', downloads: 1950, isFree: true, isHot: true },
-    { id: 23, name: '石材墙面贴图', type: 'texture', category1: '硬装构件', category2: '侘寂', category3: '精品', downloads: 1450, isFree: false, isHot: true },
-    { id: 24, name: '玻璃材质贴图', type: 'texture', category1: '硬装构件', category2: '现代', category3: '免费', downloads: 1250, isFree: true, isHot: false },
-    { id: 25, name: '壁纸图案贴图', type: 'texture', category1: '装饰品', category2: '法式', category3: '推荐', downloads: 980, isFree: true, isHot: false }
-  ];
-}
-
-// ========== UI初始化 ==========
-function initUI() {
-  localStorage.setItem('gd-demo-email', AppState.demoAccount.email);
-  updateAuthUI();
-}
-
-function updateAuthUI() {
-  const loginBtn = document.getElementById('loginEntryBtn');
-  const consoleBtn = document.getElementById('consoleBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const userBadge = document.getElementById('userBadge');
-  const userAvatar = document.getElementById('userAvatar');
-  if (AppState.isLoggedIn) {
-    if (loginBtn) loginBtn.style.display = 'none';
-    if (consoleBtn) consoleBtn.style.display = '';
-    if (logoutBtn) logoutBtn.style.display = '';
-    if (userBadge) userBadge.style.display = '';
-    if (userAvatar) userAvatar.textContent = (AppState.username || '演').charAt(0).toUpperCase();
-  } else {
-    if (loginBtn) loginBtn.style.display = '';
-    if (consoleBtn) consoleBtn.style.display = 'none';
-    if (logoutBtn) logoutBtn.style.display = 'none';
-    if (userBadge) userBadge.style.display = 'none';
-  }
-}
-
-// ========== 登录弹窗 ==========
-function openLoginModal() {
-  const m = document.getElementById('loginModal');
-  if (!m) return;
-  document.getElementById('loginEmail').value = AppState.demoAccount.email;
-  document.getElementById('loginPassword').value = AppState.demoAccount.password;
-  m.classList.add('active');
-}
-function closeLoginModal() {
-  const m = document.getElementById('loginModal');
-  if (m) m.classList.remove('active');
-}
-function doLogin() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const pwd = document.getElementById('loginPassword').value.trim();
-  if (!email || !pwd) { showToast('warning', '请输入邮箱与密码'); return; }
-  AppState.isLoggedIn = true;
-  AppState.username = (email === AppState.demoAccount.email) ? AppState.demoAccount.name : email.split('@')[0];
-  localStorage.setItem('gd-logged-in', 'true');
-  localStorage.setItem('gd-username', AppState.username);
-  updateAuthUI();
-  closeLoginModal();
-  showToast('success', '登录成功！点击右上角「控制台」进入后台');
-}
-function logout() {
-  AppState.isLoggedIn = false;
-  AppState.username = '';
-  localStorage.removeItem('gd-logged-in');
-  localStorage.removeItem('gd-username');
-  updateAuthUI();
-  showToast('info', '已退出登录');
-}
-function togglePwdVisible() {
-  const i = document.getElementById('loginPassword');
-  if (i) i.type = i.type === 'password' ? 'text' : 'password';
-}
-window.openLoginModal = openLoginModal;
-window.closeLoginModal = closeLoginModal;
-window.doLogin = doLogin;
-window.logout = logout;
-window.togglePwdVisible = togglePwdVisible;
-
-function initBannerCarousel() {
-  const slides = document.querySelectorAll('.znz-banner-slide');
-  const dots = document.querySelectorAll('.znz-banner-dot');
-  let currentSlide = 0;
-  const totalSlides = slides.length;
-  
-  function goToSlide(index) {
-    slides.forEach(s => s.classList.remove('active'));
-    dots.forEach(d => d.classList.remove('active'));
-    slides[index].classList.add('active');
-    dots[index].classList.add('active');
-    currentSlide = index;
-  }
-  
-  dots.forEach(dot => {
-    dot.addEventListener('click', () => {
-      goToSlide(parseInt(dot.dataset.index));
-    });
-  });
-  
-  // 自动轮播
-  setInterval(() => {
-    goToSlide((currentSlide + 1) % totalSlides);
-  }, 5000);
-}
-
-function initEventListeners() {
-  // Banner 轮播
-  initBannerCarousel();
-  
-  // 搜索框
-  const searchInput = document.getElementById('searchInput');
-  searchInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      AppState.filters.searchKeyword = searchInput.value.trim();
-      applyFilters();
+    function setStatus(s){ if (bootStatus) bootStatus.textContent = s; }
+    function logLine(s){
+      logs.push(s);
+      if (bootLog){ bootLog.textContent = logs.join('\n'); bootLog.style.display='block'; }
+      console.log('[boot]', s);
     }
-  });
-  const heroBtn = document.getElementById('heroSearchBtn');
-  if (heroBtn) heroBtn.addEventListener('click', () => {
-    AppState.filters.searchKeyword = searchInput.value.trim();
-    applyFilters();
-  });
-
-  // Banner 上的分类标签（与下方二级标签联动）—— 抽成函数，侧边栏共用
-  function selectBannerTab(key) {
-    document.querySelectorAll('.znz-banner-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === key));
-    const lower = document.querySelector('.znz-category-tab[data-tab="' + key + '"]');
-    document.querySelectorAll('.znz-category-tab').forEach(t => t.classList.remove('active'));
-    if (lower) {
-      lower.classList.add('active');
-      AppState.filters.activeTab = key;
-    } else {
-      const allTab = document.querySelector('.znz-category-tab[data-tab="all"]');
-      if (allTab) allTab.classList.add('active');
-      AppState.filters.activeTab = 'all';
+    function showError(title, detail){
+      bootEl.classList.add('error');
+      bootTitle.textContent = title;
+      bootStatus.textContent = detail || '';
+      bootRetry.style.display = 'inline-block';
     }
-    applyFilters();
-  }
-  window.selectBannerTab = selectBannerTab;
 
-  document.querySelectorAll('.znz-banner-tab').forEach(tab => {
-    tab.addEventListener('click', () => selectBannerTab(tab.dataset.tab));
-  });
+    // 检测协议：file:// 会阻止脚本加载（除 Safari 外多数浏览器）
+    if (location.protocol === 'file:'){
+      showError('请通过 HTTP 服务访问，而不是直接打开文件',
+        '浏览器在 file:// 协议下会阻止跨文件加载脚本。');
+      logLine('当前协议: file://');
+      logLine('');
+      logLine('解决方法（任选一种）：');
+      logLine('  1. 在项目目录运行: bash serve.sh');
+      logLine('  2. 或运行: python3 -m http.server 8080');
+      logLine('  3. 然后访问 http://localhost:8080');
+      bootRetry.style.display = 'none';
+      return;
+    }
 
-  // 左侧导航：与 banner 标签点击效果一致
-  // 首页→全部，素材库→3D模型，灵感库→案例；AI生图/AI智能体/云渲染→外部平台
-  document.querySelectorAll('.znz-menu-item[data-nav]').forEach(item => {
-    item.addEventListener('click', () => {
-      const nav = item.dataset.nav;
-      if (nav === 'external') {
-        window.open('https://www.yunhui.art/s/designer', '_blank');
-        return;
-      }
-      document.querySelectorAll('.znz-menu-item').forEach(m => m.classList.remove('active'));
-      item.classList.add('active');
-      selectBannerTab(nav);
-      // 首页回到顶部；素材库/灵感库滚动到筛选结果区
-      if (nav === 'all') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        const tabs = document.querySelector('.znz-category-tabs');
-        if (tabs) tabs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // 全局错误捕获
+    window.addEventListener('error', function(e){
+      logLine('JS Error: ' + (e.message || e.error || 'unknown') + (e.filename? ' @ '+e.filename.split('/').pop():'') + (e.lineno?':'+e.lineno:''));
+      if (!window.__APP_BOOTED__){
+        showError('加载失败：脚本错误',
+          '请打开浏览器控制台查看详细错误，或点下方按钮重试。');
       }
     });
-  });
-  
-  // 分类标签（二级）
-  document.querySelectorAll('.znz-category-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.znz-category-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      AppState.filters.activeTab = tab.dataset.tab;
-      applyFilters();
-    });
-  });
-  
-  // 一级分类
-  document.querySelectorAll('.znz-category-link').forEach(link => {
-    link.addEventListener('click', () => {
-      document.querySelectorAll('.znz-category-link').forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
-      AppState.filters.activeCategory = link.textContent;
-      applyFilters();
-    });
-  });
-  
-  // 风格标签
-  document.querySelectorAll('.znz-style-tag').forEach(tag => {
-    tag.addEventListener('click', () => {
-      document.querySelectorAll('.znz-style-tag').forEach(t => t.classList.remove('active'));
-      tag.classList.add('active');
-      AppState.filters.activeStyle = tag.textContent;
-      applyFilters();
-    });
-  });
-  
-  // 加载更多
-  document.getElementById('loadMoreBtn').addEventListener('click', loadMore);
-  
-  // 其他按钮（跳过有独立 onclick 的登录/控制台）
-  document.querySelectorAll('.znz-header-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const text = e.target.textContent.trim();
-      if (text === '登录/注册' || text === '控制台' || text === '退出') return;
-      if (text === '上传') {
-        if (!AppState.isLoggedIn) { showToast('warning', '请先登录'); }
-        else { showToast('success', `开始${text}...`); }
+
+    // 多源 CDN，按可用性顺序
+    var SOURCES = {
+      react: [
+        'https://unpkg.com/react@18.2.0/umd/react.production.min.js',
+        'https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js'
+      ],
+      reactDom: [
+        'https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js',
+        'https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js'
+      ],
+      three: [
+        'https://unpkg.com/three@0.160.0/build/three.min.js',
+        'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js'
+      ]
+    };
+
+    // 本地优先：先试 vendor 路径，再走 CDN
+    function localPath(name){ return 'vendor/' + name; }
+    var LOCAL_NAMES = {
+      react: 'react.production.min.js',
+      reactDom: 'react-dom.production.min.js',
+      three: 'three.min.js'
+    };
+
+    function loadScriptOnce(src, timeoutMs){
+      return new Promise(function(resolve, reject){
+        var s = document.createElement('script');
+        var done = false;
+        var timer = setTimeout(function(){
+          if (done) return;
+          done = true; s.onload = s.onerror = null;
+          reject(new Error('timeout: '+src));
+        }, timeoutMs || 8000);
+        s.src = src;
+        s.crossOrigin = 'anonymous';
+        s.onload = function(){
+          if (done) return;
+          done = true; clearTimeout(timer);
+          resolve(src);
+        };
+        s.onerror = function(){
+          if (done) return;
+          done = true; clearTimeout(timer);
+          // 移除失败的 script 标签，避免堆积
+          if (s.parentNode) s.parentNode.removeChild(s);
+          reject(new Error('failed: '+src));
+        };
+        document.head.appendChild(s);
+      });
+    }
+
+    // 依次尝试多个源
+    function tryUrls(urls){
+      var i = 0;
+      function next(){
+        if (i >= urls.length) return Promise.reject(new Error('all sources failed'));
+        var url = urls[i++];
+        return loadScriptOnce(url).catch(function(e){
+          logLine('  ✗ ' + shortUrl(url));
+          return next();
+        }).then(function(ok){
+          if (ok){ logLine('  ✓ ' + shortUrl(ok)); return ok; }
+        });
       }
-    });
-  });
-}
-
-// ========== 过滤逻辑 ==========
-function applyFilters() {
-  const { searchKeyword, activeTab, activeCategory, activeStyle } = AppState.filters;
-  
-  AppState.filteredResources = AppState.resources.filter(resource => {
-    // 搜索关键词
-    if (searchKeyword && !resource.name.toLowerCase().includes(searchKeyword.toLowerCase())) {
-      return false;
+      return next();
     }
-    
-    // 分类标签
-    if (activeTab !== 'all') {
-      if (activeTab === '3dmodel' && resource.type !== '3dmodel') return false;
-      if (activeTab === 'sumodel' && resource.type !== 'sumodel') return false;
-      if (activeTab === 'texture' && resource.type !== 'texture') return false;
-      if (activeTab === 'case' && resource.type !== 'case') return false;
-      if (activeTab === 'material' && resource.type !== 'material') return false;
-      if (activeTab === 'cad' && resource.type !== 'cad') return false;
-      if (activeTab === 'ai') return false; // AI生图特殊处理
+    function shortUrl(u){
+      try { return u.replace(/^https?:\/\//,'').split('/')[0] + '/...' + u.split('/').pop(); }
+      catch(e){ return u; }
     }
-    
-    // 一级分类
-    if (activeCategory !== '推荐' && resource.category1 !== activeCategory) {
-      return false;
+
+    // 加载一个库：本地 → 多 CDN
+    function loadLib(key, globalName){
+      setStatus('加载 ' + globalName + '...');
+      logLine('[' + globalName + '] 尝试本地 vendor/');
+      return loadScriptOnce(localPath(LOCAL_NAMES[key]), 3000)
+        .then(function(p){ logLine('  ✓ ' + p); return p; })
+        .catch(function(){
+          logLine('  · 本地不存在，回退 CDN');
+          return tryUrls(SOURCES[key]);
+        })
+        .then(function(){
+          if (!window[globalName]){
+            throw new Error(globalName + ' 加载后仍未定义');
+          }
+          return true;
+        });
     }
-    
-    // 风格
-    if (activeStyle !== '全部' && resource.category2 !== activeStyle) {
-      return false;
+
+    // 加载本地脚本（必须存在）
+    function loadLocal(path){
+      setStatus('加载 ' + path);
+      return loadScriptOnce(path, 6000).then(function(){
+        logLine('  ✓ ' + path);
+      });
     }
-    
-    return true;
-  });
-  
-  // 重置分页
-  AppState.pagination.currentPage = 1;
-  AppState.pagination.hasMore = AppState.filteredResources.length > AppState.pagination.pageSize;
-  
-  renderResults();
-}
 
-// ========== 渲染结果 ==========
-function renderResults() {
-  const grid = document.getElementById('resultsGrid');
-  const loadMoreBtn = document.getElementById('loadMoreBtn');
-  
-  if (AppState.filteredResources.length === 0) {
-    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px; color:var(--znz-text-light);">没有找到匹配的资源</div>';
-    loadMoreBtn.style.display = 'none';
-    return;
-  }
-  
-  // 计算当前页显示的资源
-  const start = 0;
-  const end = AppState.pagination.currentPage * AppState.pagination.pageSize;
-  const currentResources = AppState.filteredResources.slice(start, end);
-  
-  grid.innerHTML = currentResources.map(resource => createResourceCard(resource)).join('');
-  
-  // 更新加载更多按钮
-  if (end < AppState.filteredResources.length) {
-    loadMoreBtn.style.display = 'block';
-    AppState.pagination.hasMore = true;
-  } else {
-    loadMoreBtn.style.display = 'none';
-    AppState.pagination.hasMore = false;
-  }
-}
-
-function createResourceCard(resource) {
-  const typeText = {
-    '3dmodel': '3D模型',
-    'sumodel': 'SU模型',
-    'texture': '贴图',
-    'case': '案例',
-    'material': '素材',
-    'cad': 'CAD'
-  }[resource.type] || resource.type;
-  
-  const thumbText = resource.name.substring(0, 2);
-  const thumbColor = getThumbColor(resource.type);
-  
-  let tags = [];
-  if (resource.isFree) tags.push('<span class="znz-card-tag free">免费</span>');
-  if (resource.isHot) tags.push('<span class="znz-card-tag hot">热门</span>');
-  if (!resource.isFree && resource.isHot) tags.push('<span class="znz-card-tag premium">精品</span>');
-  
-  return `
-    <div class="znz-resource-card" onclick="handleResourceClick(${resource.id})">
-      <div class="znz-card-wrapper">
-        <div class="znz-card-image" style="background: ${thumbColor};">
-          <img class="gd-real-img" src="${gdResPhoto(resource)}" alt="" loading="lazy" onload="this.classList.add('loaded')" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s;z-index:1;">
-          <div class="znz-card-overlay" style="z-index:3;">
-            <div class="znz-card-title">${resource.name}</div>
-            <div class="znz-card-meta">
-              <span>${typeText}</span>
-              <span>⬇ ${resource.downloads.toLocaleString()}</span>
-            </div>
-          </div>
-          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:32px; color:rgba(255,255,255,0.9); font-weight:700; z-index:2;">${thumbText}</div>
-        </div>
-        <div class="znz-card-info">
-          <div class="znz-card-name">${resource.name}</div>
-          <div class="znz-card-tags">
-            ${tags.join('')}
-            <span class="znz-card-tag">${resource.category1}</span>
-            <span class="znz-card-tag">${resource.category2}</span>
-          </div>
-          <div class="znz-card-stats">
-            <span class="znz-card-type">${typeText}</span>
-            <span class="znz-card-downloads">⬇ ${resource.downloads.toLocaleString()}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function getThumbColor(type) {
-  const colors = {
-    '3dmodel': 'linear-gradient(135deg, #8b5cf6, #6366f1)',
-    'sumodel': 'linear-gradient(135deg, #10b981, #34d399)',
-    'texture': 'linear-gradient(135deg, #f59e0b, #fbbf24)',
-    'case': 'linear-gradient(135deg, #3b82f6, #60a5fa)',
-    'material': 'linear-gradient(135deg, #ef4444, #f87171)',
-    'cad': 'linear-gradient(135deg, #8b5cf6, #a78bfa)'
-  };
-  return colors[type] || 'linear-gradient(135deg, #6b7280, #9ca3af)';
-}
-
-// ========== 分页 ==========
-function loadMore() {
-  if (!AppState.pagination.hasMore) return;
-  
-  AppState.pagination.currentPage++;
-  const start = (AppState.pagination.currentPage - 1) * AppState.pagination.pageSize;
-  const end = AppState.pagination.currentPage * AppState.pagination.pageSize;
-  
-  const newResources = AppState.filteredResources.slice(start, end);
-  const grid = document.getElementById('resultsGrid');
-  
-  newResources.forEach(resource => {
-    const card = document.createElement('div');
-    card.className = 'znz-resource-card';
-    card.innerHTML = createResourceCard(resource);
-    card.onclick = () => handleResourceClick(resource.id);
-    grid.appendChild(card);
-  });
-  
-  // 更新加载更多按钮
-  if (end >= AppState.filteredResources.length) {
-    document.getElementById('loadMoreBtn').style.display = 'none';
-    AppState.pagination.hasMore = false;
-  }
-}
-
-// ========== 交互处理 ==========
-function handleResourceClick(resourceId) {
-  if (!AppState.isLoggedIn) {
-    showToast('warning', '请先登录查看详情');
-    return;
-  }
-  showToast('info', `查看资源 ${resourceId} 详情（功能开发中）`);
-}
-
-function showToast(type, message) {
-  if (typeof window.showToast === 'function') {
-    window.showToast(type, message);
-  } else {
-    const toast = document.createElement('div');
-    toast.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: ${type === 'success' ? '#10b981' : type === 'warning' ? '#f59e0b' : '#3b82f6'};
-      color: white;
-      padding: 12px 20px;
-      border-radius: var(--znz-radius-menu);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 10000;
-      font-size: 14px;
-      animation: fadeIn 0.3s;
-    `;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-  }
-}
-</script>
+    // 启动流程
+    Promise.resolve()
+      .then(function(){ return loadLib('react', 'React'); })
+      .then(function(){ return loadLib('reactDom', 'ReactDOM'); })
+      .then(function(){ return loadLib('three', 'THREE'); })
+      .then(function(){ return loadLocal('assets/js/data.js'); })
+      .then(function(){
+        if (!window.AIHome) throw new Error('data.js 加载后 window.AIHome 未定义');
+      })
+      .then(function(){ return loadLocal('assets/js/canvas.js'); })
+      .then(function(){
+        if (!window.AICanvas) throw new Error('canvas.js 加载后 window.AICanvas 未定义');
+      })
+      .then(function(){ return loadLocal('assets/js/scene3d.js'); })
+      .then(function(){
+        if (!window.AIScene3D) throw new Error('scene3d.js 加载后 window.AIScene3D 未定义');
+      })
+      .then(function(){ return loadLocal('assets/js/app.js'); })
+      .then(function(){
+        window.__APP_BOOTED__ = true;
+        setStatus('就绪');
+        // 应用挂载到 #root 后，隐藏 boot
+        setTimeout(function(){
+          if (document.querySelector('#root > *')){
+            bootEl.style.display = 'none';
+          } else {
+            // app 没成功渲染，留 boot 显示提示
+            showError('应用未正确渲染',
+              '所有脚本加载完成，但根组件未渲染。请查看控制台。');
+          }
+        }, 100);
+      })
+      .catch(function(err){
+        console.error('[boot] 启动失败:', err);
+        logLine('FATAL: ' + (err.message || err));
+        showError('加载失败',
+          '请检查网络（CDN 可能被墙），或参考 DEPLOYMENT.md 用 fetch-vendor.sh 离线部署。');
+      });
+  })();
+  </script>
 </body>
 </html>
