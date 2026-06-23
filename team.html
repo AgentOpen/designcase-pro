@@ -62,7 +62,10 @@
       <div class="home-panel" id="team-intake">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
           <div style="font-size:13px;color:var(--text-secondary);" id="intakeHint"></div>
-          <button class="btn btn-primary btn-sm" id="intakeNewBtn" onclick="openNewIntake()">＋ 登记外部项目</button>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button class="btn btn-secondary btn-sm" id="intakeShareBtn" onclick="openIntakeShare()" title="生成外部填写链接">🔗 分享填写链接</button>
+            <button class="btn btn-primary btn-sm" id="intakeNewBtn" onclick="openNewIntake()">＋ 登记外部项目</button>
+          </div>
         </div>
         <div class="card">
           <div class="card-title" id="intakeListTitle">待分配 / 处理中</div>
@@ -189,6 +192,32 @@
       </div>
     </div>
     <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('intakeModal')">取消</button><button class="btn btn-primary" id="intakeSaveBtn" onclick="saveIntake()">登记</button></div>
+  </div>
+</div>
+
+<!-- 分享外部填写链接 -->
+<div class="modal-overlay" id="intakeShareModal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header"><h2>🔗 分享外部填写链接</h2><button class="modal-close" onclick="closeModal('intakeShareModal')">✕</button></div>
+    <div class="modal-body">
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:10px;">把链接发给客户/销售/外部合作方，他们填写后会进入你的「待分配」列表。</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <input class="input" id="shareLink" readonly style="flex:1;font-size:12px;" value="">
+        <button class="btn btn-primary btn-sm" onclick="copyShareLink()">复制链接</button>
+      </div>
+      <div style="border-top:1px dashed var(--border);padding-top:14px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px;">📝 外部填写表单预览（与登记外部项目一致）</div>
+        <div class="form-group"><label>项目名称 *</label><input class="input" id="extName" style="width:100%;" placeholder="如 江景豪宅全案"></div>
+        <div class="form-group"><label>来源 / 客户 *</label><input class="input" id="extFrom" style="width:100%;" placeholder="如 绿城集团 / 王经理"></div>
+        <div class="form-row" style="display:flex;gap:12px;">
+          <div class="form-group" style="flex:1;"><label>截止时间</label><input class="input" type="date" id="extDue" style="width:100%;"></div>
+          <div class="form-group" style="flex:1;"><label>设计面积（㎡）</label><input class="input" type="number" min="0" id="extArea" style="width:100%;" placeholder="如 180"></div>
+        </div>
+        <div class="form-group"><label>需求说明</label><textarea class="input" id="extDesc" rows="3" style="width:100%;" placeholder="项目背景、风格偏好、交付要求等"></textarea></div>
+        <div style="font-size:12px;color:var(--text-muted);">提交后将作为「待分配」外部项目进入总负责人列表，由总负责人分配给部门。</div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('intakeShareModal')">关闭</button><button class="btn btn-primary" onclick="submitExternalIntake()">模拟外部提交</button></div>
   </div>
 </div>
 
@@ -479,14 +508,14 @@ function openNewProject(){
   document.getElementById('projDue').value='';
   document.getElementById('projArea').value='';
   document.getElementById('projBrief').value='';
-  // 主设计师下拉：按角色——总负责人选部门负责人 / 部门负责人选本部门设计师 / 设计师默认自己
+  // 分配下拉：总负责人选「部门」(实际由部门负责人接收) / 部门负责人选本部门设计师 / 设计师默认自己
   var leadSel=document.getElementById('projLead');
   var leadLabel=document.getElementById('projLeadLabel');
   var opts;
-  if(TIER==='gm'){ leadLabel.textContent='分配给（部门负责人）'; opts=assignTargets(); }
+  if(TIER==='gm'){ leadLabel.textContent='分配给（部门）'; opts=GDOrg.allDepts(); }
   else if(TIER==='head'){ leadLabel.textContent='分配给（本部门设计师）'; opts=assignTargets(); }
   else { leadLabel.textContent='主设计师'; opts=[ME]; }
-  leadSel.innerHTML=opts.map(function(n){ return '<option'+(n===ME?' selected':'')+'>'+n+'</option>'; }).join('');
+  leadSel.innerHTML=opts.map(function(n){ return '<option'+((TIER!=='gm'&&n===ME)?' selected':'')+'>'+n+'</option>'; }).join('');
   leadSel.disabled = (TIER==='designer');
   openModal('projModal');
 }
@@ -494,21 +523,27 @@ function saveProject(){
   var name=document.getElementById('projName').value.trim();
   if(!name){ showToast('warning','请输入项目名称'); return; }
   var id=PROJECTS.reduce(function(m,x){return Math.max(m,x.id);},0)+1;
-  var lead=document.getElementById('projLead').value||ME;
+  var pick=document.getElementById('projLead').value||ME;
   var area=parseInt(document.getElementById('projArea').value)||null;
+  // 总负责人选的是部门 → 主设计师实际为该部门负责人；其它角色选的就是人
+  var dept=null, lead=pick;
+  if(TIER==='gm'){ dept=pick; lead=GDOrg.headOf(pick)||pick; }
+  else if(TIER==='head'){ dept=MY_DEPT; }
+  else { dept=GDOrg.deptOf(ME); }
   var members=[lead]; if(members.indexOf(ME)<0) members.unshift(ME);
   PROJECTS.unshift({
     id:id, name:name,
     client:document.getElementById('projClient').value.trim()||'内部',
-    members:members, lead:lead, progress:0,
+    members:members, lead:lead, dept:dept, progress:0,
     due:document.getElementById('projDue').value||'待定',
     status:'筹备中',
     area:area, country:document.getElementById('projCountry').value,
     brief:document.getElementById('projBrief').value.trim()
   });
   save(); closeModal('projModal'); renderProjects();
-  var who = TIER==='designer' ? '你自己' : lead;
-  showToast('success','项目「'+name+'」已创建，主设计师：'+who);
+  var msg = TIER==='gm' ? ('项目「'+name+'」已分配给 '+dept+'，由部门负责人 '+lead+' 接收')
+          : (TIER==='designer' ? ('项目「'+name+'」已创建，主设计师：你自己') : ('项目「'+name+'」已创建，主设计师：'+lead));
+  showToast('success', msg);
 }
 window.openNewProject=openNewProject; window.saveProject=saveProject;
 
@@ -595,12 +630,13 @@ function renderKanban(){
   visibleTasks.forEach(function(t){ if(projIds.indexOf(t.projId)<0) projIds.push(t.projId); });
 
   var board=document.getElementById('kanban');
+  var COL_CLS={'待开始':'kc-todo','进行中':'kc-doing','待审核':'kc-review','已完成':'kc-done'};
   // 表头：第一列“项目” + 各状态列
-  var head = '<div class="kbm-head"><div class="kbm-corner">项目</div>' +
+  var head = '<div class="kbm-head"><div class="kbm-corner">📂 项目</div>' +
     COLS.map(function(c){ var n=visibleTasks.filter(function(t){return t.status===c;}).length;
-      return '<div class="kbm-colhead">'+c+' <span class="kbm-cnt">'+n+'</span></div>'; }).join('') + '</div>';
+      return '<div class="kbm-colhead '+(COL_CLS[c]||'')+'">'+c+' <span class="kbm-cnt">'+n+'</span></div>'; }).join('') + '</div>';
 
-  if(!projIds.length){ board.innerHTML = head + '<div style="padding:40px;text-align:center;color:var(--text-muted);">暂无任务</div>'; return; }
+  if(!projIds.length){ board.innerHTML = '<div class="kbm-wrap">'+head + '<div style="padding:40px;text-align:center;color:var(--text-muted);">暂无任务</div></div>'; return; }
 
   var rows = projIds.map(function(projId){
     var p=projById(projId);
@@ -608,8 +644,8 @@ function renderKanban(){
       var items = visibleTasks.filter(function(t){ return t.projId===projId && t.status===col; });
       var cards = items.map(function(t){ return kanbanCard(t, col, canAssign); }).join('');
       // 放置区（拖拽落点）
-      return '<div class="kbm-cell" ondragover="kbAllowDrop(event)" ondrop="kbDrop(event,'+projId+',\''+col+'\')" data-col="'+col+'">'+cards+
-        (canAssign?'<button class="kbm-add" onclick="openNewTask('+projId+',\''+col+'\')">＋</button>':'')+'</div>';
+      return '<div class="kbm-cell '+(COL_CLS[col]||'')+'" ondragover="kbAllowDrop(event)" ondrop="kbDrop(event,'+projId+',\''+col+'\')" data-col="'+col+'">'+cards+
+        (canAssign?'<button class="kbm-add" onclick="openNewTask('+projId+',\''+col+'\')">＋ 添加</button>':'')+'</div>';
     }).join('');
     return '<div class="kbm-row"><div class="kbm-proj"><span class="kbm-proj-ic">📂</span><div><div class="kbm-proj-name">'+(p?p.name:'未关联')+'</div>'+
       (p&&p.client?'<div class="kbm-proj-sub">'+p.client+'</div>':'')+'</div></div>'+cells+'</div>';
@@ -846,6 +882,8 @@ window.openStatus=openStatus; window.onStateChange=onStateChange; window.saveSta
 function renderIntake(){
   refreshSelects();
   var btn=document.getElementById('intakeNewBtn');
+  var shareBtn=document.getElementById('intakeShareBtn');
+  if(shareBtn) shareBtn.style.display = (TIER==='gm'||TIER==='head') ? '' : 'none';
   var hint=document.getElementById('intakeHint');
   // 按角色：标题/按钮/说明
   if(TIER==='gm'){
@@ -953,6 +991,42 @@ function saveIntake(){
   showToast('success', assignTo ? ('外部项目已登记并分配给 '+assignTo) : '外部项目已登记，待分配');
 }
 window.openNewIntake=openNewIntake; window.saveIntake=saveIntake;
+
+// ---- 分享外部填写链接（生成链接 + 演示外部提交，进总负责人待分配）----
+function openIntakeShare(){
+  // 演示链接：实际部署时指向独立填写页 intake-form.html?token=xxx
+  var token = 'GD' + Date.now().toString(36).toUpperCase();
+  var base = (location.href.split('#')[0].replace(/team\.html.*$/,'')) || '';
+  document.getElementById('shareLink').value = base + 'intake-form.html?token=' + token;
+  document.getElementById('extName').value=''; document.getElementById('extFrom').value='';
+  document.getElementById('extDue').value=''; document.getElementById('extArea').value=''; document.getElementById('extDesc').value='';
+  openModal('intakeShareModal');
+}
+function copyShareLink(){
+  var inp=document.getElementById('shareLink');
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(inp.value); }
+    else { inp.select(); document.execCommand && document.execCommand('copy'); }
+    showToast('success','链接已复制，发给外部填写即可');
+  }catch(e){ inp.select(); showToast('info','请手动复制链接'); }
+}
+// 外部提交：始终作为「待分配」外部项目进入总负责人列表
+function submitExternalIntake(){
+  var name=document.getElementById('extName').value.trim();
+  var from=document.getElementById('extFrom').value.trim();
+  if(!name){ showToast('warning','请填写项目名称'); return; }
+  if(!from){ showToast('warning','请填写来源/客户'); return; }
+  var id=INTAKES.reduce(function(m,x){return Math.max(m,x.id);},0)+1;
+  INTAKES.unshift({ id:id, title:name, from:from,
+    due:document.getElementById('extDue').value||'待定',
+    area:parseInt(document.getElementById('extArea').value)||null,
+    desc:document.getElementById('extDesc').value.trim(),
+    prio:'中', status:'待分配', assignee:null, dept:null, source:'外部', viaLink:true });
+  save(); closeModal('intakeShareModal');
+  if(TIER==='gm') renderIntake();
+  showToast('success','外部已提交「'+name+'」，已进入总负责人待分配列表');
+}
+window.openIntakeShare=openIntakeShare; window.copyShareLink=copyShareLink; window.submitExternalIntake=submitExternalIntake;
 
 // 分配产物：GM 分配到部门 → 生成项目（主设计师=部门负责人）
 function _intakeToProject(it){
