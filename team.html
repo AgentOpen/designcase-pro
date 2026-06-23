@@ -58,14 +58,14 @@
         </div>
       </div>
 
-      <!-- 外部派单（组长接收外部任务并分配） -->
+      <!-- 外部派单 / 项目分配（按角色） -->
       <div class="home-panel" id="team-intake">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
-          <div style="font-size:13px;color:var(--text-secondary);" id="intakeHint">组长（部门主管）在此接收来自客户/销售的外部任务，分配给空闲设计师。已分配的任务会进入对应项目的任务看板。</div>
-          <button class="btn btn-primary btn-sm" id="intakeNewBtn" onclick="openNewIntake()">＋ 登记外部任务</button>
+          <div style="font-size:13px;color:var(--text-secondary);" id="intakeHint"></div>
+          <button class="btn btn-primary btn-sm" id="intakeNewBtn" onclick="openNewIntake()">＋ 登记外部项目</button>
         </div>
         <div class="card">
-          <div class="card-title">待分配 / 处理中</div>
+          <div class="card-title" id="intakeListTitle">待分配 / 处理中</div>
           <div id="intakeList"></div>
         </div>
       </div>
@@ -89,10 +89,16 @@
     <div class="modal-body">
       <div class="form-group"><label>任务名称</label><input class="input" id="taskTitle" style="width:100%;" placeholder="如：主卧空间深化"></div>
       <div class="form-group"><label>所属项目</label><select class="input" id="taskProj" style="width:100%;"></select></div>
-      <div class="form-group"><label>负责人</label><select class="input" id="taskWho" style="width:100%;"></select></div>
-      <div class="form-group"><label>优先级</label><select class="input" id="taskPrio" style="width:100%;"><option value="高">高</option><option value="中" selected>中</option><option value="低">低</option></select></div>
-      <div class="form-group"><label>截止日期</label><input class="input" type="date" id="taskDue" style="width:100%;"></div>
+      <div style="display:flex;gap:12px;">
+        <div class="form-group" style="flex:1;"><label id="taskWhoLabel">负责人 / 协作设计师</label><select class="input" id="taskWho" style="width:100%;"></select></div>
+        <div class="form-group" style="flex:1;"><label>设计面积（㎡）</label><input class="input" type="number" min="0" id="taskArea" style="width:100%;" placeholder="用于绩效统计"></div>
+      </div>
+      <div style="display:flex;gap:12px;">
+        <div class="form-group" style="flex:1;"><label>优先级</label><select class="input" id="taskPrio" style="width:100%;"><option value="高">高</option><option value="中" selected>中</option><option value="低">低</option></select></div>
+        <div class="form-group" style="flex:1;"><label>截止日期</label><input class="input" type="date" id="taskDue" style="width:100%;"></div>
+      </div>
       <div class="form-group"><label>状态</label><select class="input" id="taskStatus" style="width:100%;"><option>待开始</option><option>进行中</option><option>待审核</option><option>已完成</option></select></div>
+      <div class="form-group"><label>需求说明</label><textarea class="input" id="taskBrief" rows="2" style="width:100%;resize:vertical;" placeholder="任务要求、交付标准等"></textarea></div>
     </div>
     <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('taskModal')">取消</button><button class="btn btn-primary" onclick="saveTask()">保存</button></div>
   </div>
@@ -100,12 +106,26 @@
 
 <!-- 新建项目 -->
 <div class="modal-overlay" id="projModal">
-  <div class="modal" style="max-width:460px;">
-    <div class="modal-header"><h2>新建项目</h2><button class="modal-close" onclick="closeModal('projModal')">✕</button></div>
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header"><h2 id="projModalTitle">新建项目</h2><button class="modal-close" onclick="closeModal('projModal')">✕</button></div>
     <div class="modal-body">
       <div class="form-group"><label>项目名称</label><input class="input" id="projName" style="width:100%;" placeholder="如：江景豪宅全案"></div>
-      <div class="form-group"><label>客户</label><input class="input" id="projClient" style="width:100%;" placeholder="如：绿城集团"></div>
-      <div class="form-group"><label>截止日期</label><input class="input" id="projDue" type="date" style="width:100%;"></div>
+      <div class="form-group"><label>客户 / 来源</label><input class="input" id="projClient" style="width:100%;" placeholder="如：绿城集团"></div>
+      <div style="display:flex;gap:12px;">
+        <div class="form-group" style="flex:1;"><label>截止日期</label><input class="input" id="projDue" type="date" style="width:100%;"></div>
+        <div class="form-group" style="flex:1;"><label>设计面积（㎡）</label><input class="input" id="projArea" type="number" min="0" style="width:100%;" placeholder="如：180"></div>
+      </div>
+      <div style="display:flex;gap:12px;">
+        <div class="form-group" style="flex:1;"><label id="projLeadLabel">主设计师</label>
+          <select class="input" id="projLead" style="width:100%;"></select>
+        </div>
+        <div class="form-group" style="flex:1;"><label>国家</label>
+          <select class="input" id="projCountry" style="width:100%;">
+            <option>美国</option><option>新加坡</option><option>马来西亚</option><option>日本</option><option>欧美</option><option>中国</option><option>法国</option><option>非洲</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>需求说明</label><textarea class="input" id="projBrief" rows="3" style="width:100%;resize:vertical;" placeholder="项目背景、风格偏好、交付要求等"></textarea></div>
     </div>
     <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('projModal')">取消</button><button class="btn btn-primary" onclick="saveProject()">创建</button></div>
   </div>
@@ -135,28 +155,50 @@
 <!-- 登记外部任务 -->
 <div class="modal-overlay" id="intakeModal">
   <div class="modal" style="max-width:480px;">
-    <div class="modal-header"><h2>登记外部任务</h2><button class="modal-close" onclick="closeModal('intakeModal')">✕</button></div>
+    <div class="modal-header"><h2 id="intakeModalTitle">登记外部项目</h2><button class="modal-close" onclick="closeModal('intakeModal')">✕</button></div>
     <div class="modal-body">
-      <div class="form-group"><label>任务标题</label><input class="input" id="inTitle" style="width:100%;" placeholder="如 海德公园样板间软装设计"></div>
-      <div class="form-group"><label>来源 / 客户</label><input class="input" id="inFrom" style="width:100%;" placeholder="如 销售部-王经理 / 万科"></div>
-      <div class="form-row" style="display:flex;gap:12px;">
-        <div class="form-group" style="flex:1;"><label>关联项目</label><select class="input" id="inProj" style="width:100%;"></select></div>
-        <div class="form-group" style="flex:1;"><label>优先级</label><select class="input" id="inPrio" style="width:100%;"><option value="高">高</option><option value="中" selected>中</option><option value="低">低</option></select></div>
+      <!-- 负责人视角：登记外部项目 -->
+      <div id="intakeProjFields">
+        <div class="form-group"><label>项目名称</label><input class="input" id="inTitle" style="width:100%;" placeholder="如 海德公园样板间软装设计"></div>
+        <div class="form-group"><label>来源 / 客户</label><input class="input" id="inFrom" style="width:100%;" placeholder="如 销售部-王经理 / 万科"></div>
+        <div class="form-row" style="display:flex;gap:12px;">
+          <div class="form-group" style="flex:1;"><label>截止日期</label><input class="input" type="date" id="inDue" style="width:100%;"></div>
+          <div class="form-group" style="flex:1;"><label>设计面积（㎡）</label><input class="input" type="number" min="0" id="inArea" style="width:100%;" placeholder="如 180"></div>
+        </div>
+        <div class="form-group"><label id="inAssignLabel">分配任务</label>
+          <select class="input" id="inAssign" style="width:100%;"></select>
+        </div>
+        <div class="form-group"><label>需求说明</label><textarea class="input" id="inDesc" rows="3" style="width:100%;" placeholder="客户需求要点、风格偏好、交付要求..."></textarea></div>
       </div>
-      <div class="form-group"><label>截止日期</label><input class="input" type="date" id="inDue" style="width:100%;"></div>
-      <div class="form-group"><label>需求说明</label><textarea class="input" id="inDesc" rows="3" style="width:100%;" placeholder="客户需求要点..."></textarea></div>
+      <!-- 设计师视角：登记任务（与邀请同事分配一致） -->
+      <div id="intakeTaskFields" style="display:none;">
+        <div class="form-group"><label>任务名称</label><input class="input" id="inTkTitle" style="width:100%;" placeholder="如 客厅效果图深化"></div>
+        <div class="form-row" style="display:flex;gap:12px;">
+          <div class="form-group" style="flex:1;"><label>所属项目</label><select class="input" id="inTkProj" style="width:100%;"></select></div>
+          <div class="form-group" style="flex:1;"><label>协作设计师</label><select class="input" id="inTkWho" style="width:100%;"></select></div>
+        </div>
+        <div class="form-row" style="display:flex;gap:12px;">
+          <div class="form-group" style="flex:1;"><label>截止日期</label><input class="input" type="date" id="inTkDue" style="width:100%;"></div>
+          <div class="form-group" style="flex:1;"><label>优先级</label><select class="input" id="inTkPrio" style="width:100%;"><option value="高">高</option><option value="中" selected>中</option><option value="低">低</option></select></div>
+        </div>
+        <div class="form-row" style="display:flex;gap:12px;">
+          <div class="form-group" style="flex:1;"><label>设计面积（㎡）</label><input class="input" type="number" min="0" id="inTkArea" style="width:100%;" placeholder="如 120"></div>
+          <div class="form-group" style="flex:1;"><label>状态</label><select class="input" id="inTkStatus" style="width:100%;"><option>待开始</option><option>进行中</option><option>待审核</option><option>已完成</option></select></div>
+        </div>
+        <div class="form-group"><label>需求说明</label><textarea class="input" id="inTkDesc" rows="3" style="width:100%;" placeholder="任务要点..."></textarea></div>
+      </div>
     </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('intakeModal')">取消</button><button class="btn btn-primary" onclick="saveIntake()">登记</button></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('intakeModal')">取消</button><button class="btn btn-primary" id="intakeSaveBtn" onclick="saveIntake()">登记</button></div>
   </div>
 </div>
 
 <!-- 分配外部任务给设计师 -->
 <div class="modal-overlay" id="assignModal">
   <div class="modal" style="max-width:460px;">
-    <div class="modal-header"><h2>分配给设计师</h2><button class="modal-close" onclick="closeModal('assignModal')">✕</button></div>
+    <div class="modal-header"><h2 id="assignModalTitle">分配</h2><button class="modal-close" onclick="closeModal('assignModal')">✕</button></div>
     <div class="modal-body">
       <div id="assignTaskInfo" style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;"></div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">按当前状态推荐（空闲优先）：</div>
+      <div id="assignHint" style="font-size:12px;color:var(--text-muted);margin-bottom:8px;"></div>
       <div id="assignChoices" style="display:flex;flex-direction:column;gap:8px;max-height:300px;overflow:auto;"></div>
     </div>
   </div>
@@ -207,6 +249,20 @@ var MEMBERS = ['陈磊','林悦','王明远','张薇','李强','孙敏','周杰'
 var LEADER_NAME = '陈磊';
 var ME = (window.GDRole ? GDRole.me() : '陈磊');
 var IS_LEADER = (window.GDRole ? GDRole.isLeader() : true);
+// 3 级角色（与首页一致）：gm 总负责人 / head 部门负责人 / designer 设计师
+var TIER = (window.GDOrg ? GDOrg.tier() : 'designer');
+var MY_DEPT = (window.GDOrg ? GDOrg.deptOf(ME) : '设计一部');
+// 权限：能否分配任务（gm→部门, head→部门设计师, designer→邀请同事协作）
+var CAN_ASSIGN = (TIER === 'gm' || TIER === 'head');      // 正式"分配任务"
+var CAN_INVITE = true;                                     // 所有角色都能邀请同事加入自己负责的任务
+var CAN_MANAGE_ALL = (TIER === 'gm');                      // 看/管全部项目
+// 分配目标：gm→各部门负责人；head→本部门设计师
+function assignTargets(){
+  if(TIER==='gm') return GDOrg.allDepts().map(function(d){ return GDOrg.headOf(d); }).filter(Boolean);
+  if(TIER==='head') return GDOrg.membersOf(MY_DEPT);
+  return [ME];
+}
+function assignTargetLabel(){ return TIER==='gm' ? '分配给部门负责人' : (TIER==='head' ? '分配给本部门设计师' : '指派给'); }
 var COLS = ['待开始','进行中','待审核','已完成'];
 var PRIO_TAG = { '高':'tag-red', '中':'tag-orange', '低':'tag-green' };
 var STATUS_TAG = { '进行中':'tag-blue','已交付':'tag-green','筹备中':'tag-orange','已归档':'tag-purple' };
@@ -287,13 +343,16 @@ function projTasks(id){ return TASKS.filter(function(t){return t.projId===id;});
 // ---------- 项目（文件夹样式） ----------
 function renderProjects(){
   refreshSelects();
-  // 设计师只看自己参与的项目；组长看全部
-  var visible = GDRole.can('createProject') ? PROJECTS : PROJECTS.filter(function(p){ return p.members.indexOf(ME)>=0; });
+  // 可见范围：总负责人=全部；部门负责人=本部门项目；设计师=自己参与的
+  var visible;
+  if(TIER==='gm') visible = PROJECTS;
+  else if(TIER==='head') visible = PROJECTS.filter(function(p){ return (p.members||[]).some(function(m){ return GDOrg.deptOf(m)===MY_DEPT; }) || (p.lead && GDOrg.deptOf(p.lead)===MY_DEPT); });
+  else visible = PROJECTS.filter(function(p){ return (p.members||[]).indexOf(ME)>=0; });
   var hint=document.getElementById('projHint');
-  if(hint) hint.textContent = GDRole.can('createProject')
-    ? '管理视角：可新建项目、分配任务、邀请同事、编辑任意进度。'
-    : '我参与的项目：可更新我负责任务的进度、复制项目到我的案例。';
-  var nb=document.getElementById('newProjBtn'); if(nb) nb.style.display = GDRole.can('createProject') ? '' : 'none';
+  if(hint) hint.textContent = (TIER==='gm') ? '总负责人：新建项目并分配给部门负责人，可查看全部门项目。'
+    : (TIER==='head') ? (MY_DEPT+'：新建项目并分配给本部门设计师，管理本部门项目。')
+    : '设计师：新建项目默认自己负责，可邀请同事协作、更新进度。';
+  var nb=document.getElementById('newProjBtn'); if(nb) nb.style.display = '';   // 所有角色都能新建项目
 
   var cards = visible.map(function(p){
     var ts = projTasks(p.id);
@@ -306,7 +365,7 @@ function renderProjects(){
         '<span class="tag '+stag+'">'+p.status+'</span>'+
       '</div>'+
       '<div class="folder-name">'+p.name+'</div>'+
-      '<div class="folder-sub">客户：'+p.client+'　·　截止 '+p.due+'</div>'+
+      '<div class="folder-sub">客户：'+(p.client||'—')+'　·　截止 '+(p.due||'—')+(p.area!=null?'　·　'+p.area+'㎡':'')+'</div>'+
       '<div class="folder-stat"><span>📋 '+ts.length+' 任务（'+done+' 完成）</span><span>👥 '+p.members.length+' 人</span></div>'+
       '<div class="proj-progress"><div class="proj-progress-fill" style="width:'+p.progress+'%;"></div></div>'+
       '<div class="folder-bottom"><div class="folder-mems">'+avatars+'</div><span class="folder-pct">'+p.progress+'%</span></div>'+
@@ -316,11 +375,9 @@ function renderProjects(){
       '</div>'+
     '</div>';
   }).join('');
-  var addCard = GDRole.can('createProject')
-    ? '<div class="folder-card folder-add" onclick="openNewProject()"><div class="folder-add-plus">＋</div><div>新建协作项目</div></div>'
-    : '';
-  document.getElementById('projFolders').innerHTML = cards + addCard ||
-    '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px;">你还没有参与任何项目，等待组长分配或邀请。</p>';
+  var addCard = '<div class="folder-card folder-add" onclick="openNewProject()"><div class="folder-add-plus">＋</div><div>新建协作项目</div></div>';
+  document.getElementById('projFolders').innerHTML = (cards + addCard) ||
+    '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px;">你还没有参与任何项目。</p>';
 }
 
 // 复制整个项目（含全部空间）到「我的案例」
@@ -352,41 +409,42 @@ window.copyProjectToMine = copyProjectToMine;
 function openProjDetail(id){
   var p = projById(id); if(!p) return;
   var ts = projTasks(id);
-  var canManage = GDRole.can('editAnyProgress');           // 组长可编辑任意项目
+  var canManage = CAN_MANAGE_ALL || (p.members && p.members[0]===ME);  // 总负责人或项目主设计师可编辑
   var rows = ts.length ? ts.map(function(t){
     var mine = t.who===ME;
-    return '<tr'+(mine?' style="background:var(--primary-light);"':'')+'><td>'+t.title+(mine?' <span class="tag tag-blue" style="font-size:10px;">我的</span>':'')+'</td><td>'+t.who+'</td><td><span class="tag '+PRIO_TAG[t.prio]+'">'+t.prio+'</span></td><td>'+t.status+'</td></tr>';
-  }).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">暂无任务</td></tr>';
+    var area = (t.area!=null? t.area+' ㎡' : '—');
+    return '<tr'+(mine?' style="background:var(--primary-light);"':'')+'><td>'+t.title+(mine?' <span class="tag tag-blue" style="font-size:10px;">我的</span>':'')+'</td><td>'+t.who+'</td><td>'+area+'</td><td><span class="tag '+PRIO_TAG[t.prio]+'">'+t.prio+'</span></td><td>'+t.status+'</td><td>'+(t.due||'—')+'</td></tr>';
+  }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">暂无任务</td></tr>';
   var memChips = p.members.map(function(m){
     return '<span class="mem-chip">'+m+(m===ME?'（我）':'')+'</span>';
   }).join('');
   var pendingChips = INVITES.filter(function(iv){return iv.projId===id&&iv.status==='待接受';})
     .map(function(iv){ return '<span class="mem-chip pending">'+iv.to+' · 待接受</span>'; }).join('');
 
-  // 状态：组长可改，设计师只读
   var statusHtml = canManage
     ? '<select class="input" id="pdStatus" onchange="updateProjStatus('+id+',this.value)">'+
         ['进行中','筹备中','已交付','已归档'].map(function(s){return '<option'+(s===p.status?' selected':'')+'>'+s+'</option>';}).join('')+'</select>'
     : '<span class="tag '+(STATUS_TAG[p.status]||'tag-blue')+'">'+p.status+'</span>';
-  // 进度：组长可拖动；设计师只读展示（个人进度通过自己任务推进）
   var progressHtml = canManage
     ? '<input type="range" min="0" max="100" step="5" value="'+p.progress+'" style="width:100%;" oninput="updateProjProgress('+id+',this.value)">'
     : '<div class="proj-progress"><div class="proj-progress-fill" style="width:'+p.progress+'%;"></div></div><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">完成自己的任务即可推进项目进度</div>';
-  // 邀请：组长可
-  var inviteBtn = GDRole.can('inviteMembers') ? '<button class="btn btn-secondary btn-sm" onclick="openInvite('+id+')">＋ 邀请同事</button>' : '';
-  // 分配任务：组长可；设计师改为"认领/更新我的任务"提示
-  var assignBtn = GDRole.can('assignTask')
-    ? '<button class="btn btn-primary btn-sm" onclick="closeModal(\'projDetailModal\');openNewTask('+id+')">＋ 分配任务</button>'
-    : '<button class="btn btn-ghost btn-sm" onclick="closeModal(\'projDetailModal\');switchTeamTab(\'tasks\')">查看我的任务</button>';
+  // 邀请：所有角色都可邀请同事加入（协作）
+  var inviteBtn = CAN_INVITE ? '<button class="btn btn-secondary btn-sm" onclick="openInvite('+id+')">＋ 邀请同事</button>' : '';
+  // 分配任务：总负责人/部门负责人按层级分配；设计师在自己负责的项目里也能"分配/指派"协作任务
+  var assignBtn = '<button class="btn btn-primary btn-sm" onclick="closeModal(\'projDetailModal\');openNewTask('+id+')">＋ 分配任务</button>';
 
   document.getElementById('projDetailTitle').textContent = p.name;
   document.getElementById('projDetailBody').innerHTML =
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;font-size:13px;">'+
-      '<div><strong>客户：</strong>'+p.client+'</div>'+
+      '<div><strong>客户：</strong>'+(p.client||'—')+'</div>'+
       '<div style="display:flex;align-items:center;gap:6px;"><strong>状态：</strong>'+statusHtml+'</div>'+
-      '<div><strong>截止：</strong>'+p.due+'</div>'+
+      '<div><strong>截止：</strong>'+(p.due||'—')+'</div>'+
       '<div><strong>成员：</strong>'+p.members.length+' 人</div>'+
+      (p.area!=null?'<div><strong>设计面积：</strong>'+p.area+' ㎡</div>':'')+
+      (p.country?'<div><strong>国家：</strong>'+p.country+'</div>':'')+
+      (p.lead?'<div><strong>主设计师：</strong>'+p.lead+'</div>':'')+
     '</div>'+
+    (p.brief?'<div style="margin-bottom:14px;font-size:13px;background:var(--bg);border-radius:8px;padding:10px 12px;"><strong>需求说明：</strong>'+p.brief+'</div>':'')+
     '<div style="margin-bottom:16px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'+
         '<strong style="font-size:13px;">项目进度</strong><span id="pdPctLabel" style="font-weight:700;color:var(--primary);">'+p.progress+'%</span></div>'+
@@ -398,7 +456,7 @@ function openProjDetail(id){
     '<div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px;">'+
       '<h4 style="margin:0;">任务（'+ts.length+'）</h4>'+assignBtn+
     '</div>'+
-    '<div class="table-wrap"><table><thead><tr><th>任务</th><th>负责人</th><th>优先级</th><th>状态</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="table-wrap"><table><thead><tr><th>任务</th><th>负责人</th><th>设计面积</th><th>优先级</th><th>状态</th><th>截止时间</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
     '<div style="margin-top:16px;text-align:right;"><button class="btn btn-secondary btn-sm" onclick="copyProjectToMine('+id+')">📑 复制整个项目到我的案例</button></div>';
   openModal('projDetailModal');
 }
@@ -415,14 +473,42 @@ window.updateProjProgress=updateProjProgress;
 function updateProjStatus(id,val){ var p=projById(id); if(!p) return; p.status=val; save(); renderProjects(); showToast('info','项目状态已更新为「'+val+'」'); }
 window.updateProjStatus=updateProjStatus;
 
-function openNewProject(){ document.getElementById('projName').value=''; document.getElementById('projClient').value=''; document.getElementById('projDue').value=''; openModal('projModal'); }
+function openNewProject(){
+  document.getElementById('projName').value='';
+  document.getElementById('projClient').value='';
+  document.getElementById('projDue').value='';
+  document.getElementById('projArea').value='';
+  document.getElementById('projBrief').value='';
+  // 主设计师下拉：按角色——总负责人选部门负责人 / 部门负责人选本部门设计师 / 设计师默认自己
+  var leadSel=document.getElementById('projLead');
+  var leadLabel=document.getElementById('projLeadLabel');
+  var opts;
+  if(TIER==='gm'){ leadLabel.textContent='分配给（部门负责人）'; opts=assignTargets(); }
+  else if(TIER==='head'){ leadLabel.textContent='分配给（本部门设计师）'; opts=assignTargets(); }
+  else { leadLabel.textContent='主设计师'; opts=[ME]; }
+  leadSel.innerHTML=opts.map(function(n){ return '<option'+(n===ME?' selected':'')+'>'+n+'</option>'; }).join('');
+  leadSel.disabled = (TIER==='designer');
+  openModal('projModal');
+}
 function saveProject(){
   var name=document.getElementById('projName').value.trim();
   if(!name){ showToast('warning','请输入项目名称'); return; }
   var id=PROJECTS.reduce(function(m,x){return Math.max(m,x.id);},0)+1;
-  PROJECTS.unshift({id:id,name:name,client:document.getElementById('projClient').value.trim()||'内部',members:[ME],progress:0,due:document.getElementById('projDue').value||'待定',status:'筹备中'});
+  var lead=document.getElementById('projLead').value||ME;
+  var area=parseInt(document.getElementById('projArea').value)||null;
+  var members=[lead]; if(members.indexOf(ME)<0) members.unshift(ME);
+  PROJECTS.unshift({
+    id:id, name:name,
+    client:document.getElementById('projClient').value.trim()||'内部',
+    members:members, lead:lead, progress:0,
+    due:document.getElementById('projDue').value||'待定',
+    status:'筹备中',
+    area:area, country:document.getElementById('projCountry').value,
+    brief:document.getElementById('projBrief').value.trim()
+  });
   save(); closeModal('projModal'); renderProjects();
-  showToast('success','项目「'+name+'」已创建');
+  var who = TIER==='designer' ? '你自己' : lead;
+  showToast('success','项目「'+name+'」已创建，主设计师：'+who);
 }
 window.openNewProject=openNewProject; window.saveProject=saveProject;
 
@@ -491,11 +577,10 @@ function refreshInviteDot(){
   if(n>0){ dot.style.display=''; dot.textContent=n; } else dot.style.display='none';
 }
 
-// ---------- 看板 ----------
+// ---------- 看板（按项目分行 × 状态分列，支持拖拽） ----------
 function renderKanban(){
   refreshSelects();
-  var canAssign = GDRole.can('assignTask');
-  // 设计师端：强制只看自己的任务，隐藏负责人筛选与“添加任务”
+  var canAssign = CAN_ASSIGN;
   var of=document.getElementById('ownerFilterLabel'); var ofs=document.getElementById('kanbanFilter');
   if(of) of.style.display = canAssign ? '' : 'none';
   if(ofs) ofs.style.display = canAssign ? '' : 'none';
@@ -503,45 +588,84 @@ function renderKanban(){
 
   var who = canAssign ? document.getElementById('kanbanFilter').value : ME;
   var pid = document.getElementById('kanbanProj').value;
-  document.getElementById('kanban').innerHTML = COLS.map(function(col){
-    var items = TASKS.filter(function(t){ return t.status===col && (!who||t.who===who) && (!pid||t.projId===parseInt(pid)); });
-    var cards = items.map(function(t){
-      var p=projById(t.projId);
-      var idx = COLS.indexOf(col);
-      var mineTask = t.who===ME;
-      // 设计师只能推进自己的任务；组长可推进全部
-      var canMove = canAssign || mineTask;
-      var left = (canMove && idx>0) ? '<button class="kb-move" title="左移" onclick="moveTask('+t.id+',-1)">◀</button>' : '';
-      var right = (canMove && idx<COLS.length-1) ? '<button class="kb-move" title="右移" onclick="moveTask('+t.id+',1)">▶</button>' : '';
-      var due = t.due || (p?p.due:'') || '';
-      var overdue = due && due!=='待定' && due < gdToday() && col!=='已完成';
-      var dueHtml = due ? '<span class="kb-due'+(overdue?' overdue':'')+'">📅 '+due+(overdue?' 逾期':'')+'</span>' : '';
-      var src = t.source==='外部' ? '<span class="tag tag-red" style="font-size:10px;">外部派单</span>' : '';
-      var deliver = '';
-      if((col==='待审核'||col==='已完成') && t.nasPath){
-        deliver = '<div class="kb-deliver">📁 交付：<code>'+t.nasPath+'</code>'+
-          (t.caseId?' <a class="kb-link" onclick="gotoMyCase(\''+t.nasPath+'\')">查看我的案例</a>':'')+'</div>';
-      }
-      // 操作按钮：编辑/删除仅组长或本人
-      var editBtns = canMove
-        ? '<button class="kb-move" title="编辑" onclick="editTask('+t.id+')">✎</button>'+
-          (canAssign?'<button class="kb-move" title="删除" onclick="delTask('+t.id+')">🗑</button>':'')
-        : '';
-      return '<div class="kanban-card'+(overdue?' kb-card-overdue':'')+(mineTask?' kb-mine':'')+'">'+
-        '<div class="kanban-card-title">'+t.title+' '+src+(mineTask?' <span class="tag tag-blue" style="font-size:10px;">我的</span>':'')+'</div>'+
-        '<div class="kb-proj">📂 '+(p?p.name:'未关联项目')+'</div>'+
-        '<div class="kb-row"><span class="kb-owner" title="负责人"><span class="rank-av" style="width:20px;height:20px;font-size:10px;">'+t.who.charAt(0)+'</span> '+t.who+'</span>'+dueHtml+'</div>'+
-        deliver+
-        '<div class="kanban-card-meta"><span class="tag '+PRIO_TAG[t.prio]+'">'+t.prio+'</span>'+
-          '<span style="font-size:11px;color:var(--text-muted);">'+col+'</span></div>'+
-        (editBtns||left||right ? '<div class="kb-actions">'+left+right+editBtns+'</div>' : '')+
-      '</div>';
+  // 参与的项目（设计师只看自己有任务的项目）
+  var visibleTasks = TASKS.filter(function(t){ return (!who||t.who===who) && (!pid||t.projId===parseInt(pid)); });
+  if(!canAssign) visibleTasks = TASKS.filter(function(t){ return t.who===ME && (!pid||t.projId===parseInt(pid)); });
+  var projIds = [];
+  visibleTasks.forEach(function(t){ if(projIds.indexOf(t.projId)<0) projIds.push(t.projId); });
+
+  var board=document.getElementById('kanban');
+  // 表头：第一列“项目” + 各状态列
+  var head = '<div class="kbm-head"><div class="kbm-corner">项目</div>' +
+    COLS.map(function(c){ var n=visibleTasks.filter(function(t){return t.status===c;}).length;
+      return '<div class="kbm-colhead">'+c+' <span class="kbm-cnt">'+n+'</span></div>'; }).join('') + '</div>';
+
+  if(!projIds.length){ board.innerHTML = head + '<div style="padding:40px;text-align:center;color:var(--text-muted);">暂无任务</div>'; return; }
+
+  var rows = projIds.map(function(projId){
+    var p=projById(projId);
+    var cells = COLS.map(function(col){
+      var items = visibleTasks.filter(function(t){ return t.projId===projId && t.status===col; });
+      var cards = items.map(function(t){ return kanbanCard(t, col, canAssign); }).join('');
+      // 放置区（拖拽落点）
+      return '<div class="kbm-cell" ondragover="kbAllowDrop(event)" ondrop="kbDrop(event,'+projId+',\''+col+'\')" data-col="'+col+'">'+cards+
+        (canAssign?'<button class="kbm-add" onclick="openNewTask('+projId+',\''+col+'\')">＋</button>':'')+'</div>';
     }).join('');
-    var addBtn = canAssign ? '<button class="btn btn-ghost btn-sm" style="width:100%;" onclick="openNewTask(null,\''+col+'\')">＋ 添加任务</button>' : '';
-    return '<div class="kanban-col"><div class="kanban-col-title">'+col+' <span class="tag tag-purple">'+items.length+'</span></div>'+
-      cards+addBtn+'</div>';
+    return '<div class="kbm-row"><div class="kbm-proj"><span class="kbm-proj-ic">📂</span><div><div class="kbm-proj-name">'+(p?p.name:'未关联')+'</div>'+
+      (p&&p.client?'<div class="kbm-proj-sub">'+p.client+'</div>':'')+'</div></div>'+cells+'</div>';
   }).join('');
+
+  board.innerHTML = '<div class="kbm-wrap">' + head + rows + '</div>';
 }
+// 单个任务卡（含拖拽属性）
+function kanbanCard(t, col, canAssign){
+  var p=projById(t.projId);
+  var mineTask = t.who===ME;
+  var canMove = canAssign || mineTask;
+  var due = t.due || (p?p.due:'') || '';
+  var overdue = due && due!=='待定' && due < gdToday() && col!=='已完成';
+  var dueHtml = due ? '<span class="kb-due'+(overdue?' overdue':'')+'">📅 '+due+(overdue?' 逾期':'')+'</span>' : '';
+  var src = t.source==='外部' ? '<span class="tag tag-red" style="font-size:9px;">外部</span>' : '';
+  var areaHtml = (t.area!=null) ? '<span class="kb-area">📐 '+t.area+'㎡</span>' : '';
+  var deliver = '';
+  if((col==='待审核'||col==='已完成') && t.nasPath){
+    deliver = '<div class="kb-deliver">📁 <code>'+t.nasPath+'</code>'+
+      (t.caseId?' <a class="kb-link" onclick="gotoMyCase(\''+t.nasPath+'\')">查看</a>':'')+'</div>';
+  }
+  var editBtns = canMove
+    ? '<button class="kb-move" title="编辑" onclick="editTask('+t.id+')">✎</button>'+
+      (canAssign?'<button class="kb-move" title="删除" onclick="delTask('+t.id+')">🗑</button>':'')
+    : '';
+  return '<div class="kanban-card'+(overdue?' kb-card-overdue':'')+(mineTask?' kb-mine':'')+'"'+
+      (canMove?' draggable="true" ondragstart="kbDragStart(event,'+t.id+')" ondragend="kbDragEnd(event)"':'')+'>'+
+    '<div class="kanban-card-title">'+t.title+' '+src+(mineTask?' <span class="tag tag-blue" style="font-size:9px;">我的</span>':'')+'</div>'+
+    '<div class="kb-row"><span class="kb-owner"><span class="rank-av" style="width:18px;height:18px;font-size:9px;">'+t.who.charAt(0)+'</span> '+t.who+'</span>'+areaHtml+'</div>'+
+    '<div class="kb-row">'+dueHtml+'<span class="tag '+PRIO_TAG[t.prio]+'" style="font-size:10px;">'+t.prio+'</span></div>'+
+    deliver+
+    (editBtns ? '<div class="kb-actions">'+editBtns+'</div>' : '')+
+  '</div>';
+}
+// 拖拽逻辑
+var KB_DRAG_ID = null;
+function kbDragStart(e,id){ KB_DRAG_ID=id; e.dataTransfer.effectAllowed='move'; try{e.dataTransfer.setData('text/plain',String(id));}catch(_){} setTimeout(function(){ if(e.target&&e.target.classList) e.target.classList.add('kb-dragging'); },0); }
+function kbDragEnd(e){ if(e.target&&e.target.classList) e.target.classList.remove('kb-dragging'); KB_DRAG_ID=null; }
+function kbAllowDrop(e){ e.preventDefault(); e.dataTransfer.dropEffect='move'; var c=e.currentTarget; if(c&&c.classList) c.classList.add('kbm-cell-over'); }
+function kbDrop(e, projId, col){
+  e.preventDefault();
+  var c=e.currentTarget; if(c&&c.classList) c.classList.remove('kbm-cell-over');
+  var id = KB_DRAG_ID; if(id==null){ try{ id=parseInt(e.dataTransfer.getData('text/plain')); }catch(_){} }
+  var t=TASKS.find(function(x){return x.id===id;}); if(!t) return;
+  // 权限：设计师只能拖自己的任务
+  if(!CAN_ASSIGN && t.who!==ME){ showToast('warning','只能移动自己负责的任务'); return; }
+  if(t.status===col) return;
+  // 闭环：移动到已完成需交付路径
+  if(col==='已完成' && !t.nasPath){ t._pendingProj=projId; openComplete(id); return; }
+  t.status=col; syncProgressFromTasks(t.projId); save(); renderKanban(); renderProjects();
+  showToast('success','「'+t.title+'」已移动到「'+col+'」');
+}
+window.kbDragStart=kbDragStart; window.kbDragEnd=kbDragEnd; window.kbAllowDrop=kbAllowDrop; window.kbDrop=kbDrop;
+// 清除拖拽悬停态
+document.addEventListener('dragleave',function(e){ if(e.target&&e.target.classList&&e.target.classList.contains('kbm-cell')) e.target.classList.remove('kbm-cell-over'); });
 function gotoMyCase(path){ showToast('info','定位到我的案例：'+path); setTimeout(function(){ window.location.href='mycases.html'; }, 600); }
 window.gotoMyCase=gotoMyCase;
 
@@ -600,10 +724,12 @@ window.openComplete=openComplete; window.confirmComplete=confirmComplete;
 var editingTaskId=null;
 function openNewTask(presetProj,presetStatus){
   editingTaskId=null;
-  document.getElementById('taskModalTitle').textContent='添加任务';
+  document.getElementById('taskModalTitle').textContent= (CAN_ASSIGN?'分配任务':'添加协作任务');
   document.getElementById('taskTitle').value='';
   document.getElementById('taskPrio').value='中';
   document.getElementById('taskDue').value='';
+  document.getElementById('taskArea').value='';
+  document.getElementById('taskBrief').value='';
   refreshSelects();
   if(presetProj) document.getElementById('taskProj').value=String(presetProj);
   document.getElementById('taskStatus').value=(typeof presetStatus==='string'?presetStatus:'待开始');
@@ -619,6 +745,8 @@ function editTask(id){
   document.getElementById('taskWho').value=t.who;
   document.getElementById('taskPrio').value=t.prio;
   document.getElementById('taskDue').value=t.due||'';
+  document.getElementById('taskArea').value=(t.area!=null?t.area:'');
+  document.getElementById('taskBrief').value=t.brief||'';
   document.getElementById('taskStatus').value=t.status;
   openModal('taskModal');
 }
@@ -633,12 +761,12 @@ function saveTask(){
   var title=document.getElementById('taskTitle').value.trim();
   if(!title){ showToast('warning','请输入任务名称'); return; }
   var status=document.getElementById('taskStatus').value;
-  // 闭环：若直接把任务设为已完成，必须有交付路径
   if(status==='已完成'){
     var existing=editingTaskId?TASKS.find(function(x){return x.id===editingTaskId;}):null;
     if(!existing||!existing.nasPath){ showToast('warning','「已完成」需在看板中拖动并填写交付路径'); status='待审核'; }
   }
-  var data={ title:title, projId:parseInt(document.getElementById('taskProj').value), who:document.getElementById('taskWho').value, prio:document.getElementById('taskPrio').value, due:document.getElementById('taskDue').value||'', status:status };
+  var area=parseInt(document.getElementById('taskArea').value); if(isNaN(area)) area=null;
+  var data={ title:title, projId:parseInt(document.getElementById('taskProj').value), who:document.getElementById('taskWho').value, prio:document.getElementById('taskPrio').value, due:document.getElementById('taskDue').value||'', status:status, area:area, brief:document.getElementById('taskBrief').value.trim() };
   if(editingTaskId){ Object.assign(TASKS.find(function(x){return x.id===editingTaskId;}),data); showToast('success','任务已更新'); }
   else { var id=TASKS.reduce(function(m,x){return Math.max(m,x.id);},0)+1; TASKS.push(Object.assign({id:id},data)); showToast('success','任务已分配给 '+data.who); }
   syncProgressFromTasks(data.projId); save(); closeModal('taskModal'); renderKanban(); renderProjects();
@@ -648,7 +776,10 @@ window.openNewTask=openNewTask; window.editTask=editTask; window.delTask=delTask
 function refreshSelects(){
   var projOpts = PROJECTS.map(function(p){return '<option value="'+p.id+'">'+p.name+'</option>';}).join('');
   var tp=document.getElementById('taskProj'); if(tp) tp.innerHTML=projOpts;
-  var tw=document.getElementById('taskWho'); if(tw) tw.innerHTML=MEMBERS.map(function(m){return '<option>'+m+'</option>';}).join('');
+  // 负责人候选按角色：gm→部门负责人；head→本部门设计师；designer→全体（协作）
+  var whoList = CAN_ASSIGN ? assignTargets() : MEMBERS;
+  var tw=document.getElementById('taskWho'); if(tw) tw.innerHTML=whoList.map(function(m){return '<option>'+m+'</option>';}).join('');
+  var twl=document.getElementById('taskWhoLabel'); if(twl) twl.textContent = CAN_ASSIGN ? (TIER==='gm'?'分配给（部门负责人）':'分配给（本部门设计师）') : '协作设计师';
   var kp=document.getElementById('kanbanProj'); if(kp){ var cur=kp.value; kp.innerHTML='<option value="">全部项目</option>'+projOpts; kp.value=cur; }
   var kf=document.getElementById('kanbanFilter'); if(kf){ var c2=kf.value; kf.innerHTML='<option value="">全部成员</option>'+MEMBERS.map(function(m){return '<option>'+m+'</option>';}).join(''); kf.value=c2; }
 }
@@ -672,11 +803,11 @@ function renderMemberLoad(){
     var stText = st.state==='忙碌' ? ('忙碌 · '+(st.proj||'未指定项目'))
               : st.state==='请假' ? ('请假'+(st.note?' · '+st.note:''))
               : '空闲';
-    var canEdit = IS_LEADER || r.name===ME;
+    var canEdit = (TIER==='gm'||TIER==='head') || r.name===ME;
     var stBtn = '<span class="state-pill '+STATE_TAG[st.state]+'" '+(canEdit?'onclick="openStatus(\''+r.name+'\')" style="cursor:pointer;" title="点击调整状态"':'')+'>'+STATE_ICON[st.state]+' '+stText+'</span>';
     return '<div class="rank-row" style="gap:12px;">'+
       '<div class="rank-av">'+r.name.charAt(0)+'</div>'+
-      '<div style="width:84px;font-size:13px;font-weight:600;">'+r.name+(r.name===ME?'（我）':'')+(r.name===ME&&IS_LEADER?' 👑':'')+'</div>'+
+      '<div style="width:84px;font-size:13px;font-weight:600;">'+r.name+(r.name===ME?'（我）':'')+(r.name===ME&&(TIER==='gm'||TIER==='head')?' 👑':'')+'</div>'+
       '<div style="width:200px;">'+stBtn+'</div>'+
       '<div class="rank-bar-wrap"><div class="rank-bar" style="width:'+(r.total/max*100)+'%;"></div></div>'+
       '<div style="width:200px;text-align:right;font-size:12px;color:var(--text-secondary);">参与 '+r.projs+' 项目 · 进行中 '+r.active+' · 完成 '+r.done+'</div>'+
@@ -711,96 +842,182 @@ function saveStatus(){
 }
 window.openStatus=openStatus; window.onStateChange=onStateChange; window.saveStatus=saveStatus;
 
-// ---------- 外部派单 ----------
+// ---------- 外部派单 / 项目分配（3 级角色） ----------
 function renderIntake(){
   refreshSelects();
-  // 角色相关 UI
-  var btn=document.getElementById('intakeNewBtn'); if(btn) btn.style.display = IS_LEADER ? '' : 'none';
+  var btn=document.getElementById('intakeNewBtn');
   var hint=document.getElementById('intakeHint');
-  if(hint) hint.textContent = IS_LEADER
-    ? '组长（部门主管）在此接收来自客户/销售的外部任务，分配给空闲设计师。已分配的任务会进入对应项目的任务看板。'
-    : '这里是派发给你的外部任务。组长分配后你会在此看到，并同步进入「任务看板」。';
-  // 用户端只看派给自己的；组长看全部
-  var base = IS_LEADER ? INTAKES : INTAKES.filter(function(it){ return it.assignee===ME; });
+  // 按角色：标题/按钮/说明
+  if(TIER==='gm'){
+    if(btn){ btn.style.display=''; btn.textContent='＋ 登记外部项目'; }
+    if(hint) hint.textContent='总负责人：登记外部项目并分配给部门（部门负责人）。下方为待分配/已分配项目列表。';
+  } else if(TIER==='head'){
+    if(btn){ btn.style.display=''; btn.textContent='＋ 登记外部项目'; }
+    if(hint) hint.textContent='部门负责人：登记本部门外部项目并分配给本部门设计师。';
+  } else {
+    if(btn){ btn.style.display=''; btn.textContent='＋ 登记任务'; }
+    if(hint) hint.textContent='设计师：登记任务并指定协作设计师（与项目内「邀请同事分配」一致）。下方为派给你的任务。';
+  }
+
+  // 数据范围：gm 看全部；head 看本部门；designer 看派给自己的
+  var base;
+  if(TIER==='gm') base = INTAKES;
+  else if(TIER==='head') base = INTAKES.filter(function(it){ return it.dept===MY_DEPT || it.status==='待分配'; });
+  else base = INTAKES.filter(function(it){ return it.assignee===ME; });
   var list = base.slice().sort(function(a,b){ return (a.status==='待分配'?0:1)-(b.status==='待分配'?0:1); });
+
+  // 分配按钮文案/动作随角色
+  var assignBtnLabel = TIER==='gm' ? '分配给部门' : (TIER==='head' ? '分配给设计师' : '');
   document.getElementById('intakeList').innerHTML = list.length ? list.map(function(it){
     var p=projById(it.projId);
     var statusTag = it.status==='待分配'?'tag-red':(it.status==='已分配'?'tag-blue':'tag-green');
-    var action = (it.status==='待分配' && IS_LEADER)
-      ? '<button class="btn btn-primary btn-sm" onclick="openAssign('+it.id+')">分配给设计师</button>'
-      : (it.assignee?'<span class="mem-chip">已派给 '+it.assignee+'</span>':'');
+    var canAssignThis = it.status==='待分配' && (TIER==='gm'||TIER==='head');
+    var action = canAssignThis
+      ? '<button class="btn btn-primary btn-sm" onclick="openAssign('+it.id+')">'+assignBtnLabel+'</button>'
+      : (it.assignee?'<span class="mem-chip">已派给 '+it.assignee+'</span>':(it.dept?'<span class="mem-chip">已分配 '+it.dept+'</span>':''));
+    var metaBits = '来源：'+it.from+'　·　截止：'+it.due+(it.area?'　·　设计面积：'+it.area+'㎡':'');
+    if(it.dept) metaBits += '　·　部门：'+it.dept;
     return '<div class="intake-row">'+
       '<div style="flex:1;">'+
-        '<div style="font-weight:600;font-size:14px;">'+it.title+' <span class="tag '+PRIO_TAG[it.prio]+'">'+it.prio+'</span> <span class="tag '+statusTag+'">'+it.status+'</span></div>'+
-        '<div style="font-size:12px;color:var(--text-secondary);margin-top:3px;">来源：'+it.from+'　·　项目：'+(p?p.name:'-')+'　·　截止：'+it.due+'</div>'+
+        '<div style="font-weight:600;font-size:14px;">'+it.title+(it.prio?' <span class="tag '+PRIO_TAG[it.prio]+'">'+it.prio+'</span>':'')+' <span class="tag '+statusTag+'">'+it.status+'</span>'+(it.source==='外部'?' <span class="tag tag-red" style="font-size:10px;">外部</span>':'')+'</div>'+
+        '<div style="font-size:12px;color:var(--text-secondary);margin-top:3px;">'+metaBits+'</div>'+
         (it.desc?'<div style="font-size:12px;color:var(--text-muted);margin-top:3px;">'+it.desc+'</div>':'')+
       '</div>'+
       '<div style="display:flex;align-items:center;gap:8px;">'+action+'</div>'+
     '</div>';
-  }).join('') : '<div style="padding:24px;text-align:center;color:var(--text-muted);">'+(IS_LEADER?'暂无外部任务':'暂无派给你的任务')+'</div>';
+  }).join('') : '<div style="padding:24px;text-align:center;color:var(--text-muted);">'+(TIER==='designer'?'暂无派给你的任务':'暂无待分配项目')+'</div>';
   refreshIntakeDot();
 }
 function refreshIntakeDot(){
-  var n=IS_LEADER ? INTAKES.filter(function(it){return it.status==='待分配';}).length
-                  : INTAKES.filter(function(it){return it.assignee===ME && it.status==='已分配';}).length;
+  var n;
+  if(TIER==='gm') n=INTAKES.filter(function(it){return it.status==='待分配';}).length;
+  else if(TIER==='head') n=INTAKES.filter(function(it){return it.status==='待分配' && (it.dept===MY_DEPT||!it.dept);}).length;
+  else n=INTAKES.filter(function(it){return it.assignee===ME && it.status==='已分配';}).length;
   var d=document.getElementById('intakeDot');
   if(n>0){ d.style.display=''; d.textContent=n; } else d.style.display='none';
 }
 function openNewIntake(){
-  document.getElementById('inTitle').value=''; document.getElementById('inFrom').value='';
-  document.getElementById('inDue').value=''; document.getElementById('inDesc').value='';
-  document.getElementById('inPrio').value='中';
-  document.getElementById('inProj').innerHTML=PROJECTS.map(function(p){return '<option value="'+p.id+'">'+p.name+'</option>';}).join('');
+  var isDesigner = (TIER==='designer');
+  document.getElementById('intakeProjFields').style.display = isDesigner ? 'none' : '';
+  document.getElementById('intakeTaskFields').style.display = isDesigner ? '' : 'none';
+  document.getElementById('intakeModalTitle').textContent = isDesigner ? '登记任务' : '登记外部项目';
+  document.getElementById('intakeSaveBtn').textContent = isDesigner ? '创建任务' : '登记并分配';
+  if(isDesigner){
+    document.getElementById('inTkTitle').value=''; document.getElementById('inTkDue').value='';
+    document.getElementById('inTkArea').value=''; document.getElementById('inTkDesc').value='';
+    document.getElementById('inTkPrio').value='中'; document.getElementById('inTkStatus').value='待开始';
+    document.getElementById('inTkProj').innerHTML=PROJECTS.filter(function(p){return p.members.indexOf(ME)>=0;}).map(function(p){return '<option value="'+p.id+'">'+p.name+'</option>';}).join('') || PROJECTS.map(function(p){return '<option value="'+p.id+'">'+p.name+'</option>';}).join('');
+    document.getElementById('inTkWho').innerHTML=MEMBERS.map(function(m){return '<option'+(m===ME?' selected':'')+'>'+m+'</option>';}).join('');
+  } else {
+    document.getElementById('inTitle').value=''; document.getElementById('inFrom').value='';
+    document.getElementById('inDue').value=''; document.getElementById('inDesc').value=''; document.getElementById('inArea').value='';
+    // 分配目标：gm→部门；head→本部门设计师
+    var lbl=document.getElementById('inAssignLabel'); var sel=document.getElementById('inAssign');
+    if(TIER==='gm'){ lbl.textContent='分配任务（分配给部门）'; sel.innerHTML='<option value="">暂不分配</option>'+GDOrg.allDepts().map(function(d){return '<option>'+d+'</option>';}).join(''); }
+    else { lbl.textContent='分配任务（分配给本部门设计师）'; sel.innerHTML='<option value="">暂不分配</option>'+GDOrg.membersOf(MY_DEPT).map(function(n){return '<option>'+n+'</option>';}).join(''); }
+  }
   openModal('intakeModal');
 }
 function saveIntake(){
+  if(TIER==='designer'){
+    // 设计师登记任务 → 直接进看板（与邀请分配一致）
+    var tkTitle=document.getElementById('inTkTitle').value.trim();
+    if(!tkTitle){ showToast('warning','请输入任务名称'); return; }
+    var tid=TASKS.reduce(function(m,x){return Math.max(m,x.id);},0)+1;
+    var who=document.getElementById('inTkWho').value||ME;
+    var pid=parseInt(document.getElementById('inTkProj').value);
+    TASKS.push({ id:tid, title:tkTitle, who:who, projId:pid,
+      prio:document.getElementById('inTkPrio').value, status:document.getElementById('inTkStatus').value,
+      due:document.getElementById('inTkDue').value||'', area:parseInt(document.getElementById('inTkArea').value)||null,
+      desc:document.getElementById('inTkDesc').value.trim(), source:'协作' });
+    var pp=projById(pid); if(pp && pp.members.indexOf(who)<0) pp.members.push(who);
+    save(); closeModal('intakeModal'); renderIntake(); renderKanban&&renderKanban();
+    showToast('success','任务已创建并指派给 '+who);
+    return;
+  }
+  // 负责人登记外部项目
   var title=document.getElementById('inTitle').value.trim();
-  if(!title){ showToast('warning','请输入任务标题'); return; }
+  if(!title){ showToast('warning','请输入项目名称'); return; }
   var id=INTAKES.reduce(function(m,x){return Math.max(m,x.id);},0)+1;
-  INTAKES.unshift({ id:id, title:title, from:document.getElementById('inFrom').value.trim()||'外部',
-    projId:parseInt(document.getElementById('inProj').value), prio:document.getElementById('inPrio').value,
-    due:document.getElementById('inDue').value||'待定', desc:document.getElementById('inDesc').value.trim(),
-    status:'待分配', assignee:null });
-  save(); closeModal('intakeModal'); renderIntake();
-  showToast('success','外部任务已登记，待分配');
+  var assignTo=document.getElementById('inAssign').value;
+  var it={ id:id, title:title, from:document.getElementById('inFrom').value.trim()||'外部',
+    due:document.getElementById('inDue').value||'待定', area:parseInt(document.getElementById('inArea').value)||null,
+    desc:document.getElementById('inDesc').value.trim(), prio:'中', status:'待分配', assignee:null, dept:null, source:'外部' };
+  // 若登记时即选择了分配目标
+  if(assignTo){
+    if(TIER==='gm'){ it.dept=assignTo; it.status='已分配'; it.assignee=GDOrg.headOf(assignTo); _intakeToProject(it); }
+    else { it.assignee=assignTo; it.dept=MY_DEPT; it.status='已分配'; _intakeToTask(it, assignTo); }
+  }
+  INTAKES.unshift(it);
+  save(); closeModal('intakeModal'); renderIntake(); renderKanban&&renderKanban();
+  showToast('success', assignTo ? ('外部项目已登记并分配给 '+assignTo) : '外部项目已登记，待分配');
 }
 window.openNewIntake=openNewIntake; window.saveIntake=saveIntake;
+
+// 分配产物：GM 分配到部门 → 生成项目（主设计师=部门负责人）
+function _intakeToProject(it){
+  var pid=PROJECTS.reduce(function(m,x){return Math.max(m,x.id);},0)+1;
+  var head=GDOrg.headOf(it.dept);
+  PROJECTS.unshift({ id:pid, name:it.title, client:it.from, members:[head], lead:head, progress:0,
+    due:it.due, status:'筹备中', area:it.area, brief:it.desc, dept:it.dept });
+  it.projId=pid;
+}
+// 分配产物：Head/设计师 分配到设计师 → 生成任务进看板
+function _intakeToTask(it, name){
+  var p=projById(it.projId);
+  var tid=TASKS.reduce(function(m,x){return Math.max(m,x.id);},0)+1;
+  TASKS.push({ id:tid, title:it.title, who:name, projId:it.projId||(PROJECTS[0]&&PROJECTS[0].id), prio:it.prio||'中',
+    status:'待开始', due:it.due||'', area:it.area, source:'外部' });
+  if(p && p.members.indexOf(name)<0) p.members.push(name);
+  STATUS[name]={state:'忙碌', proj:(p?p.name:undefined)};
+}
 
 var assignTarget=null;
 function openAssign(intakeId){
   assignTarget=intakeId;
   var it=INTAKES.find(function(x){return x.id===intakeId;}); if(!it) return;
-  var p=projById(it.projId);
-  document.getElementById('assignTaskInfo').innerHTML='任务：<strong>'+it.title+'</strong>　·　项目：'+(p?p.name:'-');
-  // 推荐：空闲优先，请假置底
-  var order={'空闲':0,'忙碌':1,'请假':2};
-  var cands=MEMBERS.filter(function(m){return m!==ME;}).map(function(m){ return {name:m, st:(STATUS[m]||{state:'空闲'})}; })
-    .sort(function(a,b){ return order[a.st.state]-order[b.st.state]; });
-  document.getElementById('assignChoices').innerHTML=cands.map(function(c){
-    var dis=c.st.state==='请假';
-    var sub=c.st.state==='忙碌'?('忙碌 · '+(c.st.proj||'')):(c.st.state==='请假'?('请假'+(c.st.note?' · '+c.st.note:'')):'空闲');
-    return '<button class="folder-choice" '+(dis?'disabled style="opacity:.55;"':'onclick="doAssign(\''+c.name+'\')"')+'>'+
-      '<span>'+STATE_ICON[c.st.state]+' '+c.name+' <span style="color:var(--text-muted);font-size:12px;">'+sub+'</span></span>'+
-      '<span class="tag '+STATE_TAG[c.st.state]+'">'+c.st.state+'</span></button>';
-  }).join('');
+  document.getElementById('assignTaskInfo').innerHTML='项目：<strong>'+it.title+'</strong>'+(it.area?'　·　设计面积：'+it.area+'㎡':'');
+  if(TIER==='gm'){
+    document.getElementById('assignModalTitle').textContent='分配给部门';
+    document.getElementById('assignHint').textContent='选择承接该项目的部门（项目主设计师将默认为该部门负责人）：';
+    document.getElementById('assignChoices').innerHTML=GDOrg.allDepts().map(function(d){
+      var head=GDOrg.headOf(d);
+      return '<button class="folder-choice" onclick="doAssign(\''+d+'\')"><span>🗂️ '+d+' <span style="color:var(--text-muted);font-size:12px;">负责人：'+head+'</span></span><span class="tag tag-blue">分配</span></button>';
+    }).join('');
+  } else {
+    document.getElementById('assignModalTitle').textContent='分配给设计师';
+    document.getElementById('assignHint').textContent='选择本部门设计师承接（空闲优先）：';
+    var order={'空闲':0,'忙碌':1,'请假':2};
+    var cands=GDOrg.membersOf(MY_DEPT).map(function(m){ return {name:m, st:(STATUS[m]||{state:'空闲'})}; })
+      .sort(function(a,b){ return order[a.st.state]-order[b.st.state]; });
+    document.getElementById('assignChoices').innerHTML=cands.map(function(c){
+      var dis=c.st.state==='请假';
+      var sub=c.st.state==='忙碌'?('忙碌 · '+(c.st.proj||'')):(c.st.state==='请假'?('请假'+(c.st.note?' · '+c.st.note:'')):'空闲');
+      return '<button class="folder-choice" '+(dis?'disabled style="opacity:.55;"':'onclick="doAssign(\''+c.name+'\')"')+'>'+
+        '<span>'+STATE_ICON[c.st.state]+' '+c.name+' <span style="color:var(--text-muted);font-size:12px;">'+sub+'</span></span>'+
+        '<span class="tag '+STATE_TAG[c.st.state]+'">'+c.st.state+'</span></button>';
+    }).join('');
+  }
   openModal('assignModal');
 }
-function doAssign(name){
+function doAssign(target){
   var it=INTAKES.find(function(x){return x.id===assignTarget;}); if(!it) return;
-  it.status='已分配'; it.assignee=name;
-  // 生成一条真实任务进入看板，并把该设计师标记忙碌于此项目
-  var p=projById(it.projId);
-  var tid=TASKS.reduce(function(m,x){return Math.max(m,x.id);},0)+1;
-  TASKS.push({ id:tid, title:it.title, who:name, projId:it.projId, prio:it.prio, status:'待开始', due:it.due||'', source:'外部' });
-  if(p && p.members.indexOf(name)<0) p.members.push(name);
-  STATUS[name]={state:'忙碌', proj:(p?p.name:undefined)};
-  save(); closeModal('assignModal'); renderIntake(); renderKanban&&renderKanban();
-  showToast('success','已分配给 '+name+'，任务进入看板，状态置为忙碌');
+  if(TIER==='gm'){
+    it.dept=target; it.status='已分配'; it.assignee=GDOrg.headOf(target);
+    _intakeToProject(it);
+    save(); closeModal('assignModal'); renderIntake(); renderProjects(); renderKanban&&renderKanban();
+    showToast('success','已分配给 '+target+'，已生成项目，主设计师：'+GDOrg.headOf(target));
+  } else {
+    it.status='已分配'; it.assignee=target; it.dept=MY_DEPT;
+    _intakeToTask(it, target);
+    save(); closeModal('assignModal'); renderIntake(); renderKanban&&renderKanban();
+    showToast('success','已分配给 '+target+'，任务进入看板，状态置为忙碌');
+  }
 }
 window.openAssign=openAssign; window.doAssign=doAssign;
 
 refreshSelects();
-(function(){ var h=document.getElementById('roleHint'); if(h) h.textContent = IS_LEADER ? '👑 当前：管理端（'+ME+'）' : '🎨 当前：用户端（'+ME+'）'; })();
+(function(){ var h=document.getElementById('roleHint'); if(h){ var tl=(window.GDOrg?GDOrg.tierLabel():'设计师'); h.textContent = '🎯 当前视角：'+tl+'（'+ME+'）'; } })();
 renderProjects();
 renderKanban();
 refreshInviteDot();

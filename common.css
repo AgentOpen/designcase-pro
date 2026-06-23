@@ -958,3 +958,25 @@ body.dark .pr-tag{background:#1e2147;color:#a5b4fc;} body.dark .pr-who{backgroun
 .perf-range input{padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--card-bg);color:var(--text);}
 .perf-unit{font-size:14px;font-weight:600;color:var(--text-secondary);}
 .perf-dept-title{font-size:13px;font-weight:600;margin:6px 0 8px;}
+
+/* ===== 任务看板：项目分行 × 状态分列 矩阵 ===== */
+.kbm-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius); }
+.kbm-head { display:grid; grid-template-columns:180px repeat(4,minmax(200px,1fr)); background:var(--bg); border-bottom:2px solid var(--border); position:sticky; top:0; z-index:2; }
+.kbm-corner { padding:12px 14px; font-weight:700; font-size:13px; border-right:1px solid var(--border); }
+.kbm-colhead { padding:12px 14px; font-weight:600; font-size:13px; border-right:1px solid var(--border); display:flex; align-items:center; gap:6px; }
+.kbm-cnt { background:var(--card-bg); border-radius:999px; padding:0 8px; font-size:11px; color:var(--text-secondary); }
+.kbm-row { display:grid; grid-template-columns:180px repeat(4,minmax(200px,1fr)); border-bottom:1px solid var(--border); }
+.kbm-row:last-child { border-bottom:none; }
+.kbm-proj { padding:14px; border-right:1px solid var(--border); display:flex; gap:8px; align-items:flex-start; background:var(--bg); }
+.kbm-proj-ic { font-size:16px; }
+.kbm-proj-name { font-size:13px; font-weight:600; }
+.kbm-proj-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
+.kbm-cell { padding:8px; border-right:1px solid var(--border); min-height:90px; display:flex; flex-direction:column; gap:8px; transition:background var(--transition); }
+.kbm-cell:last-child { border-right:none; }
+.kbm-cell-over { background:var(--primary-light); outline:2px dashed var(--primary); outline-offset:-4px; }
+.kbm-add { align-self:flex-start; border:1px dashed var(--border); background:transparent; color:var(--text-muted); border-radius:6px; width:26px; height:26px; cursor:pointer; font-size:14px; transition:all var(--transition); }
+.kbm-add:hover { border-color:var(--primary); color:var(--primary); }
+.kanban-card[draggable="true"] { cursor:grab; }
+.kanban-card.kb-dragging { opacity:.45; cursor:grabbing; }
+.kb-area { font-size:11px; color:var(--text-secondary); }
+@media (max-width:900px){ .kbm-head,.kbm-row{ grid-template-columns:140px repeat(4,minmax(160px,1fr)); } }
