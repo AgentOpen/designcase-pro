@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目需求提交 · George Design</title>
+<link rel="stylesheet" href="common.css">
+<style>
+  body { display:block; background:linear-gradient(135deg,#eef2ff,#f8fafc); min-height:100vh; }
+  .ext-wrap { max-width:560px; margin:40px auto; padding:0 16px; }
+  .ext-card { background:#fff; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,.08); padding:32px; }
+  .ext-logo { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+  .ext-logo-ic { width:36px; height:36px; border-radius:9px; background:linear-gradient(135deg,#4f46e5,#7c73f0); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; }
+  .ext-title { font-size:20px; font-weight:700; margin:14px 0 4px; }
+  .ext-sub { font-size:13px; color:var(--text-secondary); margin-bottom:22px; }
+  .ext-done { text-align:center; padding:30px 10px; }
+  .ext-done-ic { font-size:48px; margin-bottom:12px; }
+</style>
+</head>
+<body>
+<div class="ext-wrap">
+  <div class="ext-card" id="formCard">
+    <div class="ext-logo"><div class="ext-logo-ic">G</div><div style="font-weight:700;">George Design</div></div>
+    <div class="ext-title">项目需求提交</div>
+    <div class="ext-sub">请填写您的项目信息，提交后我们的设计团队负责人会尽快接收并安排。</div>
+    <div class="form-group"><label>项目名称 *</label><input class="input" id="fName" style="width:100%;" placeholder="如 江景豪宅全案"></div>
+    <div class="form-group"><label>来源 / 客户 *</label><input class="input" id="fFrom" style="width:100%;" placeholder="如 绿城集团 / 王经理"></div>
+    <div class="form-row" style="display:flex;gap:12px;">
+      <div class="form-group" style="flex:1;"><label>期望截止时间</label><input class="input" type="date" id="fDue" style="width:100%;"></div>
+      <div class="form-group" style="flex:1;"><label>设计面积（㎡）</label><input class="input" type="number" min="0" id="fArea" style="width:100%;" placeholder="如 180"></div>
+    </div>
+    <div class="form-group"><label>需求说明</label><textarea class="input" id="fDesc" rows="4" style="width:100%;resize:vertical;" placeholder="项目背景、风格偏好、交付要求等"></textarea></div>
+    <button class="btn btn-primary" style="width:100%;margin-top:6px;" onclick="submitForm()">提交需求</button>
+  </div>
+  <div class="ext-card" id="doneCard" style="display:none;">
+    <div class="ext-done">
+      <div class="ext-done-ic">✅</div>
+      <div class="ext-title">提交成功</div>
+      <div class="ext-sub" id="doneMsg">我们已收到您的项目需求，设计团队负责人会尽快与您联系。</div>
+      <button class="btn btn-secondary" onclick="resetForm()">再提交一个</button>
+    </div>
+  </div>
+</div>
+<script src="common.js"></script>
+<script>
+function submitForm(){
+  var name=document.getElementById('fName').value.trim();
+  var from=document.getElementById('fFrom').value.trim();
+  if(!name){ showToast('warning','请填写项目名称'); return; }
+  if(!from){ showToast('warning','请填写来源/客户'); return; }
+  var intakes=[]; try{ intakes=JSON.parse(localStorage.getItem('gd-intakes')||'[]'); }catch(e){}
+  var id=intakes.reduce(function(m,x){return Math.max(m,x.id||0);},0)+1;
+  intakes.unshift({ id:id, title:name, from:from,
+    due:document.getElementById('fDue').value||'待定',
+    area:parseInt(document.getElementById('fArea').value)||null,
+    desc:document.getElementById('fDesc').value.trim(),
+    prio:'中', status:'待分配', assignee:null, dept:null, source:'外部', viaLink:true });
+  try{ localStorage.setItem('gd-intakes', JSON.stringify(intakes)); }catch(e){}
+  document.getElementById('formCard').style.display='none';
+  document.getElementById('doneCard').style.display='';
+  document.getElementById('doneMsg').textContent='我们已收到「'+name+'」的项目需求，设计团队负责人会尽快接收并安排。';
+}
+function resetForm(){
+  ['fName','fFrom','fDue','fArea','fDesc'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('doneCard').style.display='none';
+  document.getElementById('formCard').style.display='';
+}
+window.submitForm=submitForm; window.resetForm=resetForm;
+</script>
+</body>
+</html>
